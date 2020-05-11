@@ -51,7 +51,7 @@ class VectorServiceTest {
         patogeno = Patogeno("Virus", 80, 80, 80)
         val id = servicePatog.crearPatogeno(patogeno)
         patogeno = servicePatog.recuperarPatogeno(id)
-        especie1 = patogeno.agregarEspecie("Dengue", "Argentina", 15)
+        especie1 = servicePatog.agregarEspecie(patogeno.id!!.toInt(),"Covid", "Argentina", 15)
         val mosquito = servicePatog.agregarEspecie(patogeno.id!!.toInt(), "Dengue", "Argentina", 15)
         val ubicacion1 = serviceUbic.crearUbicacion("Argentina")
         vectorA = Vector(ubicacion1, VectorFrontendDTO.TipoDeVector.Persona)

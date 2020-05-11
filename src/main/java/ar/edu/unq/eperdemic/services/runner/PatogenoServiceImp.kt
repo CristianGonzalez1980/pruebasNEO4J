@@ -13,7 +13,7 @@ class PatogenoServiceImp(
 ) : PatogenoService {
 
     override fun recuperarEspecie(id: Int): Especie {
-        return kotlin.run { patogenoDAO.recuperarEspecie(id) }
+        return runTrx { patogenoDAO.recuperarEspecie(id) }
     }
 
     override fun esPandemia(especieId: Int): Boolean {
@@ -21,7 +21,18 @@ class PatogenoServiceImp(
     }
 
     override fun cantidadDeInfectados(especieId: Int): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
+         val patogeno = this.recuperarPatogeno(especieId)
+
+
+          val especies = patogeno.especies
+          var cantVectores = 0
+          for (e :Especie in especies) {
+              cantVectores += e.vectores.size
+          }
+
+         return cantVectores
+
     }
 
     override fun agregarEspecie(id: Int, nombreEspecie: String, paisDeOrigen: String, adn: Int): Especie {

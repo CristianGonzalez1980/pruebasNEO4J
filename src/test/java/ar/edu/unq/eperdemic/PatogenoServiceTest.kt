@@ -1,11 +1,16 @@
 package ar.edu.unq.eperdemic
 
+import ar.edu.unq.eperdemic.dto.VectorFrontendDTO
 import ar.edu.unq.eperdemic.modelo.Especie
 import ar.edu.unq.eperdemic.modelo.Patogeno
-import ar.edu.unq.eperdemic.persistencia.dao.hibernate.HibernateDataDAO
-import ar.edu.unq.eperdemic.persistencia.dao.hibernate.HibernatePatogenoDAO
+import ar.edu.unq.eperdemic.modelo.Vector
+import ar.edu.unq.eperdemic.persistencia.dao.hibernate.*
 import ar.edu.unq.eperdemic.services.PatogenoService
+import ar.edu.unq.eperdemic.services.UbicacionService
+import ar.edu.unq.eperdemic.services.VectorService
 import ar.edu.unq.eperdemic.services.runner.PatogenoServiceImp
+import ar.edu.unq.eperdemic.services.runner.UbicacionServiceImp
+import ar.edu.unq.eperdemic.services.runner.VectorServiceImp
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -18,6 +23,8 @@ class PatogenoServiceTest {
     lateinit var patogeno: Patogeno
     lateinit var patogeno2: Patogeno
     lateinit var patogeno3: Patogeno
+    lateinit var serviceVec: VectorService
+    lateinit var serviceUbic: UbicacionService
 
     @Before
     fun crearModelo() {
@@ -25,6 +32,10 @@ class PatogenoServiceTest {
                 HibernatePatogenoDAO(),
                 HibernateDataDAO()
         )
+
+        this.serviceVec = VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernateEspecieDAO())
+        this.serviceUbic = UbicacionServiceImp(HibernateUbicacionDAO(), HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernateEspecieDAO()))
+
     }
 
     @Test
@@ -65,11 +76,30 @@ class PatogenoServiceTest {
     fun agregarEspecieAPatogenoYRecuperarEspecie() {
         patogeno = Patogeno("1-12", 20, 50, 12)
         val id = service.crearPatogeno(patogeno)
-        service.agregarEspecie(id, "cruza", "Ecuador", 44)
-        //val patogenoRecuperado = service.recuperarPatogeno(id)
+        val especie = service.agregarEspecie(id, "cruza", "Ecuador", 44)
+        val patogenoRecuperado = service.recuperarPatogeno(id)
         //revisar la implementacion de recuperarEspecie segun lo que pide el enunciado
-        //Assert.assertEquals(patogenoRecuperado.id, (service.recuperarEspecie(id).owner)!!.id)
+        //Assert.assertEquals(patogenoRecuperado, (service.recuperarEspecie(id)).owner)
+
     }
+    @Test
+    fun verificoLaCantidadDeInfectadosDeUnPatogeno(){
+        patogeno = Patogeno("1", 20, 50, 12)
+        val id = service.crearPatogeno(patogeno)
+        var especie = service.agregarEspecie(id, "rb", "Ecuador", 50)
+        val ubicacion1 = serviceUbic.crearUbicacion("Argentina")
+        var vectorA = Vector(ubicacion1, VectorFrontendDTO.TipoDeVector.Persona)
+        var vectorB = Vector(ubicacion1, VectorFrontendDTO.TipoDeVector.Persona)
+        vectorA = serviceVec.crearVector(vectorA)
+        vectorB = serviceVec.crearVector(vectorB)
+        vectorA.enfermedades.add(especie)
+        vectorB.enfermedades.add(especie)
+        especie.vectores.add(vectorA)
+        especie.vectores.add(vectorB)
+
+        Assert.assertEquals(2, (service.cantidadDeInfectados(especie.id!!.toInt())))
+    }
+
 
     @After
     fun cleanup() {
