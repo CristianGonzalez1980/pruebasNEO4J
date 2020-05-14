@@ -22,16 +22,7 @@ class PatogenoServiceImp(
 
     override fun cantidadDeInfectados(especieId: Int): Int {
 
-         val patogeno = this.recuperarPatogeno(especieId)
-
-
-          val especies = patogeno.especies
-          var cantVectores = 0
-          for (e :Especie in especies) {
-              cantVectores += e.vectores.size
-          }
-
-         return cantVectores
+        return runTrx { patogenoDAO.cantidadDeInfectados(especieId) }
 
     }
 

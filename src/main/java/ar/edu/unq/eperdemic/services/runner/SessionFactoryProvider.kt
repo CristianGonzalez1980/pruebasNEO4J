@@ -10,8 +10,8 @@ class SessionFactoryProvider private constructor() {
 
     init {
         val env = System.getenv()
-        val user = env.getOrDefault("USER", "laura")
-        val password = env.getOrDefault("PASSWORD", "password")
+        val user = env.getOrDefault("USER", "root")
+        val password = env.getOrDefault("PASSWORD", "root")
         val dataBase = env.getOrDefault("DATA_BASE", "epers_hibernate")
         val host = env.getOrDefault("HOST", "localhost")
 

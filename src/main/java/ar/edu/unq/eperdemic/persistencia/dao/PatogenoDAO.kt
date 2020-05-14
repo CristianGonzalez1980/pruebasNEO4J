@@ -10,5 +10,6 @@ interface PatogenoDAO {
     fun recuperarATodos() : List<Patogeno>
     fun agregarEspecie(idPatogeno: Int, nombreEspecie: String, paisDeOrigen: String, adn: Int): Especie
     fun recuperarEspecie(id: Int): Especie
+    fun cantidadDeInfectados(especieId: Int): Int
 
 }

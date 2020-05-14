@@ -2,6 +2,7 @@ package ar.edu.unq.eperdemic.persistencia.dao.hibernate
 
 import ar.edu.unq.eperdemic.modelo.Especie
 import ar.edu.unq.eperdemic.modelo.Patogeno
+import ar.edu.unq.eperdemic.modelo.Vector
 import ar.edu.unq.eperdemic.persistencia.dao.PatogenoDAO
 import ar.edu.unq.eperdemic.services.runner.TransactionRunner
 
@@ -9,22 +10,31 @@ import ar.edu.unq.eperdemic.services.runner.TransactionRunner
 open class HibernatePatogenoDAO : HibernateDAO<Patogeno>(Patogeno::class.java), PatogenoDAO {
 
     override fun recuperarEspecie(id: Int): Especie {
-        //var patogeno = this.recuperar(id)
-       /* val especies = patogeno.especies
-        for (e: Especie in especies){
-            if (e.owner?.id!!.toInt() == id)
 
-                return e
-
-        }*/
-
+        var patogeno = this.recuperar(id)
         val session = TransactionRunner.currentSession
-        val hql = """ select especie from patogeno join especie e where e.owner = :unPatogeno"""
+        val hql = """ select especie from patogeno p join p.especies especie  where especie.owner = :unPatogeno"""
         val query = session.createQuery(hql, Especie::class.java)
-        query.setParameter("unPatogeno", id)
-        var especie = query.resultList[0]
-        return especie
+        query.setParameter("unPatogeno", patogeno)
+        query.maxResults = 1
+        return query.singleResult
 
+    }
+
+    override fun cantidadDeInfectados(especieId: Int) : Int{
+
+        val especie = this.recuperarEspecie(especieId)
+        val session = TransactionRunner.currentSession
+        val hql = """ 
+                  select vectores_id
+                  from especie e join especie_vector  on e.owner = v.enfermedades_id where e.owner = :unPatogeno 
+
+                  """
+
+        val query = session.createQuery(hql, Especie::class.java)
+        query.setParameter("unPatogeno", especie.owner)
+        val res = query.resultList.size
+        return  res
     }
 
     override fun agregarEspecie(idPatogeno: Int, nombreEspecie: String, paisDeOrigen: String, adn: Int): Especie {

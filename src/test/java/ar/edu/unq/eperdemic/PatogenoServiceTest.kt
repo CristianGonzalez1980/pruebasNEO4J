@@ -78,8 +78,7 @@ class PatogenoServiceTest {
         val id = service.crearPatogeno(patogeno)
         val especie = service.agregarEspecie(id, "cruza", "Ecuador", 44)
         val patogenoRecuperado = service.recuperarPatogeno(id)
-        //revisar la implementacion de recuperarEspecie segun lo que pide el enunciado
-        //Assert.assertEquals(patogenoRecuperado, (service.recuperarEspecie(id)).owner)
+        Assert.assertEquals(especie, (service.recuperarEspecie(id)))
 
     }
     @Test
@@ -96,7 +95,7 @@ class PatogenoServiceTest {
         vectorB.enfermedades.add(especie)
         especie.vectores.add(vectorA)
         especie.vectores.add(vectorB)
-
+        println(service.cantidadDeInfectados(especie.id!!.toInt()))
         Assert.assertEquals(2, (service.cantidadDeInfectados(especie.id!!.toInt())))
     }
 
