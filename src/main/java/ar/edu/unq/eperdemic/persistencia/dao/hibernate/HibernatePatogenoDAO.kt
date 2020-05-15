@@ -26,13 +26,13 @@ open class HibernatePatogenoDAO : HibernateDAO<Patogeno>(Patogeno::class.java), 
         val especie = this.recuperarEspecie(especieId)
         val session = TransactionRunner.currentSession
         val hql = """ 
-                  select vectores_id
-                  from especie e join especie_vector  on e.owner = v.enfermedades_id where e.owner = :unPatogeno 
+                  select vector
+                  from especie e join e.vectores vector  where e = :unaEspecie 
 
                   """
 
-        val query = session.createQuery(hql, Especie::class.java)
-        query.setParameter("unPatogeno", especie.owner)
+        val query = session.createQuery(hql, Vector::class.java)
+        query.setParameter("unaEspecie", especie)
         val res = query.resultList.size
         return  res
     }
@@ -43,6 +43,7 @@ open class HibernatePatogenoDAO : HibernateDAO<Patogeno>(Patogeno::class.java), 
         patogeno.agregarEspecie(especie)
         val session = TransactionRunner.currentSession
         session.save(especie)
+
         return especie
     }
 

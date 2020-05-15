@@ -23,7 +23,10 @@ class Vector() {
     @ManyToOne
     var location: Ubicacion? = null
 
-    @ManyToMany(mappedBy = "vectores", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    @ManyToOne
+    var especie : Especie? = null
+
+    @OneToMany(mappedBy = "vector", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     var enfermedades: MutableSet<Especie> = HashSet()
 
     @Transient
@@ -36,11 +39,11 @@ class Vector() {
         this.initEstrategia()
     }
 
-    fun contagiar(vectorInfectado: Vector, vectores: List<Vector>) {
+    /*fun contagiar(vectorInfectado: Vector, vectores: List<Vector>) {
         for (v: Vector in vectores) {
             estrategiaDeContagio?.darContagio(vectorInfectado, v)!!
         }
-    }
+    }*/
 
     fun cambiarDeUbicacion(ubicacion: Ubicacion) {
         this.location!!.desAlojarVector(this)
@@ -61,5 +64,13 @@ class Vector() {
         if (this.tipo!!.name == "Insecto") {
             this.estrategiaDeContagio = StrategyInsecto()
         }
+    }
+
+    fun agregarEnfermedad(unaEspecie: Especie) {
+
+        this.especie = unaEspecie
+
+        this.enfermedades.add(especie!!)
+
     }
 }

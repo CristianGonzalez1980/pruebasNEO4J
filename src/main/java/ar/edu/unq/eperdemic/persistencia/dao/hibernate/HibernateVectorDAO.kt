@@ -30,13 +30,17 @@ open class HibernateVectorDAO : HibernateDAO<Vector>(Vector::class.java), Vector
         return (this.recuperar(vector.id))
     }
 
-    override fun agregarEnfermedad(vectorId: Int, especieId: Int) {
-        val session = TransactionRunner.currentSession
+    override fun agregarEnfermedad(vectorId: Int, especie: Especie) {
+        var vectorRec: Vector = this.recuperar(vectorId)
+        vectorRec.agregarEnfermedad(especie)
+        this.actualizar(vectorRec)
+
+        /*val session = TransactionRunner.currentSession
         val hql = ("insert into vector_especie(:idDelVector, :idDeLaEspecie)")
         val query = session.createQuery(hql)
         query.setParameter("idDelVector", vectorId)
         query.setParameter("idDeLaEspecie", especieId)
-        query.executeUpdate()
+        query.executeUpdate()*/
     }
 
     override fun eliminar(idDelVector: Int) {

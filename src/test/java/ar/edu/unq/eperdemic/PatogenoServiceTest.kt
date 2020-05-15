@@ -33,8 +33,8 @@ class PatogenoServiceTest {
                 HibernateDataDAO()
         )
 
-        this.serviceVec = VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernateEspecieDAO())
-        this.serviceUbic = UbicacionServiceImp(HibernateUbicacionDAO(), HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernateEspecieDAO()))
+        this.serviceVec = VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO())
+        this.serviceUbic = UbicacionServiceImp(HibernateUbicacionDAO(), HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO()))
 
     }
 
@@ -75,15 +75,15 @@ class PatogenoServiceTest {
     @Test
     fun agregarEspecieAPatogenoYRecuperarEspecie() {
         patogeno = Patogeno("1-12", 20, 50, 12)
-        val id = service.crearPatogeno(patogeno)
-        val especie = service.agregarEspecie(id, "cruza", "Ecuador", 44)
-        val patogenoRecuperado = service.recuperarPatogeno(id)
+         val id = service.crearPatogeno(patogeno)
+         val especie = service.agregarEspecie(id, "cruza", "Ecuador", 44)
+
         Assert.assertEquals(especie, (service.recuperarEspecie(id)))
 
     }
     @Test
     fun verificoLaCantidadDeInfectadosDeUnPatogeno(){
-        patogeno = Patogeno("1", 20, 50, 12)
+        patogeno = Patogeno("1", 100, 50, 12)
         val id = service.crearPatogeno(patogeno)
         var especie = service.agregarEspecie(id, "rb", "Ecuador", 50)
         val ubicacion1 = serviceUbic.crearUbicacion("Argentina")
@@ -91,10 +91,11 @@ class PatogenoServiceTest {
         var vectorB = Vector(ubicacion1, VectorFrontendDTO.TipoDeVector.Persona)
         vectorA = serviceVec.crearVector(vectorA)
         vectorB = serviceVec.crearVector(vectorB)
-        vectorA.enfermedades.add(especie)
-        vectorB.enfermedades.add(especie)
-        especie.vectores.add(vectorA)
-        especie.vectores.add(vectorB)
+        serviceVec.infectar(vectorA,especie)
+        serviceVec.infectar(vectorB,especie)
+        //vectorB.enfermedades.add(especie)
+        //especie.vectores.add(vectorA)
+        //especie.vectores.add(vectorB)
         println(service.cantidadDeInfectados(especie.id!!.toInt()))
         Assert.assertEquals(2, (service.cantidadDeInfectados(especie.id!!.toInt())))
     }
