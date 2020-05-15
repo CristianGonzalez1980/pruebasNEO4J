@@ -10,9 +10,9 @@ class StrategyInsecto : StrategySuperClase() {
                 || (vectorRecibido.tipo!!.name == "Persona"))
     }
 
-    override fun darContagio(vectorDAO: VectorDAO, vectorInfectado: Vector, vectorAContagiar: Vector) {
+    override fun darContagio(vectorInfectado: Vector, vectorAContagiar: Vector) {
         if (this.poneEnRiesgoA(vectorAContagiar)) {
-            super.darContagio(vectorDAO,vectorInfectado, vectorAContagiar)
+            super.darContagio(vectorInfectado, vectorAContagiar)
         }
     }
 }

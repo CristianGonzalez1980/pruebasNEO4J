@@ -32,7 +32,7 @@ open class HibernateVectorDAO : HibernateDAO<Vector>(Vector::class.java), Vector
 
     override fun agregarEnfermedad(vectorId: Int, especie: Especie) {
         var vectorRec: Vector = this.recuperar(vectorId)
-        vectorRec.agregarEnfermedad(especie)
+        vectorRec.estrategiaDeContagio!!.infectar(vectorRec, especie)
         this.actualizar(vectorRec)
 
         /*val session = TransactionRunner.currentSession
