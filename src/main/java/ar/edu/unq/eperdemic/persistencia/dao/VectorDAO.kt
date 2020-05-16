@@ -11,7 +11,7 @@ import ar.edu.unq.eperdemic.modelo.Vector
 interface VectorDAO {
     fun crearVector(vector: Vector): Vector
     fun recuperar(idDelVector: Int): Vector
-    fun recuperarEnfermedades(idDelVector: Int): MutableSet<Especie>
+    fun enfermedades(idDelVector: Int): List<Especie>
     fun eliminar(idDelVector: Int)
     fun agregarEnfermedad(vectorId: Int, especie: Especie)
     fun actualizar(vector: Vector): Vector

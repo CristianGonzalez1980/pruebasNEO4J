@@ -30,13 +30,14 @@ class VectorServiceImp(
 
     override fun contagiar(vectorInfectado: Vector, vectores: List<Vector>) {
         runTrx {
-            val vectorInf: Vector = vectorDAO.recuperar(vectorInfectado.id!!.toInt())
+            //val vectorInf: Vector = vectorDAO.recuperar(vectorInfectado.id!!.toInt())
             for (vectorAInfect: Vector in vectores) {
-                val vectorAContagiar = vectorDAO.recuperar(vectorAInfect.id!!.toInt())
-                vectorInf.estrategiaDeContagio!!.darContagio(vectorInf, vectorAContagiar)
-                vectorDAO.actualizar(vectorAContagiar)
+                //val vectorAContagiar = vectorDAO.recuperar(vectorAInfect.id!!.toInt())
+                //vectorInf.estrategiaDeContagio!!.darContagio(vectorInf, vectorAContagiar)
+                vectorInfectado.estrategiaDeContagio!!.darContagio(vectorInfectado, vectorAInfect)
+                vectorDAO.actualizar(vectorAInfect)
             }
-            vectorDAO.actualizar(vectorInf)
+            //vectorDAO.actualizar(vectorInf)
         }
     }
 
@@ -55,9 +56,9 @@ class VectorServiceImp(
         }
     }
 
-    override fun enfermedades(vectorId: Int): MutableSet<Especie> {
+    override fun enfermedades(vectorId: Int): List<Especie> {
         return runTrx {
-                vectorDAO.recuperarEnfermedades(vectorId)
+                vectorDAO.enfermedades(vectorId)
         }
     }
 

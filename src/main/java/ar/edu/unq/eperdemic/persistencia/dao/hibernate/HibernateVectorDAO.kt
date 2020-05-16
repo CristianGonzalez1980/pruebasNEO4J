@@ -14,15 +14,17 @@ open class HibernateVectorDAO : HibernateDAO<Vector>(Vector::class.java), Vector
     override fun recuperar(idDelVector: Int): Vector {
         val vector = this.recuperar(idDelVector.toLong())
         vector.initEstrategia()
+        vector.enfermedades = this.enfermedades(vector.id!!.toInt()).toMutableSet()
         return vector
     }
 
-    override fun recuperarEnfermedades(idDelVector: Int): MutableSet<Especie> {
+    override fun enfermedades(idDelVector: Int): List<Especie> {
         val session = TransactionRunner.currentSession
-        val hql = ("select enfermedades_nombre from vector_especie where vector_id = :idVector")
+        val hql = ("select enfermedad from vector v join v.enfermedades enfermedad where v.id = :idVector")
         val query = session.createQuery(hql, Especie::class.java)
         query.setParameter("idVector", idDelVector)
-        return query.resultList.toMutableSet()
+        //return query.resultList.toMutableSet()
+        return query.resultList
     }
 
     override fun crearVector(vector: Vector): Vector {
@@ -31,7 +33,7 @@ open class HibernateVectorDAO : HibernateDAO<Vector>(Vector::class.java), Vector
     }
 
     override fun agregarEnfermedad(vectorId: Int, especie: Especie) {
-        var vectorRec: Vector = this.recuperar(vectorId)
+        val vectorRec: Vector = this.recuperar(vectorId)
         vectorRec.estrategiaDeContagio!!.infectar(vectorRec, especie)
         this.actualizar(vectorRec)
 
