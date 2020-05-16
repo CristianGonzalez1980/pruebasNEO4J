@@ -93,10 +93,11 @@ class PatogenoServiceTest {
         vectorB = serviceVec.crearVector(vectorB)
         serviceVec.infectar(vectorA,especie)
         serviceVec.infectar(vectorB,especie)
+        val especieRecu = service.recuperarEspecie(id)
         //vectorB.enfermedades.add(especie)
         //especie.vectores.add(vectorA)
         //especie.vectores.add(vectorB)
-        println(service.cantidadDeInfectados(especie.id!!.toInt()))
+        println(especieRecu.vectores)
         Assert.assertEquals(2, (service.cantidadDeInfectados(especie.id!!.toInt())))
     }
 
