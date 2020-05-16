@@ -20,9 +20,11 @@ open class HibernateVectorDAO : HibernateDAO<Vector>(Vector::class.java), Vector
 
     override fun enfermedades(idDelVector: Int): List<Especie> {
         val session = TransactionRunner.currentSession
-        val hql = ("select enfermedad from vector v join v.enfermedades enfermedad where v.id = :idVector")
+        val hql = """
+        select enfermedad 
+        from vector v join v.enfermedades enfermedad where v.id = :idVector"""
         val query = session.createQuery(hql, Especie::class.java)
-        query.setParameter("idVector", idDelVector)
+        query.setParameter("idVector", idDelVector.toLong())
         //return query.resultList.toMutableSet()
         return query.resultList
     }

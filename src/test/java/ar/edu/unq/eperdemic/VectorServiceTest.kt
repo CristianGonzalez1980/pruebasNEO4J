@@ -71,8 +71,11 @@ class VectorServiceTest {
     fun contagioExitoso() {
         vectores.add(vectorB)
         Assert.assertTrue(vectorB.enfermedades.isEmpty())
+        println(vectorA.enfermedades)
         serviceVect.contagiar(vectorA, vectores)
         val vectorBRecuperadoPost = serviceVect.recuperarVector(vectorB.id!!.toInt())
+        val id = vectorBRecuperadoPost.id
+
         Assert.assertEquals(1, vectorBRecuperadoPost.enfermedades.size)
     }
 
@@ -82,7 +85,8 @@ class VectorServiceTest {
         Assert.assertTrue(vectorD.enfermedades.isEmpty())
         serviceVect.contagiar(vectorC, vectores)
         val vectorDRecuperadoPost = serviceVect.actualizar(vectorD)
-        Assert.assertEquals(0, vectorDRecuperadoPost.enfermedades.size)
+        val id = vectorDRecuperadoPost.id
+        Assert.assertEquals(0, (serviceVect.enfermedades(id!!.toInt()).size))
     }
 
     @After

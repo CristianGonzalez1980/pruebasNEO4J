@@ -30,6 +30,7 @@ class VectorServiceImp(
 
     override fun contagiar(vectorInfectado: Vector, vectores: List<Vector>) {
         runTrx {
+
             //val vectorInf: Vector = vectorDAO.recuperar(vectorInfectado.id!!.toInt())
             for (vectorAInfect: Vector in vectores) {
                 //val vectorAContagiar = vectorDAO.recuperar(vectorAInfect.id!!.toInt())
