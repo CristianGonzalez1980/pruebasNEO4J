@@ -62,7 +62,7 @@ class VectorServiceTest {
         vectorB = serviceVect.crearVector(vectorB)
         vectorC = serviceVect.crearVector(vectorC)
         vectorD = serviceVect.crearVector(vectorD)
-        serviceVect.infectar(vectorA, mosquito)
+        vectorA.agregarEnfermedad(mosquito)
         vectorC.enfermedades.add(especie1)
         vectores = ArrayList()
     }
@@ -70,13 +70,13 @@ class VectorServiceTest {
     @Test
     fun contagioExitoso() {
         vectores.add(vectorB)
+
         Assert.assertTrue(vectorB.enfermedades.isEmpty())
-        println(vectorA.enfermedades)
+
         serviceVect.contagiar(vectorA, vectores)
         val vectorBRecuperadoPost = serviceVect.recuperarVector(vectorB.id!!.toInt())
-        val id = vectorBRecuperadoPost.id
 
-        Assert.assertEquals(1, vectorBRecuperadoPost.enfermedades.size)
+        Assert.assertEquals(1, vectorBRecuperadoPost.cantidadEnfermedades())
     }
 
     @Test

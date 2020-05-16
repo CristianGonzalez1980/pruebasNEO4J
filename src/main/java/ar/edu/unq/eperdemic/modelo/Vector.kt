@@ -44,6 +44,9 @@ class Vector() {
             estrategiaDeContagio?.darContagio(vectorInfectado, v)!!
         }
     }*/
+    fun cantidadEnfermedades(): Int {
+        return (this.enfermedades.size)
+    }
 
     fun cambiarDeUbicacion(ubicacion: Ubicacion) {
         this.location!!.desAlojarVector(this)
