@@ -12,7 +12,7 @@ import ar.edu.unq.eperdemic.services.runner.PatogenoServiceImp
 import ar.edu.unq.eperdemic.services.runner.UbicacionServiceImp
 import ar.edu.unq.eperdemic.services.runner.VectorServiceImp
 import ar.edu.unq.eperdemic.utils.DataService
-import ar.edu.unq.eperdemic.utils.impl.DataServiceImp
+import ar.edu.unq.eperdemic.utils.Impl.DataServiceImp
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -49,12 +49,13 @@ class EstadisticaServiceTest {
 
     @Before
     fun crearModelo() {
-        this.serviceEst = EstadisticaServiceImp()
         this.serviceUbi = UbicacionServiceImp(HibernateUbicacionDAO(),
-                HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO()))
-        this.serviceVec = VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO())
+                HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO() /*HibernateEspecieDAO()*/))
+        this.serviceVec = VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO()/*HibernateEspecieDAO()*/)
         this.servicePatog = PatogenoServiceImp(HibernatePatogenoDAO(), HibernateDataDAO())
         this.serviceData = DataServiceImp(HibernateDataDAO())
+        this.serviceEst = EstadisticaServiceImp(HibernateEspecieDAO(), HibernateUbicacionDAO(), UbicacionServiceImp(HibernateUbicacionDAO(),
+                HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO() /*HibernateEspecieDAO()*/)))
 
         //se elimina tdo tipo de informacion persistida hasta el momento
         serviceData.eliminarTodo()
@@ -165,19 +166,30 @@ class EstadisticaServiceTest {
         vectorG = serviceVec.crearVector(Vector(ubi2, VectorFrontendDTO.TipoDeVector.Persona))
         serviceVec.infectar(vectorG, especie10)
     }
-
-
+    /* ----insecto   B: paperas, h1n1, escarlatina, varicela, viruela, sarampion, covid19
+    *
+    * varicela 3-
+    * Anthrax 3-
+    * sarampion 3-
+    * covid19 2-
+    * paludismo-
+    * salmonela-
+    * colera-
+    * fiebre amarilla-
+    * viruela-
+    *
+    */
     @Test
     fun `se verifica especie que infecto mas humanos`() {
         //      vectorA, vectorD y vectorG son humanos (anthrax tienen todos)
         //      que pasa si hay empates?
-        Assert.assertEquals(serviceEst.especieLider(), especie10)//falta comparar con la salida
+        Assert.assertEquals(serviceEst.especieLider(), especie10)
     }
 
     @Test
     fun `se obtiene lista de 10 especies con mayor infeccion en humanos y animales`() {
         //       varicela, sarampion esta en ambos grupos solamente
-        //       que pasa si no hay 10 especies?     //que pasa si hay empates?    //no se consideran que hayan infectado humanos y animales por separado, solo combinados?
+        //       no se consideran que hayan infectado humanos y animales por separado, solo combinados?
         Assert.assertEquals(serviceEst.lideres(), mutableListOf(especie1, especie3))//falta comparar con la salida
     }
 
@@ -189,7 +201,10 @@ class EstadisticaServiceTest {
         var vectoresPresente = mutableListOf<Vector>(vectorB, vectorC, vectorE, vectorF)
         var vectoresInfectados = mutableListOf<Vector>(vectorB, vectorC, vectorE)
         var especieLider = especie7
-        Assert.assertEquals(serviceEst.reporteDeContagios("Bernal"), mutableListOf(vectoresPresente, vectoresInfectados, especieLider))//falta comparar con la salida
+        Assert.assertEquals(serviceEst.reporteDeContagios("Bernal").vectoresPresentes, vectoresPresente.size)
+        Assert.assertEquals(serviceEst.reporteDeContagios("Bernal").vectoresInfecatods, vectoresInfectados.size)
+        Assert.assertEquals(serviceEst.reporteDeContagios("Bernal").nombreDeEspecieMasInfecciosa, especieLider.nombre)
+
     }
 
 }

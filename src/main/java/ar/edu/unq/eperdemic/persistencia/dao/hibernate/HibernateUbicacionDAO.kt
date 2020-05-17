@@ -24,4 +24,31 @@ open class HibernateUbicacionDAO : HibernateDAO<Ubicacion>(Ubicacion::class.java
         val session = TransactionRunner.currentSession
         session.saveOrUpdate(ubicacion)
     }
+
+    override fun nomEspecieMasInfecciosa(nombreDeLaUbicacion: String): String {
+        val session = TransactionRunner.currentSession
+        val hql = """
+            select especie 
+            from especie especie
+                join especie.vectores v where v.location.nombreDeLaUbicacion = :id
+                group by especie
+                order by count(especie) desc
+         """
+        val query = session.createQuery(hql, Especie::class.java)
+        query.setParameter("id", nombreDeLaUbicacion)
+        query.maxResults = 1
+        return query.singleResult.toString()
+    }
+
+    override fun cantVectoresInfectados(nombreDeLaUbicacion: String): Int {
+        val session = TransactionRunner.currentSession
+        val hql = """
+            select count(distinct vector.id)
+            from vector vector
+                right join vector.enfermedades e where vector.location.nombreDeLaUbicacion = :id
+         """
+        val query = session.createQuery(hql, Number::class.java)
+        query.setParameter("id", nombreDeLaUbicacion)
+        return query.singleResult.toInt()
+    }
 }
