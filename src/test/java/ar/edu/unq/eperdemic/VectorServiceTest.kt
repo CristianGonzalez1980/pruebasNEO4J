@@ -68,14 +68,19 @@ class VectorServiceTest {
     }
 
     @Test
+    fun recuperarYVerificarTipo() {
+        val tipoOriginal = vectorA.tipo
+        val vectorRecuperado = serviceVect.recuperarVector(vectorA.id!!.toInt())
+        val tipoRecuperado = vectorRecuperado.tipo
+        Assert.assertEquals(tipoOriginal, tipoRecuperado)
+    }
+
+    @Test
     fun contagioExitoso() {
         vectores.add(vectorB)
-
         Assert.assertTrue(vectorB.enfermedades.isEmpty())
-
         serviceVect.contagiar(vectorA, vectores)
         val vectorBRecuperadoPost = serviceVect.recuperarVector(vectorB.id!!.toInt())
-
         Assert.assertEquals(1, vectorBRecuperadoPost.cantidadEnfermedades())
     }
 

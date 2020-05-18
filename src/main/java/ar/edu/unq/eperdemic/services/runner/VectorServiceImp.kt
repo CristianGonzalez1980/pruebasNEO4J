@@ -44,10 +44,10 @@ class VectorServiceImp(
 
     override fun infectar(vector: Vector, especie: Especie) {
         runTrx {
-            var especieRec: Especie = patogenoDAO.recuperarEspecie(especie.owner!!.id!!.toInt())
+            val especieRec: Especie = patogenoDAO.recuperarEspecie(especie.owner!!.id!!.toInt())
 
             //vectorDAO.agregarEnfermedad(vector.id!!.toInt(),especieRec)
-            var vectorRec: Vector = vectorDAO.recuperar(vector.id!!.toInt())
+            val vectorRec: Vector = vectorDAO.recuperar(vector.id!!.toInt())
             vector.estrategiaDeContagio!!.infectar(vectorRec, especieRec)
             vectorDAO.actualizar(vectorRec)
             //entiendo que la especie se actualizaaaaa*/

@@ -66,25 +66,34 @@ class UbicacionDaoTest {
     @Test
     fun chequeoDeGuardarUbicaciones() {
         serviceUbi.crearUbicacion(ubicacionC.nombreDeLaUbicacion!!)//"Tolosa"
-        var ubiGuardada: Ubicacion = serviceUbi.recuperar(ubicacionC.nombreDeLaUbicacion!!)
+        val ubiGuardada: Ubicacion = serviceUbi.recuperar(ubicacionC.nombreDeLaUbicacion!!)
         Assert.assertEquals(ubicacionC.nombreDeLaUbicacion, ubiGuardada.nombreDeLaUbicacion)
     }
 
     @Test
     fun seAsientanVectoresEnLaUbicacion() {
-        var ubicacionAnterior: Ubicacion = ubicacionA.alojarVector(vectorB)//De City Bell a La plata
+        /*var ubicacionAnterior: Ubicacion = ubicacionA.alojarVector(vectorB)//De City Bell a La plata
         var ubicacionAnterior2: Ubicacion = ubicacionA.alojarVector(vectorC)//De City Bell a La plata
         serviceUbi.actualizar(ubicacionAnterior)
         serviceUbi.actualizar(ubicacionA)
         val ubiPersistida: Ubicacion = serviceUbi.recuperar(ubicacionA.nombreDeLaUbicacion!!)
         val ubiAnterior: Ubicacion = serviceUbi.recuperar(ubicacionAnterior.nombreDeLaUbicacion!!)
         Assert.assertEquals(2, ubiPersistida.vectores.size)//En City Bell
+        Assert.assertEquals(3, ubiAnterior.vectores.size)//En La plata*/
+        //La cambie porque el alojar ya no retorna la ubicacion y ademas habian actualizaciones innecesarias ya que se encarga el service de eso
+        val ubicacionAnterior = vectorB.location
+        val ubicacionAnterior2 = vectorC.location
+        serviceUbi.mover(vectorB.id!!.toInt(), ubicacionA.nombreDeLaUbicacion!!.toString())
+        serviceUbi.mover(vectorC.id!!.toInt(), ubicacionA.nombreDeLaUbicacion!!.toString())
+        val ubiPersistida: Ubicacion = serviceUbi.recuperar(ubicacionA.nombreDeLaUbicacion!!)
+        val ubiAnterior: Ubicacion = serviceUbi.recuperar(ubicacionAnterior?.nombreDeLaUbicacion!!)
+        Assert.assertEquals(2, ubiPersistida.vectores.size)//En City Bell
         Assert.assertEquals(3, ubiAnterior.vectores.size)//En La plata
     }
 
     @Test
     fun moverDeUbicacionVectores() {
-        serviceUbi.crearUbicacion(ubicacionD.nombreDeLaUbicacion!!)//se persiste Ringuelet
+        /*serviceUbi.crearUbicacion(ubicacionD.nombreDeLaUbicacion!!)//se persiste Ringuelet
         var ringuelet: Ubicacion = serviceUbi.recuperar(ubicacionD.nombreDeLaUbicacion!!)//se recupera Ringuelet
         var ubiAnterior = ringuelet.alojarVector(vectorC)//De City Bell a Ringuelet
         ringuelet.alojarVector(vectorD)//De City Bell a Ringuelet
@@ -92,6 +101,16 @@ class UbicacionDaoTest {
         serviceUbi.actualizar(ubiAnterior)
         ringuelet = serviceUbi.recuperar(ringuelet.nombreDeLaUbicacion!!)
         ubiAnterior = serviceUbi.recuperar(ubiAnterior.nombreDeLaUbicacion!!)
+        Assert.assertEquals(2, ringuelet.vectores.size)//En Ringuelet
+        Assert.assertEquals(3, ubiAnterior.vectores.size)//En City Bel*/
+        //La cambie porque el alojar ya no retorna la ubicacion y ademas habian actualizaciones innecesarias ya que se encarga el service de eso
+        serviceUbi.crearUbicacion(ubicacionD.nombreDeLaUbicacion!!)//se persiste Ringuelet
+        var ringuelet: Ubicacion = serviceUbi.recuperar(ubicacionD.nombreDeLaUbicacion!!)//se recupera Ringuelet
+        var ubiAnterior: Ubicacion? = vectorC.location
+        serviceUbi.mover(vectorC.id!!.toInt(), ringuelet.nombreDeLaUbicacion!!.toString())//De City Bell a Ringuelet
+        serviceUbi.mover(vectorD.id!!.toInt(), ringuelet.nombreDeLaUbicacion!!.toString())//De City Bell a Ringuelet
+        ringuelet = serviceUbi.recuperar(ringuelet.nombreDeLaUbicacion!!)
+        ubiAnterior = serviceUbi.recuperar(ubiAnterior!!.nombreDeLaUbicacion!!)
         Assert.assertEquals(2, ringuelet.vectores.size)//En Ringuelet
         Assert.assertEquals(3, ubiAnterior.vectores.size)//En City Bel
     }

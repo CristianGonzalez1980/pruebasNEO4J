@@ -17,12 +17,10 @@ class Ubicacion() {
         this.nombreDeLaUbicacion = nombreUbicacion
     }
 
-    fun alojarVector(vector: Vector): Ubicacion {
-        this.vectores.add(vector)
-        val ubicacionAnterior = vector.location
+    fun alojarVector(vector: Vector) {
         vector.location!!.desAlojarVector(vector)
         vector.location = this
-        return ubicacionAnterior!!
+        this.vectores.add(vector)
     }
 
     fun desAlojarVector(vector: Vector) {

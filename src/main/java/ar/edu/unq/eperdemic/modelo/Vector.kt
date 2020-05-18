@@ -49,7 +49,6 @@ class Vector() {
     }
 
     fun cambiarDeUbicacion(ubicacion: Ubicacion) {
-        this.location!!.desAlojarVector(this)
         ubicacion.alojarVector(this)
     }
 
