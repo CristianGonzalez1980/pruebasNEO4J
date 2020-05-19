@@ -2,6 +2,7 @@ package ar.edu.unq.eperdemic.persistencia.dao.hibernate
 
 import ar.edu.unq.eperdemic.modelo.Especie
 import ar.edu.unq.eperdemic.modelo.Patogeno
+import ar.edu.unq.eperdemic.modelo.Ubicacion
 import ar.edu.unq.eperdemic.modelo.Vector
 import ar.edu.unq.eperdemic.persistencia.dao.PatogenoDAO
 import ar.edu.unq.eperdemic.services.runner.TransactionRunner
@@ -11,12 +12,10 @@ open class HibernatePatogenoDAO : HibernateDAO<Patogeno>(Patogeno::class.java), 
 
     override fun recuperarEspecie(id: Int): Especie {
 
-        var patogeno = this.recuperar(id)
         val session = TransactionRunner.currentSession
-        val hql = """ select especie from patogeno p join p.especies especie  where especie.owner = :unPatogeno"""
+        val hql = """ select especie from patogeno p join p.especies especie  where especie.id =:unId"""
         val query = session.createQuery(hql, Especie::class.java)
-        query.setParameter("unPatogeno", patogeno)
-        query.maxResults = 1
+        query.setParameter("unId",id.toLong())
         return query.singleResult
 
     }
@@ -37,14 +36,40 @@ open class HibernatePatogenoDAO : HibernateDAO<Patogeno>(Patogeno::class.java), 
         return  res
     }
 
+    override fun esPandemia(especieId: Int): Boolean {
+
+        var especie = this.recuperarEspecie(especieId)
+        //var ubicaciones : MutableSet<Ubicacion> = HashSet()
+
+
+        val session = TransactionRunner.currentSession
+        val hql1 = """ select distinct (v.location)
+                 from especie e join e.vectores v where e.id = :unId"""
+        val query1 = session.createQuery(hql1, Ubicacion::class.java)
+        query1.setParameter("unId", especie.id!!.toLong())
+        var ubicaciones =  query1.resultList.size
+
+        val hql2 = "from ubicacion u " + " order by u.id"
+        val query2 = session.createQuery(hql2, Ubicacion::class.java)
+        var cantUbicacion = (query2.resultList.size) / 2
+
+
+        return ubicaciones > cantUbicacion
+
+
+    }
+
     override fun agregarEspecie(idPatogeno: Int, nombreEspecie: String, paisDeOrigen: String, adn: Int): Especie {
         var patogeno = this.recuperar(idPatogeno)
         val especie = Especie(patogeno,nombreEspecie,paisDeOrigen, adn)
         patogeno.agregarEspecie(especie)
         val session = TransactionRunner.currentSession
         session.save(especie)
+        val hql = """ select especie from patogeno p join p.especies especie  where especie.nombre = :unNombre"""
+        val query = session.createQuery(hql, Especie::class.java)
+        query.setParameter("unNombre",nombreEspecie)
 
-        return especie
+        return query.singleResult
     }
 
     override fun recuperarATodos(): List<Patogeno> {

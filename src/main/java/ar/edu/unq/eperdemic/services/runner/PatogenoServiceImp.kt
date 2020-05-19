@@ -2,14 +2,20 @@ package ar.edu.unq.eperdemic.services.runner
 
 import ar.edu.unq.eperdemic.modelo.Especie
 import ar.edu.unq.eperdemic.modelo.Patogeno
+import ar.edu.unq.eperdemic.modelo.Ubicacion
+import ar.edu.unq.eperdemic.modelo.Vector
 import ar.edu.unq.eperdemic.persistencia.dao.DataDAO
 import ar.edu.unq.eperdemic.persistencia.dao.PatogenoDAO
+import ar.edu.unq.eperdemic.persistencia.dao.hibernate.HibernatePatogenoDAO
+import ar.edu.unq.eperdemic.persistencia.dao.hibernate.HibernateUbicacionDAO
+import ar.edu.unq.eperdemic.persistencia.dao.hibernate.HibernateVectorDAO
 import ar.edu.unq.eperdemic.services.PatogenoService
 import ar.edu.unq.eperdemic.services.runner.TransactionRunner.runTrx
 
 class PatogenoServiceImp(
         private val patogenoDAO: PatogenoDAO,
         private val dataDAO: DataDAO
+
 ) : PatogenoService {
 
     override fun recuperarEspecie(id: Int): Especie {
@@ -17,7 +23,9 @@ class PatogenoServiceImp(
     }
 
     override fun esPandemia(especieId: Int): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
+        return runTrx { patogenoDAO.esPandemia(especieId)}
+
     }
 
     override fun cantidadDeInfectados(especieId: Int): Int {

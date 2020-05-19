@@ -51,4 +51,6 @@ open class HibernateUbicacionDAO : HibernateDAO<Ubicacion>(Ubicacion::class.java
         query.setParameter("id", nombreDeLaUbicacion)
         return query.singleResult.toInt()
     }
+
+
 }

@@ -15,4 +15,8 @@ open class HibernateDAO<T>(private val entityType: Class<T>) {
         val session = TransactionRunner.currentSession
         return session.get(entityType, id)
     }
+
+    open fun esPandemia(especieId: Int): Boolean {
+        TODO("Not yet implemented")
+    }
 }

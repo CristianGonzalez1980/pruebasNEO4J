@@ -44,7 +44,7 @@ class VectorServiceImp(
 
     override fun infectar(vector: Vector, especie: Especie) {
         runTrx {
-            val especieRec: Especie = patogenoDAO.recuperarEspecie(especie.owner!!.id!!.toInt())
+            val especieRec: Especie = patogenoDAO.recuperarEspecie(especie.id!!.toInt())
 
             //vectorDAO.agregarEnfermedad(vector.id!!.toInt(),especieRec)
             val vectorRec: Vector = vectorDAO.recuperar(vector.id!!.toInt())
