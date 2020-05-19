@@ -14,7 +14,7 @@ open class HibernateVectorDAO : HibernateDAO<Vector>(Vector::class.java), Vector
     override fun recuperar(idDelVector: Int): Vector {
         val vector = this.recuperar(idDelVector.toLong())
         vector.initEstrategia()
-        vector.enfermedades = this.enfermedades(vector.id!!.toInt()).toMutableSet()
+        //vector.enfermedades = this.enfermedades(vector.id!!.toInt()).toMutableSet()
         return vector
     }
 

@@ -30,30 +30,18 @@ class VectorServiceImp(
 
     override fun contagiar(vectorInfectado: Vector, vectores: List<Vector>) {
         runTrx {
-
-            //val vectorInf: Vector = vectorDAO.recuperar(vectorInfectado.id!!.toInt())
             for (vectorAInfect: Vector in vectores) {
-                //val vectorAContagiar = vectorDAO.recuperar(vectorAInfect.id!!.toInt())
-                //vectorInf.estrategiaDeContagio!!.darContagio(vectorInf, vectorAContagiar)
                 vectorInfectado.estrategiaDeContagio!!.darContagio(vectorInfectado, vectorAInfect)
                 vectorDAO.actualizar(vectorAInfect)
             }
-            //vectorDAO.actualizar(vectorInf)
         }
     }
 
     override fun infectar(vector: Vector, especie: Especie) {
         runTrx {
-            val especieRec: Especie = patogenoDAO.recuperarEspecie(especie.id!!.toInt())
+            vector.estrategiaDeContagio!!.infectar(vector, especie)
+            vectorDAO.actualizar(vector)
 
-            //vectorDAO.agregarEnfermedad(vector.id!!.toInt(),especieRec)
-            val vectorRec: Vector = vectorDAO.recuperar(vector.id!!.toInt())
-            vector.estrategiaDeContagio!!.infectar(vectorRec, especieRec)
-            vectorDAO.actualizar(vectorRec)
-            //entiendo que la especie se actualizaaaaa*/
-            /*vector.agregarEnfermedad(especieRec)
-            especie.agregarVector(vectorRec)
-            vectorDAO.actualizar(vectorRec)*/
         }
     }
 

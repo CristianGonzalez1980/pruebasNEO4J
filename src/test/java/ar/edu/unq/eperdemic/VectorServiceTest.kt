@@ -27,14 +27,12 @@ class VectorServiceTest {
     lateinit var vectorB: Vector
     lateinit var vectorC: Vector
     lateinit var vectorD: Vector
-    lateinit var vectorARecuperado: Vector
-    lateinit var vectorBRecuperado: Vector
-    lateinit var vectorCRecuperado: Vector
-    lateinit var vectorDRecuperado: Vector
+    lateinit var vectorE: Vector
     lateinit var vectores: MutableList<Vector>
     lateinit var especie1: Especie
-    lateinit var especie2: Especie
-    lateinit var especie3: Especie
+    lateinit var mosquito: Especie
+    lateinit var covid19: Especie
+    lateinit var gripeAviar: Especie
     lateinit var estrategia: StrategyHumano
     lateinit var estrategia1: StrategyAnimal
     lateinit var patogeno: Patogeno
@@ -52,19 +50,35 @@ class VectorServiceTest {
         val id = servicePatog.crearPatogeno(patogeno)
         patogeno = servicePatog.recuperarPatogeno(id)
         especie1 = servicePatog.agregarEspecie(patogeno.id!!.toInt(),"Covid", "Argentina", 15)
-        val mosquito = servicePatog.agregarEspecie(patogeno.id!!.toInt(), "Dengue", "Argentina", 15)
+        covid19 = servicePatog.agregarEspecie(patogeno.id!!.toInt(), "Coronavirus", "China", 55)
+        gripeAviar = servicePatog.agregarEspecie(patogeno.id!!.toInt(), "H5N1", "EEUU", 40)
+        mosquito = servicePatog.agregarEspecie(patogeno.id!!.toInt(), "Dengue", "Argentina", 15)
         val ubicacion1 = serviceUbic.crearUbicacion("Argentina")
         vectorA = Vector(ubicacion1, VectorFrontendDTO.TipoDeVector.Persona)
         vectorB = Vector(ubicacion1, VectorFrontendDTO.TipoDeVector.Persona)
         vectorC = Vector(ubicacion1, VectorFrontendDTO.TipoDeVector.Animal)
         vectorD = Vector(ubicacion1, VectorFrontendDTO.TipoDeVector.Animal)
+        vectorE = Vector(ubicacion1, VectorFrontendDTO.TipoDeVector.Animal)
         vectorA = serviceVect.crearVector(vectorA)
         vectorB = serviceVect.crearVector(vectorB)
         vectorC = serviceVect.crearVector(vectorC)
         vectorD = serviceVect.crearVector(vectorD)
-        vectorA.agregarEnfermedad(mosquito)
-        vectorC.enfermedades.add(especie1)
+        vectorE = serviceVect.crearVector(vectorE)
+        serviceVect.infectar(vectorA, mosquito)
+        serviceVect.infectar(vectorC, especie1)
+        serviceVect.infectar(vectorE, mosquito)
+        serviceVect.infectar(vectorE, covid19)
+        serviceVect.infectar(vectorE, gripeAviar)
         vectores = ArrayList()
+    }
+
+    @Test
+    fun infectarCon2EspeciesAVectorConDengue() {
+        serviceVect.infectar(vectorA, mosquito)
+        serviceVect.infectar(vectorA, covid19)
+        serviceVect.infectar(vectorA, gripeAviar)
+        val vectorARecuperadoPost = serviceVect.recuperarVector(vectorA.id!!.toInt())
+        Assert.assertEquals(3,vectorARecuperadoPost.enfermedades.size )
     }
 
     @Test
@@ -90,8 +104,13 @@ class VectorServiceTest {
         Assert.assertTrue(vectorD.enfermedades.isEmpty())
         serviceVect.contagiar(vectorC, vectores)
         val vectorDRecuperadoPost = serviceVect.actualizar(vectorD)
-        val id = vectorDRecuperadoPost.id
-        Assert.assertEquals(0, (serviceVect.enfermedades(id!!.toInt()).size))
+        Assert.assertEquals(0, (serviceVect.enfermedades(vectorDRecuperadoPost.id!!.toInt()).size))
+    }
+
+    @Test
+    fun enfermedadesDelVector(){
+        val vectorERecuperadoPost = serviceVect.recuperarVector(vectorE.id!!.toInt())
+        Assert.assertEquals(3,vectorERecuperadoPost.enfermedades.size)
     }
 
     @After
