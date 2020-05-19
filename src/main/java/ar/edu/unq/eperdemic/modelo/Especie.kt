@@ -41,6 +41,7 @@ class Especie() : Serializable {
         if ((this.adn!! >= unaMutacion.getAdnNecesario()!!) && this.tieneMutaciones(unaMutacion.mutacionesNecesarias())) {
             this.adn = (this.adn!! - unaMutacion.getAdnNecesario()!!)
             this.mutaciones.add(unaMutacion)
+            unaMutacion.potenciarEspecie(this)
         }
     }
 

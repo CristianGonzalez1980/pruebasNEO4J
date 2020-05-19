@@ -1,4 +1,16 @@
 package ar.edu.unq.eperdemic.persistencia.dao.hibernate
 
-class HIbernateMutacionDAO {
+import ar.edu.unq.eperdemic.modelo.Mutacion
+import ar.edu.unq.eperdemic.persistencia.dao.MutacionDAO
+
+open class HibernateMutacionDAO : HibernateDAO<Mutacion>(Mutacion::class.java), MutacionDAO {
+
+    override fun crear(mutacion: Mutacion): Mutacion {
+        this.guardar(mutacion)
+        return mutacion
+    }
+
+    override fun recuperarMut(mutacionId: Int): Mutacion {
+        return this.recuperar(mutacionId.toLong())
+    }
 }

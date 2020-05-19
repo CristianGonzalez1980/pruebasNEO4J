@@ -55,4 +55,24 @@ class Patogeno() {
     fun agregarEspecie(especie: Especie) {
         this.especies.add(especie)
     }
+
+    fun incrementarCapacidadDeContagio() {
+        this.capacidadContagio = this.incrementarValor(this.capacidadContagio!!)
+    }
+
+    fun incrementarLetalidal() {
+        this.letalidad = this.incrementarValor(this.letalidad!!)
+    }
+
+    fun incrementarDefensa() {
+        this.defensa = this.incrementarValor(this.defensa!!)
+    }
+
+    fun incrementarValor(valor: Int): Int {
+        if (valor < 100) {
+            return valor + 1
+        } else {
+            return valor
+        }
+    }
 }
