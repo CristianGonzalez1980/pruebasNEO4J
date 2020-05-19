@@ -54,31 +54,17 @@ class VectorServiceTest {
         gripeAviar = servicePatog.agregarEspecie(patogeno.id!!.toInt(), "H5N1", "EEUU", 40)
         mosquito = servicePatog.agregarEspecie(patogeno.id!!.toInt(), "Dengue", "Argentina", 15)
         val ubicacion1 = serviceUbic.crearUbicacion("Argentina")
-        vectorA = Vector(ubicacion1, VectorFrontendDTO.TipoDeVector.Persona)
-        vectorB = Vector(ubicacion1, VectorFrontendDTO.TipoDeVector.Persona)
-        vectorC = Vector(ubicacion1, VectorFrontendDTO.TipoDeVector.Animal)
-        vectorD = Vector(ubicacion1, VectorFrontendDTO.TipoDeVector.Animal)
-        vectorE = Vector(ubicacion1, VectorFrontendDTO.TipoDeVector.Animal)
-        vectorA = serviceVect.crearVector(vectorA)
-        vectorB = serviceVect.crearVector(vectorB)
-        vectorC = serviceVect.crearVector(vectorC)
-        vectorD = serviceVect.crearVector(vectorD)
-        vectorE = serviceVect.crearVector(vectorE)
+        vectorA = serviceVect.crearVector(Vector(ubicacion1, VectorFrontendDTO.TipoDeVector.Persona))
+        vectorB = serviceVect.crearVector(Vector(ubicacion1, VectorFrontendDTO.TipoDeVector.Persona))
+        vectorC = serviceVect.crearVector(Vector(ubicacion1, VectorFrontendDTO.TipoDeVector.Animal))
+        vectorD = serviceVect.crearVector(Vector(ubicacion1, VectorFrontendDTO.TipoDeVector.Animal))
+        vectorE = serviceVect.crearVector(Vector(ubicacion1, VectorFrontendDTO.TipoDeVector.Animal))
         serviceVect.infectar(vectorA, mosquito)
         serviceVect.infectar(vectorC, especie1)
         serviceVect.infectar(vectorE, mosquito)
         serviceVect.infectar(vectorE, covid19)
         serviceVect.infectar(vectorE, gripeAviar)
         vectores = ArrayList()
-    }
-
-    @Test
-    fun infectarCon2EspeciesAVectorConDengue() {
-        serviceVect.infectar(vectorA, mosquito)
-        serviceVect.infectar(vectorA, covid19)
-        serviceVect.infectar(vectorA, gripeAviar)
-        val vectorARecuperadoPost = serviceVect.recuperarVector(vectorA.id!!.toInt())
-        Assert.assertEquals(3,vectorARecuperadoPost.enfermedades.size )
     }
 
     @Test
@@ -105,6 +91,14 @@ class VectorServiceTest {
         serviceVect.contagiar(vectorC, vectores)
         val vectorDRecuperadoPost = serviceVect.actualizar(vectorD)
         Assert.assertEquals(0, (serviceVect.enfermedades(vectorDRecuperadoPost.id!!.toInt()).size))
+    }
+
+    @Test
+    fun infectarConEspecie1AVectorYaInfectdoCon3Especies() {
+        serviceVect.infectar(vectorE, especie1)
+        val vectorARecuperadoPost = serviceVect.recuperarVector(vectorE.id!!.toInt())
+        println(vectorARecuperadoPost.enfermedades.size)
+        Assert.assertEquals(4,vectorARecuperadoPost.enfermedades.size)
     }
 
     @Test

@@ -1,12 +1,15 @@
 package ar.edu.unq.eperdemic.utils
-/*
+
+import ar.edu.unq.eperdemic.modelo.Especie
 import ar.edu.unq.eperdemic.modelo.Patogeno
+import ar.edu.unq.eperdemic.persistencia.dao.DataDAO
 import ar.edu.unq.eperdemic.persistencia.dao.PatogenoDAO
 import ar.edu.unq.eperdemic.persistencia.dao.hibernate.HibernateDataDAO
 import ar.edu.unq.eperdemic.persistencia.dao.hibernate.HibernatePatogenoDAO
 import ar.edu.unq.eperdemic.services.PatogenoService
 import ar.edu.unq.eperdemic.services.runner.PatogenoServiceImp
-import ar.edu.unq.eperdemic.utils.jdbc.DataServiceJDBC
+import ar.edu.unq.eperdemic.services.runner.TransactionRunner.runTrx
+import org.hibernate.exception.ConstraintViolationException
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -18,8 +21,9 @@ import javax.validation.constraints.AssertTrue
 
 class PatogenoDaoTest {
 
+    private val dao: PatogenoDAO = HibernatePatogenoDAO()
+    private val datadao: DataDAO = HibernateDataDAO()
     lateinit var service: PatogenoService
-    lateinit var patogenoRaro: Patogeno
 
 
     /*private val modelo: DataService = DataServiceJDBC()
@@ -30,69 +34,61 @@ class PatogenoDaoTest {
         this.service = PatogenoServiceImp(
                 HibernatePatogenoDAO(),
                 HibernateDataDAO()
-        )    }
-
-    @Test
-    fun crearUnCuartoPatogenoSeCorroboraNumeroDeId() {
-        patogenoRaro = Patogeno("Priones")
-        Assert.assertEquals(4, dao.crear(patogenoRaro))
-    }
-    @Test
-    fun crearUnQuintoPatogenoConUnTipoYaExistenteYNoMeLoPermite() {
-        try {
-            patogenoRaro = Patogeno("Virus")
-            Assert.assertEquals(5, dao.crear(patogenoRaro))
-        }catch(e:Exception) {
-            assertThrows<SQLIntegrityConstraintViolationException> { dao.crear(patogenoRaro) }
-        }
-
+        )
+        service.crearPatogeno(Patogeno("Bacteria", 30, 50, 50))
+        service.crearPatogeno(Patogeno("Parsero", 52, 8, 25))
+        service.crearPatogeno(Patogeno("Volado", 7, 6, 3))
     }
 
     @Test
+    fun crearUnPatogenoSeCorroboraNumeroDeId() {
+        val patogenoRaro = Patogeno("Priones", 30, 20, 15)
+        Assert.assertEquals(4, runTrx { dao.crear(patogenoRaro) })
+    }
+
+    @Test(expected = ConstraintViolationException::class)
+    fun crearUnSegundoPatogenoConUnTipoYaExistenteYNoMeLoPermite() {
+        val patogenoRaro = Patogeno("Bacteria", 50, 84, 98)
+        val idPatogeno: Int = runTrx { dao.crear(patogenoRaro) }
+        Assert.assertEquals(2, idPatogeno)
+    }
+
+    @Test(expected = NullPointerException::class)
     fun pruebaRecuperarPatogenoQueNoFueCreadoYMeRespondeQueEsNulo() {
-        try {
-            patogenoRaro = Patogeno("Priones")
-            val patogeno: Patogeno = dao.recuperar(4)
-            Assert.assertEquals("Priones", patogeno.tipo)
-        }catch(e:Exception) {
-            assertThrows<NullPointerException> { dao.recuperar(4) }
-        }
+        val patogenoRaro2 = runTrx { dao.recuperar(4) }
+        Assert.assertEquals("Virus", patogenoRaro2.tipo)
     }
 
     @Test
     fun pruebaRecuperar() {
-        val patogeno: Patogeno = dao.recuperar(1)
-        Assert.assertEquals("Virus", patogeno.tipo)
+        val patogeno: Patogeno = runTrx { dao.recuperar(1) }
+        Assert.assertEquals("Bacteria", patogeno.tipo)
     }
 
-    @Test
-    fun crearUnPatogenoCuandoLoActualizoMeRespondeQueNoPuedeSerActualizado(){
-       try{
-                patogenoRaro= Patogeno("Covid")
-                patogenoRaro.cantidadDeEspecies = 1
-                val idPatogeno= dao.crear(patogenoRaro)
-                println(dao.actualizar(patogenoRaro))
-           Assert.assertEquals(0, dao.recuperar(idPatogeno).cantidadDeEspecies)
-       }catch(e:Exception) {
-           assertThrows<Exception> { dao.actualizar(patogenoRaro) }
-       }
-    }
+/*    @Test
+    fun crearUnPatogenoCuandoLoActualizoMeRespondeQueNoPuedeSerActualizado() {
+        val patogenoRaro = Patogeno("Hongo", 80, 80, 48)
+        val idPatogeno = dao.crear(patogenoRaro)
+        println(dao.actualizar(patogenoRaro))
+        Assert.assertEquals(0, dao.recuperar(idPatogeno).cantidadDeEspecies)
+    }*/
+
     @Test
     fun seAgregaUnaEspecieSeCorroboraLaActualizacionDelPatogeno() {
-        val patogeno: Patogeno = dao.recuperar(3)
-        patogeno.crearEspecie("VacaLoca", "Reino Unido")
-        dao.actualizar(patogeno)
-        Assert.assertEquals(1, dao.recuperar(3).cantidadDeEspecies)
+        val patogeno: Patogeno = runTrx { dao.recuperar(1) }
+        val especie = Especie(patogeno,"Vaca Loca","Francia", 5)
+        val patogenoRec = runTrx { dao.recuperar(1) }
+        Assert.assertEquals(1, patogenoRec.cantidadDeEspecies)
     }
 
     @Test
     fun seRecuperanTodosLosPatogenosSeCorroboraCantidad() {
-        val patogenos: List<Patogeno> = dao.recuperarATodos()
+        val patogenos: List<Patogeno> = runTrx { dao.recuperarATodos() }
         Assert.assertEquals(3, patogenos.size)
     }
-/*
+
     @After
     fun emilinarModelo() {
-        modelo.eliminarTodo()
-    }*/
-}*/
+        runTrx { datadao.clear() }
+    }
+}

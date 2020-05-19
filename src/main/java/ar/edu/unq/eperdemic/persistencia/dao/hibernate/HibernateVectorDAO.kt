@@ -47,17 +47,24 @@ open class HibernateVectorDAO : HibernateDAO<Vector>(Vector::class.java), Vector
         query.executeUpdate()*/
     }
 
-    override fun eliminar(idDelVector: Int) {
-        val session = TransactionRunner.currentSession
-        val hql = ("delete from vector where id = :idDelVector")
-        val query = session.createQuery(hql, Vector::class.java)
-        query.setParameter("idDelVector", idDelVector)
-        query.executeUpdate()
-    }
-
     override fun actualizar(vector: Vector): Vector {
         val session = TransactionRunner.currentSession
         session.saveOrUpdate(vector)
         return this.recuperar(vector.id)
     }
+
+    override fun eliminar(idDelVector: Int) {
+        val vector = this.recuperar(idDelVector)
+        val session = TransactionRunner.currentSession
+        vector.location!!.desAlojarVector(vector)
+        vector.enfermedades.map { it.vectores.remove(vector) }
+        session.delete(vector)
+    }
+/*    override fun eliminar(idDelVector: Int) {
+        val session = TransactionRunner.currentSession
+        val hql = ("delete from vector where id = :idDelVector")
+        val query = session.createQuery(hql, Vector::class.java)
+        query.setParameter("idDelVector", idDelVector)
+        query.executeUpdate()
+    }*/
 }
