@@ -89,7 +89,7 @@ class VectorServiceTest {
         vectores.add(vectorD)
         Assert.assertTrue(vectorD.enfermedades.isEmpty())
         serviceVect.contagiar(vectorC, vectores)
-        val vectorDRecuperadoPost = serviceVect.actualizar(vectorD)
+        val vectorDRecuperadoPost = serviceVect.recuperarVector(vectorD.id!!.toInt())
         Assert.assertEquals(0, (serviceVect.enfermedades(vectorDRecuperadoPost.id!!.toInt()).size))
     }
 
@@ -97,7 +97,6 @@ class VectorServiceTest {
     fun infectarConEspecie1AVectorYaInfectdoCon3Especies() {
         serviceVect.infectar(vectorE, especie1)
         val vectorARecuperadoPost = serviceVect.recuperarVector(vectorE.id!!.toInt())
-        println(vectorARecuperadoPost.enfermedades.size)
         Assert.assertEquals(4,vectorARecuperadoPost.enfermedades.size)
     }
 
@@ -105,6 +104,13 @@ class VectorServiceTest {
     fun enfermedadesDelVector(){
         val vectorERecuperadoPost = serviceVect.recuperarVector(vectorE.id!!.toInt())
         Assert.assertEquals(3,vectorERecuperadoPost.enfermedades.size)
+    }
+
+    @Test
+    fun infectarYVerificarPorFuncionEnfermedades(){
+        serviceVect.infectar(vectorA, mosquito)
+        val cantidadEnfermedadesRecuperadas = serviceVect.enfermedades(vectorA.id!!.toInt()).size
+        Assert.assertEquals(1,cantidadEnfermedadesRecuperadas)
     }
 
     @After
