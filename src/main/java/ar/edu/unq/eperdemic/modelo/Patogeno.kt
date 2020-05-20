@@ -12,7 +12,7 @@ class Patogeno() {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
 
-    @Column(nullable = false, length = 500)
+    @Column(nullable = false, unique = true, length = 500)
     var tipo: String? = null
 
     @OneToMany(mappedBy = "owner", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
@@ -51,10 +51,14 @@ class Patogeno() {
     override fun toString(): String {
         return this.tipo!!
     }
-
-    fun agregarEspecie(especie: Especie) {
-        this.especies.add(especie)
+    fun agregarEspecie(nombreEspecie: String, paisDeOrigen: String, adn: Int): Especie {
+        val nuevaEspecie: Especie = Especie(this, nombreEspecie, paisDeOrigen, adn)
+        this.especies.add(nuevaEspecie)
+        return nuevaEspecie
     }
+/*    fun agregarEspecie(especie: Especie) {
+        this.especies.add(especie)
+    }*/
 
     fun incrementarCapacidadDeContagio() {
         this.capacidadContagio = this.incrementarValor(this.capacidadContagio!!)

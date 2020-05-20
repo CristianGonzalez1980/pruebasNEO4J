@@ -61,8 +61,7 @@ open class HibernatePatogenoDAO : HibernateDAO<Patogeno>(Patogeno::class.java), 
 
     override fun agregarEspecie(idPatogeno: Int, nombreEspecie: String, paisDeOrigen: String, adn: Int): Especie {
         var patogeno = this.recuperar(idPatogeno)
-        val especie = Especie(patogeno,nombreEspecie,paisDeOrigen, adn)
-        patogeno.agregarEspecie(especie)
+        val especie = patogeno.agregarEspecie(nombreEspecie, paisDeOrigen, adn)
         val session = TransactionRunner.currentSession
         session.save(especie)
         val hql = """ select especie from patogeno p join p.especies especie  where especie.nombre = :unNombre"""

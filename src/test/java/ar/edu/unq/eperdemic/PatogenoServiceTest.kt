@@ -97,7 +97,7 @@ class PatogenoServiceTest {
         //vectorB.enfermedades.add(especie)
         //especie.vectores.add(vectorA)
         //especie.vectores.add(vectorB)
-        println(especieRecu.vectores)
+ //       println(especieRecu.vectores)
         Assert.assertEquals(2, (service.cantidadDeInfectados(especie.id!!.toInt())))
     }
 
@@ -127,7 +127,7 @@ class PatogenoServiceTest {
         //vectorB.enfermedades.add(especie)
         //especie.vectores.add(vectorA)
         //especie.vectores.add(vectorB)
-        println(especieRecu.vectores)
+//        println(especieRecu.vectores)
         Assert.assertEquals(true, (service.esPandemia(especie.id!!.toInt())))
     }
 

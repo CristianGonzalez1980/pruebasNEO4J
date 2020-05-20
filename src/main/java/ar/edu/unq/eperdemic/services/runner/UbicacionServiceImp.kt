@@ -17,19 +17,20 @@ class UbicacionServiceImp(
 ) : UbicacionService {
 
     override fun mover(vectorId: Int, nombreUbicacion: String) {
-        runTrx {
-            val vector = vectorDAO.recuperar(vectorId)
-            val ubicacionVieja: Ubicacion? = vector.location
-            val ubicacionNueva: Ubicacion = ubicacionDAO.recuperar(nombreUbicacion)
-            vector.cambiarDeUbicacion(ubicacionNueva)
-            //vectorDAO.actualizar(vector) La comente porque estamos actualizando con el mismo vector que nos pasan, no tiene mucho sentido
-            if (ubicacionVieja != null) {
-                ubicacionDAO.actualizar(ubicacionVieja)
-            }
-            if (vector.estaInfectado()) {
-                vectorServiceImp.contagiar(vector, ubicacionNueva.vectores.toList())
-            }
-            ubicacionDAO.actualizar(ubicacionNueva)
+
+        val vectorRecuperado = vectorServiceImp.recuperarVector(vectorId)
+        val ubicacionVieja = vectorRecuperado.location
+        val ubicacionNueva = this.recuperar(nombreUbicacion)
+
+        vectorRecuperado.cambiarDeUbicacion(ubicacionNueva)
+        //vectorDAO.actualizar(vector) La comente porque estamos actualizando con el mismo vector que nos pasan, no tiene mucho sentido
+/*        if (ubicacionVieja != null) {
+            ubicacionDAO.actualizar(ubicacionVieja)
+        }*/
+        //this.actualizar(ubicacionVieja!!)
+        this.actualizar(ubicacionNueva)
+        if (vectorRecuperado.estaInfectado()) {
+            vectorServiceImp.contagiar(vectorRecuperado, ubicacionNueva.vectores.toList())
         }
     }
 

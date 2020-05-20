@@ -19,8 +19,9 @@ open class StrategySuperClase() {
         }
     }
 
-    open fun infectar(vector: Vector, especie: Especie) {
-        vector.agregarEnfermedad(especie)
-        especie.agregarVector(vector)
+    fun infectar(vector: Vector, especie: Especie) {
+        vector.enfermedades.add(especie)
+        especie.vectores.add(vector)
+        especie.sumarAdn()
     }
 }

@@ -23,10 +23,10 @@ class Vector() {
     @ManyToOne
     var location: Ubicacion? = null
 
-    @ManyToOne
-    var especie: Especie? = null
+/*    @ManyToOne
+    var especie: Especie? = null*/
 
-    @OneToMany(mappedBy = "vector", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "vectores", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     var enfermedades: MutableSet<Especie> = HashSet()
 
     @Transient
@@ -68,9 +68,9 @@ class Vector() {
         }
     }
 
-    fun agregarEnfermedad(unaEspecie: Especie) {
+/*    fun agregarEnfermedad(unaEspecie: Especie) {
         this.especie = unaEspecie
         this.enfermedades.add(especie!!)
 
-    }
+    }*/
 }

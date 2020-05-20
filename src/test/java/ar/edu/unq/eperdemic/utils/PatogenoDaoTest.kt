@@ -76,7 +76,8 @@ class PatogenoDaoTest {
     @Test
     fun seAgregaUnaEspecieSeCorroboraLaActualizacionDelPatogeno() {
         val patogeno: Patogeno = runTrx { dao.recuperar(1) }
-        val especie = Especie(patogeno,"Vaca Loca","Francia", 5)
+        val especie = patogeno.agregarEspecie("Vaca Loca","Francia", 5)
+        runTrx { dao.actualizar(patogeno) }
         val patogenoRec = runTrx { dao.recuperar(1) }
         Assert.assertEquals(1, patogenoRec.cantidadDeEspecies)
     }

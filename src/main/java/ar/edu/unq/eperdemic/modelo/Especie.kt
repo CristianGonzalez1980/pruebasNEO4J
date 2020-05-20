@@ -19,14 +19,18 @@ class Especie() : Serializable {
     @ManyToOne
     var owner: Patogeno? = null
 
-    var adn: Int? = null  //Una especie obtendra 1 de ADN cada 5 personas infectadas, FALTA IMPLEMENTAR
-    @ManyToOne
-    var vector : Vector? = null
+    var adn: Int = 0  //Una especie obtendra 1 de ADN cada 5 personas infectadas, FALTA IMPLEMENTAR
+
+    @Column(nullable = false, length = 500)
+    var countIncAdn: Int = 0
+
+/*    @ManyToOne
+    var vector : Vector? = null*/
 
     @OneToMany(mappedBy = "owner", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     val mutaciones: MutableList<Mutacion> = ArrayList()
 
-    @OneToMany(mappedBy = "especie", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    @ManyToMany
     var vectores: MutableSet<Vector> = HashSet()
 
     fun tieneMutaciones(mutaciones: List<Mutacion>): Boolean {         //Corrobora que la especie tenga las mutaciones
@@ -35,6 +39,14 @@ class Especie() : Serializable {
             resultado = (resultado and this.mutaciones.contains(mutacion))
         }
         return resultado
+    }
+
+    fun sumarAdn() {
+        ++countIncAdn
+        if (this.countIncAdn == 5) {
+            ++adn
+            countIncAdn = 0
+        }
     }
 
     fun agregarMutacion(unaMutacion: Mutacion) {
@@ -62,10 +74,11 @@ class Especie() : Serializable {
         val especie = o as Especie?
         return owner!!.id == (especie!!.owner!!).id
     }
+/*
 
     fun agregarVector(unVector: Vector) {
         this.vector = unVector
         this.vectores.add(vector!!)
+*/
 
-    }
 }

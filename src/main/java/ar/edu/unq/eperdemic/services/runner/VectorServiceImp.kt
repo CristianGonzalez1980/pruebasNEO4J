@@ -29,10 +29,12 @@ class VectorServiceImp(
     }
 
     override fun contagiar(vectorInfectado: Vector, vectores: List<Vector>) {
-        runTrx {
-            for (vectorAInfect: Vector in vectores) {
-                vectorInfectado.estrategiaDeContagio!!.darContagio(vectorInfectado, vectorAInfect)
-                vectorDAO.actualizar(vectorAInfect)
+        var vecAInfect: Vector
+        for (vectorAInfect: Vector in vectores) {
+            vecAInfect = vectorAInfect
+            if (vecAInfect != vectorInfectado) {
+                vectorInfectado.estrategiaDeContagio!!.darContagio(vectorInfectado, vecAInfect)
+                runTrx { vectorDAO.actualizar(vecAInfect) }
             }
         }
     }
@@ -41,13 +43,12 @@ class VectorServiceImp(
         runTrx {
             vector.estrategiaDeContagio!!.infectar(vector, especie)
             vectorDAO.actualizar(vector)
-
         }
     }
 
     override fun enfermedades(vectorId: Int): List<Especie> {
         return runTrx {
-                vectorDAO.enfermedades(vectorId)
+            vectorDAO.enfermedades(vectorId)
         }
     }
 
