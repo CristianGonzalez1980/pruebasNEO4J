@@ -182,7 +182,7 @@ class EstadisticaServiceTest {
     @Test
     fun `se verifica especie que infecto mas humanos`() {
         //      vectorA, vectorD y vectorG son humanos (anthrax tienen todos)
-        //      que pasa si hay empates?
+        //      que pasa si hay empates? -Respuesta: Creo que se elige culquiera de los empatados
         Assert.assertEquals(serviceEst.especieLider(), especie10)
     }
 

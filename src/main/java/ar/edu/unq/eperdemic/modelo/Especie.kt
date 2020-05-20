@@ -19,7 +19,7 @@ class Especie() : Serializable {
     @ManyToOne
     var owner: Patogeno? = null
 
-    var adn: Int = 0  //Una especie obtendra 1 de ADN cada 5 personas infectadas, FALTA IMPLEMENTAR
+    var adn: Int = 0
 
     @Column(nullable = false, length = 500)
     var countIncAdn: Int = 0
@@ -50,18 +50,21 @@ class Especie() : Serializable {
     }
 
     fun agregarMutacion(unaMutacion: Mutacion) {
-        if ((this.adn!! >= unaMutacion.getAdnNecesario()!!) && this.tieneMutaciones(unaMutacion.mutacionesNecesarias())) {
-            this.adn = (this.adn!! - unaMutacion.getAdnNecesario()!!)
+        if (this.noLaTiene(unaMutacion) && (this.adn >= unaMutacion.getAdnNecesario()!!) && this.tieneMutaciones(unaMutacion.mutacionesNecesarias())) {
+            this.adn = (this.adn - unaMutacion.getAdnNecesario()!!)
             this.mutaciones.add(unaMutacion)
             unaMutacion.potenciarEspecie(this)
         }
     }
 
-    constructor(owner: Patogeno, nombre: String, paisDeOrigen: String, cantidadAdn: Int) : this() {
+    fun noLaTiene(unaMutacion: Mutacion) : Boolean {
+        return (!this.mutaciones.contains(unaMutacion))
+    }
+
+    constructor(owner: Patogeno, nombre: String, paisDeOrigen: String) : this() {
         this.owner = owner
         this.nombre = nombre
         this.paisDeOrigen = paisDeOrigen
-        this.adn = cantidadAdn
     }
 
     override fun toString(): String {
@@ -75,7 +78,6 @@ class Especie() : Serializable {
         return owner!!.id == (especie!!.owner!!).id
     }
 /*
-
     fun agregarVector(unVector: Vector) {
         this.vector = unVector
         this.vectores.add(vector!!)

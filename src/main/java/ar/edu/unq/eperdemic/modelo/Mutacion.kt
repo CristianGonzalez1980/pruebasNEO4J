@@ -25,9 +25,7 @@ class Mutacion() {
 
 
     constructor(puntos: Int, mutacionesNecesarias: MutableList<Mutacion>, mutacionesHabilitadas: MutableList<Mutacion>, potencialidad: Potencialidad) : this() {
-
         this.puntosAdnNecesarios = puntos
-
         this.mutacionesNecesarias = mutacionesNecesarias
         this.mutacionesHabilitadas = mutacionesHabilitadas
         this.potencialidad = potencialidad
