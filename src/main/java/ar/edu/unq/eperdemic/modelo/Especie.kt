@@ -30,7 +30,7 @@ class Especie() : Serializable {
     @OneToMany(mappedBy = "owner", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     val mutaciones: MutableList<Mutacion> = ArrayList()
 
-    @ManyToMany
+    @ManyToMany( cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     var vectores: MutableSet<Vector> = HashSet()
 
     fun tieneMutaciones(mutaciones: List<Mutacion>): Boolean {         //Corrobora que la especie tenga las mutaciones

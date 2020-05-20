@@ -72,6 +72,7 @@ class UbicacionServiceTest {
         serviceVec.infectar(vectorD, especie1)
         vectorA = serviceVec.crearVector(vectorA)
         service.actualizar(ubi3)
+        service.actualizar(ubi2)
         vectorB = serviceVec.crearVector(vectorB)
         vectorC = serviceVec.crearVector(vectorC)
         vectorA = serviceVec.recuperarVector(vectorA.id!!.toInt())
@@ -96,7 +97,7 @@ class UbicacionServiceTest {
         service.mover(vectorD.id!!.toInt(), "Quilmes")
         val vectores: MutableList<Vector> = service.recuperar("Quilmes").vectores.toMutableList()
         val totalDeInfectados = vectores.count { it.estaInfectado() }
-        Assert.assertEquals(2, totalDeInfectados)
+        Assert.assertEquals(3, totalDeInfectados)
     }
 
     @Test
@@ -120,6 +121,7 @@ class UbicacionServiceTest {
         service.expandir("Quilmes")
         val vectores: MutableList<Vector> = service.recuperar("Quilmes").vectores.toMutableList()
         val totalDeInfectados = vectores.count { it.estaInfectado() }
+
         Assert.assertEquals(0, totalDeInfectados)
     }
 

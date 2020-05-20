@@ -41,10 +41,14 @@ class UbicacionServiceImp(
     override fun expandir(nombreUbicacion: String) {
         val ubicacion: Ubicacion = this.recuperar(nombreUbicacion)
         val vectores: MutableList<Vector> = ubicacion.vectores.toMutableList()
-        val vectorInfectado: Vector? = vectores.find { it.estaInfectado() }
-        if (vectorInfectado != null) {
-            vectorServiceImp.contagiar(vectorInfectado, vectores)
+
+        if(vectores.filter {it.estaInfectado()}.isNotEmpty()){
+        val vectorInfectado: Vector = vectores.filter {it.estaInfectado() }[0]
+        // vectorServiceImp.contagiar(vectorInfectado, vectores)
+        ubicacion.actualizarInfectadoseEnUbicacion(vectorInfectado , vectores)
+        runTrx { ubicacionDAO.actualizar(ubicacion) }
         }
+
     }
 
     override fun crearUbicacion(nombre: String): Ubicacion {
