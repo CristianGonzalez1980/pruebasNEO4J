@@ -61,10 +61,11 @@ class Especie() : Serializable {
         return (!this.mutaciones.contains(unaMutacion))
     }
 
-    constructor(owner: Patogeno, nombre: String, paisDeOrigen: String) : this() {
+    constructor(owner: Patogeno, nombre: String, paisDeOrigen: String, adn : Int) : this() {
         this.owner = owner
         this.nombre = nombre
         this.paisDeOrigen = paisDeOrigen
+        this.adn = adn
     }
 
     override fun toString(): String {

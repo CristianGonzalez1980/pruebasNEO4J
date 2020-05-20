@@ -52,7 +52,7 @@ class Patogeno() {
         return this.tipo!!
     }
     fun agregarEspecie(nombreEspecie: String, paisDeOrigen: String, adn: Int): Especie {
-        val nuevaEspecie: Especie = Especie(this, nombreEspecie, paisDeOrigen)
+        val nuevaEspecie: Especie = Especie(this, nombreEspecie, paisDeOrigen,adn)
         this.especies.add(nuevaEspecie)
         return nuevaEspecie
     }
