@@ -72,7 +72,7 @@ class EstadisticaServiceTest {
         ubi2 = serviceUbi.crearUbicacion("Wilde")
         //se crean 2 vectores con dicha ubicacion se persiste
         vectorD = serviceVec.crearVector(Vector(ubi2, VectorFrontendDTO.TipoDeVector.Persona))
-        vectorE = serviceVec.crearVector(Vector(ubi2, VectorFrontendDTO.TipoDeVector.Animal))
+        vectorE = serviceVec.crearVector(Vector(ubi2, VectorFrontendDTO.TipoDeVector.Persona))
         serviceUbi.actualizar(ubi2)
 
         //se crea el patogeno "Virus"
@@ -102,8 +102,8 @@ class EstadisticaServiceTest {
         serviceVec.infectar(vectorB, especie4)
         serviceVec.infectar(vectorB, especie5)
         serviceVec.infectar(vectorB, especie6)
-        serviceVec.infectar(vectorC, especie7)
-        serviceVec.infectar(vectorC, especie8)
+        serviceVec.infectar(vectorC, especie2)
+        serviceVec.infectar(vectorC, especie3)
         serviceVec.infectar(vectorC, especie9)
         serviceVec.infectar(vectorD, especie10)
         serviceVec.infectar(vectorD, especie11)
@@ -111,22 +111,23 @@ class EstadisticaServiceTest {
         serviceVec.infectar(vectorE, especie1)
         serviceVec.infectar(vectorE, especie2)
         serviceVec.infectar(vectorE, especie3)
-        serviceVec.infectar(vectorE, especie7)
+        serviceVec.infectar(vectorE, especie10)
 
-        /*  hasta el momento A Y D (humanos), C Y E (animales), B (insecto) infectados con:
+        /*  hasta el momento A D y E (humanos), C (animales), B (insecto) infectados con:
         *
         *   A: varicela, Anthrax, sarampion
         *   D: anthrax, salmonela, paludismo
         *
-        *   C: covid19, colera, fiebre amarilla
-        *   E: varicela, viruela, sarampion, covid19
+        *   C: sarampion, viruela, fiebre amarilla
+        *   E: varicela, viruela, sarampion, anthrax
         *
         *   B: paperas, h1n1, escarlatina
         *
         * */
 
+        //esto lo saque no use el mover
         //se muda el vectorA a Wilde
-        serviceUbi.mover(vectorA.id!!.toInt(), "Wilde")
+        //serviceUbi.mover(vectorA.id!!.toInt(), "Wilde")
         /*  intentara contagia a residentes vectorD y vectorE
         *   solo pone en riesgo a vectorD ya que es humano (vectorE es animal)
         *   por el momento que solo la estrategia define contagio exitoso
@@ -142,8 +143,10 @@ class EstadisticaServiceTest {
         *   anthrax, salmonela, paludismo
         */
 
+
+        //no  use el mover
         //se muda el vectorE a Bernal
-        serviceUbi.mover(vectorE.id!!.toInt(), "Bernal")
+       // serviceUbi.mover(vectorE.id!!.toInt(), "Bernal")
         /*  intentara contagia a residentes vectorB y vectorC
         *   solo pone en riesgo a vectorB ya que es insecto (vectorC es animal)
         *   por el momento que solo la estrategia define contagio exitoso
@@ -190,6 +193,7 @@ class EstadisticaServiceTest {
     fun `se obtiene lista de 10 especies con mayor infeccion en humanos y animales`() {
         //       varicela, sarampion esta en ambos grupos solamente
         //       no se consideran que hayan infectado humanos y animales por separado, solo combinados?
+        println(serviceEst.lideres())
         Assert.assertEquals(serviceEst.lideres(), mutableListOf(especie1, especie3))//falta comparar con la salida
     }
 
@@ -198,9 +202,9 @@ class EstadisticaServiceTest {
         //bernal: vectores B,C,E y F (presentes e infectados) lider: covid19
         //wilde: vectores D y A (presentes e infectados) lideres: (varicela, anthrax, sarampion)
         //verificar vacios    //que pasa si hay empates?
-        var vectoresPresente = mutableListOf<Vector>(vectorB, vectorC, vectorE, vectorF)
-        var vectoresInfectados = mutableListOf<Vector>(vectorB, vectorC, vectorE)
-        var especieLider = especie7
+        var vectoresPresente = mutableListOf<Vector>(vectorB, vectorC, vectorA, vectorF)
+        var vectoresInfectados = mutableListOf<Vector>(vectorB, vectorC, vectorA)
+        var especieLider = especie3
         Assert.assertEquals(serviceEst.reporteDeContagios("Bernal").vectoresPresentes, vectoresPresente.size)
         Assert.assertEquals(serviceEst.reporteDeContagios("Bernal").vectoresInfecatods, vectoresInfectados.size)
         Assert.assertEquals(serviceEst.reporteDeContagios("Bernal").nombreDeEspecieMasInfecciosa, especieLider.nombre)
