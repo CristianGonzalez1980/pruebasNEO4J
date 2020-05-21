@@ -8,7 +8,7 @@ import ar.edu.unq.eperdemic.services.VectorService
 import ar.edu.unq.eperdemic.services.impl.UbicacionServiceImp
 import ar.edu.unq.eperdemic.services.impl.VectorServiceImp
 
-class QQQqqVectorFrontendDTO(val tipoDeVector: TipoDeVector,
+class VectorFrontendDTO(val tipoDeVector: TipoDeVector,
                         val nombreDeUbicacionPresente: String) {
 
     enum class TipoDeVector {

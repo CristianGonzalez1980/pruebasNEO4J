@@ -1,11 +1,9 @@
 package ar.edu.unq.eperdemic
 
 import ar.edu.unq.eperdemic.dto.VectorFrontendDTO
-import ar.edu.unq.eperdemic.modelo.Especie
-import ar.edu.unq.eperdemic.modelo.Patogeno
+import ar.edu.unq.eperdemic.modelo.*
 import ar.edu.unq.eperdemic.modelo.StrategyVectores.StrategyHumano
 import ar.edu.unq.eperdemic.modelo.StrategyVectores.StrategyAnimal
-import ar.edu.unq.eperdemic.modelo.Vector
 import ar.edu.unq.eperdemic.persistencia.dao.hibernate.*
 import ar.edu.unq.eperdemic.services.impl.PatogenoServiceImp
 import ar.edu.unq.eperdemic.services.impl.UbicacionServiceImp
@@ -37,14 +35,12 @@ class VectorServiceTest {
     lateinit var estrategia1: StrategyAnimal
     lateinit var patogeno: Patogeno
 
-
     @Before
     fun crearModelo() {
         this.servicePatog = PatogenoServiceImp(HibernatePatogenoDAO(), HibernateDataDAO())
         this.serviceVect = VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO())
         this.serviceUbic = UbicacionServiceImp(HibernateUbicacionDAO(), HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO()))
         this.serviceData = DataServiceImp(HibernateDataDAO())
-
         estrategia = StrategyHumano()
         estrategia1 = StrategyAnimal()
         patogeno = Patogeno("Virus", 80, 80, 80)

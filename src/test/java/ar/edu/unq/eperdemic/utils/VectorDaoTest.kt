@@ -4,7 +4,6 @@ import ar.edu.unq.eperdemic.dto.VectorFrontendDTO
 import ar.edu.unq.eperdemic.modelo.Ubicacion
 import ar.edu.unq.eperdemic.modelo.Vector
 import ar.edu.unq.eperdemic.persistencia.dao.DataDAO
-import ar.edu.unq.eperdemic.persistencia.dao.EspecieDAO
 import ar.edu.unq.eperdemic.persistencia.dao.VectorDAO
 import ar.edu.unq.eperdemic.persistencia.dao.hibernate.*
 import ar.edu.unq.eperdemic.services.UbicacionService
@@ -23,11 +22,10 @@ class VectorDaoTest {
 
     private val dao: VectorDAO = HibernateVectorDAO()
     private val datadao: DataDAO = HibernateDataDAO()
-    private val especieDAO: EspecieDAO = HibernateEspecieDAO()
     private val dataService: DataService = DataServiceImp(HibernateDataDAO())
-    private val serviceVect: VectorService = VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO()/*, HibernateEspecieDAO()*/)
+    private val serviceVect: VectorService = VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO())
     private val serviceUbi: UbicacionService = UbicacionServiceImp(HibernateUbicacionDAO(),
-            HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO()/*HibernateEspecieDAO()*/))
+            HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO()))
     lateinit var ubicacionA: Ubicacion
     lateinit var ubicacionB: Ubicacion
     lateinit var vectorA: Vector

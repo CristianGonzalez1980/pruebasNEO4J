@@ -47,11 +47,11 @@ class MutacionServiceTest {
 
     @Before
     fun crearModelo() {
-        this.servicePatog = PatogenoServiceImp(HibernatePatogenoDAO(), HibernateDataDAO()/* ,HibernateEspecieDAO(),*/)
+        this.servicePatog = PatogenoServiceImp(HibernatePatogenoDAO(), HibernateDataDAO())
         this.serviceData = DataServiceImp(HibernateDataDAO())
-        this.serviceMut = MutacionServiceImp(HibernateDataDAO(), HibernateMutacionDAO(), HibernateEspecieDAO(), HibernatePatogenoDAO())
-        this.serviceVec = VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO()/*, HibernateEspecieDAO()*/, HibernatePatogenoDAO())
-        this.serviceUbi = UbicacionServiceImp(HibernateUbicacionDAO(), HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO()/*, HibernateEspecieDAO()*/, HibernatePatogenoDAO()))
+        this.serviceMut = MutacionServiceImp(HibernateDataDAO(), HibernateMutacionDAO(), HibernatePatogenoDAO())
+        this.serviceVec = VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO())
+        this.serviceUbi = UbicacionServiceImp(HibernateUbicacionDAO(), HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO()))
 
         //se persisten mutaciones
         mutacion1 = serviceMut.crearMutacion(Mutacion(1, mutableListOf(), mutableListOf(), Potencialidad.Letalidad))

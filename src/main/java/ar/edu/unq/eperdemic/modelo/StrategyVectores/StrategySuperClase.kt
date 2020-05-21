@@ -1,6 +1,7 @@
 package ar.edu.unq.eperdemic.modelo.StrategyVectores
 
 import ar.edu.unq.eperdemic.modelo.Especie
+import ar.edu.unq.eperdemic.modelo.Random
 import ar.edu.unq.eperdemic.modelo.Vector
 
 open class StrategySuperClase() {
@@ -9,7 +10,7 @@ open class StrategySuperClase() {
         val enfermedades: MutableSet<Especie> = vectorInfectado.enfermedades
         for (e: Especie in enfermedades) {
             val factorContagio = e.owner?.capacidadContagio
-            val porcentajeDeContagioExitoso = 5 + factorContagio!!
+            val porcentajeDeContagioExitoso = Random().giveRandom() + factorContagio!!
             if ((porcentajeDeContagioExitoso > 70) and (!vectorAContagiar.enfermedades.contains(e))) {
                 this.infectar(vectorAContagiar, e)
             }

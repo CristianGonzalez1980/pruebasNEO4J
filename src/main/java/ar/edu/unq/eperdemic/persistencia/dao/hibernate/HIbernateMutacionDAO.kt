@@ -7,7 +7,7 @@ open class HibernateMutacionDAO : HibernateDAO<Mutacion>(Mutacion::class.java), 
 
     override fun crear(mutacion: Mutacion): Mutacion {
         this.guardar(mutacion)
-        return mutacion
+        return  (this.recuperar(mutacion.id))
     }
 
     override fun recuperarMut(mutacionId: Int): Mutacion {
