@@ -8,5 +8,4 @@ interface EstadisticasService {
     fun especieLider(): Especie
     fun lideres(): List<Especie>
     fun reporteDeContagios(nombreUbicacion: String) : ReporteDeContagios
-
 }

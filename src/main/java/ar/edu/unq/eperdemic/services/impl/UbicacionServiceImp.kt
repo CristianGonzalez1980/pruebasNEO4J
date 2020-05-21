@@ -1,4 +1,4 @@
-package ar.edu.unq.eperdemic.services.runner
+package ar.edu.unq.eperdemic.services.impl
 
 import ar.edu.unq.eperdemic.modelo.Ubicacion
 import ar.edu.unq.eperdemic.modelo.Vector
@@ -48,7 +48,6 @@ class UbicacionServiceImp(
         ubicacion.actualizarInfectadoseEnUbicacion(vectorInfectado , vectores)
         runTrx { ubicacionDAO.actualizar(ubicacion) }
         }
-
     }
 
     override fun crearUbicacion(nombre: String): Ubicacion {
@@ -56,10 +55,6 @@ class UbicacionServiceImp(
             val ubicacion = Ubicacion(nombre)
             ubicacionDAO.crear(ubicacion)
         }
-    }
-
-    override public fun clear() {
-        runTrx { dataDAO.clear() }
     }
 
     override fun recuperar(ubicacion: String): Ubicacion {

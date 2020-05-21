@@ -1,10 +1,7 @@
 package ar.edu.unq.eperdemic.modelo.StrategyVectores
 
 import ar.edu.unq.eperdemic.modelo.Especie
-import java.util.*
 import ar.edu.unq.eperdemic.modelo.Vector
-import ar.edu.unq.eperdemic.persistencia.dao.VectorDAO
-import ar.edu.unq.eperdemic.persistencia.dao.hibernate.HibernateVectorDAO
 
 open class StrategySuperClase() {
 

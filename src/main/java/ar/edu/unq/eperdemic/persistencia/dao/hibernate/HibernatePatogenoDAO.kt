@@ -51,10 +51,7 @@ open class HibernatePatogenoDAO : HibernateDAO<Patogeno>(Patogeno::class.java), 
         val query2 = session.createQuery(hql2, Ubicacion::class.java)
         var cantUbicacion = (query2.resultList.size) / 2
 
-
         return ubicaciones > cantUbicacion
-
-
     }
 
     override fun agregarEspecie(idPatogeno: Int, nombreEspecie: String, paisDeOrigen: String, adn: Int): Especie {

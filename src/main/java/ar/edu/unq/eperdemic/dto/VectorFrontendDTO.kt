@@ -2,14 +2,13 @@ package ar.edu.unq.eperdemic.dto
 
 import ar.edu.unq.eperdemic.modelo.Ubicacion
 import ar.edu.unq.eperdemic.modelo.Vector
-import ar.edu.unq.eperdemic.persistencia.dao.UbicacionDAO
 import ar.edu.unq.eperdemic.persistencia.dao.hibernate.*
 import ar.edu.unq.eperdemic.services.UbicacionService
 import ar.edu.unq.eperdemic.services.VectorService
-import ar.edu.unq.eperdemic.services.runner.UbicacionServiceImp
-import ar.edu.unq.eperdemic.services.runner.VectorServiceImp
+import ar.edu.unq.eperdemic.services.impl.UbicacionServiceImp
+import ar.edu.unq.eperdemic.services.impl.VectorServiceImp
 
-class VectorFrontendDTO(val tipoDeVector: TipoDeVector,
+class QQQqqVectorFrontendDTO(val tipoDeVector: TipoDeVector,
                         val nombreDeUbicacionPresente: String) {
 
     enum class TipoDeVector {
@@ -18,7 +17,7 @@ class VectorFrontendDTO(val tipoDeVector: TipoDeVector,
 
     fun aModelo(): Vector {
         var vecDAO: VectorService = VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO())
-        var ubiDAO: UbicacionService = UbicacionServiceImp(HibernateUbicacionDAO(), HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(),HibernatePatogenoDAO()))
+        var ubiDAO: UbicacionService = UbicacionServiceImp(HibernateUbicacionDAO(), HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO()))
         val ubicacion: Ubicacion = ubiDAO.recuperar(nombreDeUbicacionPresente)
         return vecDAO.crearVector(Vector(ubicacion, tipoDeVector))
     }

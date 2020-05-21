@@ -1,14 +1,9 @@
-package ar.edu.unq.eperdemic.services.runner
+package ar.edu.unq.eperdemic.services.impl
 
 import ar.edu.unq.eperdemic.modelo.Especie
 import ar.edu.unq.eperdemic.modelo.Patogeno
-import ar.edu.unq.eperdemic.modelo.Ubicacion
-import ar.edu.unq.eperdemic.modelo.Vector
 import ar.edu.unq.eperdemic.persistencia.dao.DataDAO
 import ar.edu.unq.eperdemic.persistencia.dao.PatogenoDAO
-import ar.edu.unq.eperdemic.persistencia.dao.hibernate.HibernatePatogenoDAO
-import ar.edu.unq.eperdemic.persistencia.dao.hibernate.HibernateUbicacionDAO
-import ar.edu.unq.eperdemic.persistencia.dao.hibernate.HibernateVectorDAO
 import ar.edu.unq.eperdemic.services.PatogenoService
 import ar.edu.unq.eperdemic.services.runner.TransactionRunner.runTrx
 
@@ -24,14 +19,12 @@ class PatogenoServiceImp(
 
     override fun esPandemia(especieId: Int): Boolean {
 
-        return runTrx { patogenoDAO.esPandemia(especieId)}
-
+        return runTrx { patogenoDAO.esPandemia(especieId) }
     }
 
     override fun cantidadDeInfectados(especieId: Int): Int {
 
         return runTrx { patogenoDAO.cantidadDeInfectados(especieId) }
-
     }
 
     override fun agregarEspecie(id: Int, nombreEspecie: String, paisDeOrigen: String, adn: Int): Especie {
@@ -48,9 +41,5 @@ class PatogenoServiceImp(
 
     override fun recuperarATodosLosPatogenos(): Collection<Patogeno> {
         return runTrx { patogenoDAO.recuperarATodos() }
-    }
-
-    override fun clear() {
-        runTrx { dataDAO.clear() }
     }
 }

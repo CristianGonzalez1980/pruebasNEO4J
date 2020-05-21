@@ -2,9 +2,7 @@ package ar.edu.unq.eperdemic.persistencia.dao.hibernate
 
 import ar.edu.unq.eperdemic.dto.VectorFrontendDTO
 import ar.edu.unq.eperdemic.modelo.Especie
-import ar.edu.unq.eperdemic.modelo.Patogeno
 import ar.edu.unq.eperdemic.persistencia.dao.EspecieDAO
-import ar.edu.unq.eperdemic.persistencia.dao.PatogenoDAO
 import ar.edu.unq.eperdemic.services.runner.TransactionRunner
 
 open class HibernateEspecieDAO : HibernateDAO<Especie>(Especie::class.java), EspecieDAO {

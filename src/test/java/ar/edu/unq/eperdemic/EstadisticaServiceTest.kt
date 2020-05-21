@@ -7,12 +7,13 @@ import ar.edu.unq.eperdemic.services.EstadisticasService
 import ar.edu.unq.eperdemic.services.PatogenoService
 import ar.edu.unq.eperdemic.services.UbicacionService
 import ar.edu.unq.eperdemic.services.VectorService
-import ar.edu.unq.eperdemic.services.runner.EstadisticaServiceImp
-import ar.edu.unq.eperdemic.services.runner.PatogenoServiceImp
-import ar.edu.unq.eperdemic.services.runner.UbicacionServiceImp
-import ar.edu.unq.eperdemic.services.runner.VectorServiceImp
+import ar.edu.unq.eperdemic.services.impl.EstadisticaServiceImp
+import ar.edu.unq.eperdemic.services.impl.PatogenoServiceImp
+import ar.edu.unq.eperdemic.services.impl.UbicacionServiceImp
+import ar.edu.unq.eperdemic.services.impl.VectorServiceImp
 import ar.edu.unq.eperdemic.utils.DataService
 import ar.edu.unq.eperdemic.utils.Impl.DataServiceImp
+import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -58,7 +59,7 @@ class EstadisticaServiceTest {
                 HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO() /*HibernateEspecieDAO()*/)))
 
         //se elimina tdo tipo de informacion persistida hasta el momento
-        serviceData.eliminarTodo()
+       // serviceData.eliminarTodo()
 
         //se crea "Bernal" y se persiste con el service
         ubi1 = serviceUbi.crearUbicacion("Bernal")
@@ -146,7 +147,7 @@ class EstadisticaServiceTest {
 
         //no  use el mover
         //se muda el vectorE a Bernal
-       // serviceUbi.mover(vectorE.id!!.toInt(), "Bernal")
+        // serviceUbi.mover(vectorE.id!!.toInt(), "Bernal")
         /*  intentara contagia a residentes vectorB y vectorC
         *   solo pone en riesgo a vectorB ya que es insecto (vectorC es animal)
         *   por el momento que solo la estrategia define contagio exitoso
@@ -169,6 +170,7 @@ class EstadisticaServiceTest {
         vectorG = serviceVec.crearVector(Vector(ubi2, VectorFrontendDTO.TipoDeVector.Persona))
         serviceVec.infectar(vectorG, especie10)
     }
+
     /* ----insecto   B: paperas, h1n1, escarlatina, varicela, viruela, sarampion, covid19
     *
     * varicela 3-
@@ -208,6 +210,10 @@ class EstadisticaServiceTest {
         Assert.assertEquals(serviceEst.reporteDeContagios("Bernal").vectoresPresentes, vectoresPresente.size)
         Assert.assertEquals(serviceEst.reporteDeContagios("Bernal").vectoresInfecatods, vectoresInfectados.size)
         Assert.assertEquals(serviceEst.reporteDeContagios("Bernal").nombreDeEspecieMasInfecciosa, especieLider.nombre)
+    }
 
+    @After
+    fun cleanup() {
+        serviceData.eliminarTodo()
     }
 }

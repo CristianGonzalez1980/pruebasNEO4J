@@ -1,17 +1,17 @@
 package ar.edu.unq.eperdemic.utils
 
 import ar.edu.unq.eperdemic.dto.VectorFrontendDTO
-import ar.edu.unq.eperdemic.modelo.Especie
 import ar.edu.unq.eperdemic.modelo.Ubicacion
 import ar.edu.unq.eperdemic.modelo.Vector
+import ar.edu.unq.eperdemic.persistencia.dao.DataDAO
 import ar.edu.unq.eperdemic.persistencia.dao.EspecieDAO
-import ar.edu.unq.eperdemic.persistencia.dao.UbicacionDAO
 import ar.edu.unq.eperdemic.persistencia.dao.VectorDAO
 import ar.edu.unq.eperdemic.persistencia.dao.hibernate.*
 import ar.edu.unq.eperdemic.services.UbicacionService
 import ar.edu.unq.eperdemic.services.VectorService
-import ar.edu.unq.eperdemic.services.runner.UbicacionServiceImp
-import ar.edu.unq.eperdemic.services.runner.VectorServiceImp
+import ar.edu.unq.eperdemic.services.runner.TransactionRunner.runTrx
+import ar.edu.unq.eperdemic.services.impl.UbicacionServiceImp
+import ar.edu.unq.eperdemic.services.impl.VectorServiceImp
 import ar.edu.unq.eperdemic.utils.Impl.DataServiceImp
 import org.junit.After
 import org.junit.Assert
@@ -22,6 +22,7 @@ class VectorDaoTest {
 
 
     private val dao: VectorDAO = HibernateVectorDAO()
+    private val datadao: DataDAO = HibernateDataDAO()
     private val especieDAO: EspecieDAO = HibernateEspecieDAO()
     private val dataService: DataService = DataServiceImp(HibernateDataDAO())
     private val serviceVect: VectorService = VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO()/*, HibernateEspecieDAO()*/)
@@ -76,8 +77,6 @@ class VectorDaoTest {
 
     @After
     fun cleanup() {
-        dataService.eliminarTodo()
-        //Destroy cierra la session factory y fuerza a que, la proxima vez, una nueva tenga
-        //que ser creada.
+        runTrx { datadao.clear() }
     }
 }

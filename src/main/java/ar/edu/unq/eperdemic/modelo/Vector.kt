@@ -5,9 +5,7 @@ import ar.edu.unq.eperdemic.modelo.StrategyVectores.StrategyAnimal
 import ar.edu.unq.eperdemic.modelo.StrategyVectores.StrategyHumano
 import ar.edu.unq.eperdemic.modelo.StrategyVectores.StrategyInsecto
 import ar.edu.unq.eperdemic.modelo.StrategyVectores.StrategySuperClase
-import java.lang.RuntimeException
 import javax.persistence.*
-import javax.transaction.Transactional
 import kotlin.jvm.Transient
 
 @Entity(name = "vector")

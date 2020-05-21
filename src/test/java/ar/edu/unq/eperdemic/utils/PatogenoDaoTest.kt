@@ -1,23 +1,18 @@
 package ar.edu.unq.eperdemic.utils
 
-import ar.edu.unq.eperdemic.modelo.Especie
 import ar.edu.unq.eperdemic.modelo.Patogeno
 import ar.edu.unq.eperdemic.persistencia.dao.DataDAO
 import ar.edu.unq.eperdemic.persistencia.dao.PatogenoDAO
 import ar.edu.unq.eperdemic.persistencia.dao.hibernate.HibernateDataDAO
 import ar.edu.unq.eperdemic.persistencia.dao.hibernate.HibernatePatogenoDAO
 import ar.edu.unq.eperdemic.services.PatogenoService
-import ar.edu.unq.eperdemic.services.runner.PatogenoServiceImp
+import ar.edu.unq.eperdemic.services.impl.PatogenoServiceImp
 import ar.edu.unq.eperdemic.services.runner.TransactionRunner.runTrx
 import org.hibernate.exception.ConstraintViolationException
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import org.junit.jupiter.api.Assertions.assertThrows
-import org.junit.jupiter.api.assertThrows
-import java.sql.SQLIntegrityConstraintViolationException
-import javax.validation.constraints.AssertTrue
 
 class PatogenoDaoTest {
 
@@ -89,7 +84,7 @@ class PatogenoDaoTest {
     }
 
     @After
-    fun emilinarModelo() {
+    fun cleanup() {
         runTrx { datadao.clear() }
     }
 }

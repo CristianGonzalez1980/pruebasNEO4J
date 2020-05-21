@@ -7,16 +7,15 @@ import ar.edu.unq.eperdemic.modelo.StrategyVectores.StrategyAnimal
 import ar.edu.unq.eperdemic.modelo.StrategyVectores.StrategyHumano
 import ar.edu.unq.eperdemic.modelo.Ubicacion
 import ar.edu.unq.eperdemic.modelo.Vector
-import ar.edu.unq.eperdemic.persistencia.dao.DataDAO
-import ar.edu.unq.eperdemic.persistencia.dao.UbicacionDAO
-import ar.edu.unq.eperdemic.persistencia.dao.VectorDAO
 import ar.edu.unq.eperdemic.persistencia.dao.hibernate.*
 import ar.edu.unq.eperdemic.services.PatogenoService
 import ar.edu.unq.eperdemic.services.UbicacionService
 import ar.edu.unq.eperdemic.services.VectorService
-import ar.edu.unq.eperdemic.services.runner.PatogenoServiceImp
-import ar.edu.unq.eperdemic.services.runner.UbicacionServiceImp
-import ar.edu.unq.eperdemic.services.runner.VectorServiceImp
+import ar.edu.unq.eperdemic.services.impl.PatogenoServiceImp
+import ar.edu.unq.eperdemic.services.impl.UbicacionServiceImp
+import ar.edu.unq.eperdemic.services.impl.VectorServiceImp
+import ar.edu.unq.eperdemic.utils.DataService
+import ar.edu.unq.eperdemic.utils.Impl.DataServiceImp
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -27,6 +26,7 @@ class UbicacionServiceTest {
     lateinit var service: UbicacionService
     lateinit var serviceVec: VectorService
     lateinit var servicePatog: PatogenoService
+    lateinit var serviceData: DataService
     lateinit var ubi1: Ubicacion
     lateinit var ubi2: Ubicacion
     lateinit var ubi3: Ubicacion
@@ -49,8 +49,8 @@ class UbicacionServiceTest {
                 HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO()))
         this.serviceVec = VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO())
         this.servicePatog = PatogenoServiceImp(HibernatePatogenoDAO(), HibernateDataDAO())
+        this.serviceData = DataServiceImp(HibernateDataDAO())
 
-        service.clear()
         estrategia = StrategyHumano()
         estrategia1 = StrategyAnimal()
         patogeno = Patogeno("Virus", 80, 80, 80)
@@ -125,8 +125,6 @@ class UbicacionServiceTest {
 
     @After
     fun cleanup() {
-        service.clear()
-        //Destroy cierra la session factory y fuerza a que, la proxima vez, una nueva tenga
-        //que ser creada.
+        serviceData.eliminarTodo()
     }
 }

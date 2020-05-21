@@ -1,20 +1,13 @@
-package ar.edu.unq.eperdemic.services.runner
+package ar.edu.unq.eperdemic.services.impl
 
 import ar.edu.unq.eperdemic.modelo.Especie
-import ar.edu.unq.eperdemic.modelo.StrategyVectores.StrategyHumano
-import ar.edu.unq.eperdemic.modelo.StrategyVectores.StrategySuperClase
-import ar.edu.unq.eperdemic.modelo.Ubicacion
 import ar.edu.unq.eperdemic.modelo.Vector
 import ar.edu.unq.eperdemic.persistencia.dao.DataDAO
-import ar.edu.unq.eperdemic.persistencia.dao.EspecieDAO
 import ar.edu.unq.eperdemic.persistencia.dao.PatogenoDAO
 import ar.edu.unq.eperdemic.persistencia.dao.VectorDAO
-import ar.edu.unq.eperdemic.persistencia.dao.hibernate.HibernateEspecieDAO
-import ar.edu.unq.eperdemic.persistencia.dao.hibernate.HibernatePatogenoDAO
 import ar.edu.unq.eperdemic.services.VectorService
 import ar.edu.unq.eperdemic.services.runner.TransactionRunner.runTrx
-import net.bytebuddy.implementation.bind.annotation.RuntimeType
-import java.lang.RuntimeException
+
 
 class VectorServiceImp(
         private val vectorDAO: VectorDAO,
@@ -64,9 +57,5 @@ class VectorServiceImp(
 
     override fun borrarVector(vectorId: Int) {
         runTrx { vectorDAO.eliminar(vectorId) }
-    }
-
-    fun clear() {
-        runTrx { dataDAO.clear() }
     }
 }

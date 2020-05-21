@@ -6,19 +6,15 @@ import ar.edu.unq.eperdemic.modelo.Patogeno
 import ar.edu.unq.eperdemic.modelo.Ubicacion
 import ar.edu.unq.eperdemic.modelo.Vector
 import ar.edu.unq.eperdemic.persistencia.dao.DataDAO
-import ar.edu.unq.eperdemic.persistencia.dao.EspecieDAO
 import ar.edu.unq.eperdemic.persistencia.dao.hibernate.*
 import ar.edu.unq.eperdemic.services.PatogenoService
 import ar.edu.unq.eperdemic.services.UbicacionService
 import ar.edu.unq.eperdemic.services.VectorService
-import ar.edu.unq.eperdemic.services.runner.PatogenoServiceImp
-import ar.edu.unq.eperdemic.services.runner.TransactionRunner
+import ar.edu.unq.eperdemic.services.impl.PatogenoServiceImp
 import ar.edu.unq.eperdemic.services.runner.TransactionRunner.runTrx
-import ar.edu.unq.eperdemic.services.runner.UbicacionServiceImp
-import ar.edu.unq.eperdemic.services.runner.VectorServiceImp
+import ar.edu.unq.eperdemic.services.impl.UbicacionServiceImp
+import ar.edu.unq.eperdemic.services.impl.VectorServiceImp
 import ar.edu.unq.eperdemic.utils.DataService
-import org.junit.Assert
-import org.junit.Test
 
 class DataServiceImp(private val dataDAO: DataDAO) : DataService {
     override fun crearSetDeDatosIniciales() {
@@ -31,8 +27,6 @@ class DataServiceImp(private val dataDAO: DataDAO) : DataService {
         val vector: Vector = vecservice.crearVector(Vector(maracaibo, VectorFrontendDTO.TipoDeVector.Persona))
         vecservice.infectar(vector, especie)
         vecservice.enfermedades(vector.id!!.toInt())
-
-
     }
 
     override fun eliminarTodo() {
@@ -40,12 +34,11 @@ class DataServiceImp(private val dataDAO: DataDAO) : DataService {
     }
 }
 
-fun main(){
+fun main() {
 
     val set: DataService = DataServiceImp(HibernateDataDAO())
     set.eliminarTodo()
     set.crearSetDeDatosIniciales()
     //  val especieDAO: EspecieDAO = HibernateEspecieDAO()
     //  println(runTrx { especieDAO.especieLider() })
-
 }

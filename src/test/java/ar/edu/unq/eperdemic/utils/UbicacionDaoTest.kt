@@ -3,13 +3,14 @@ package ar.edu.unq.eperdemic.utils
 import ar.edu.unq.eperdemic.dto.VectorFrontendDTO
 import ar.edu.unq.eperdemic.modelo.Ubicacion
 import ar.edu.unq.eperdemic.modelo.Vector
+import ar.edu.unq.eperdemic.persistencia.dao.DataDAO
 import ar.edu.unq.eperdemic.persistencia.dao.UbicacionDAO
 import ar.edu.unq.eperdemic.persistencia.dao.hibernate.*
 import ar.edu.unq.eperdemic.services.UbicacionService
 import ar.edu.unq.eperdemic.services.VectorService
 import ar.edu.unq.eperdemic.services.runner.TransactionRunner.runTrx
-import ar.edu.unq.eperdemic.services.runner.UbicacionServiceImp
-import ar.edu.unq.eperdemic.services.runner.VectorServiceImp
+import ar.edu.unq.eperdemic.services.impl.UbicacionServiceImp
+import ar.edu.unq.eperdemic.services.impl.VectorServiceImp
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -18,6 +19,7 @@ import org.junit.Test
 class UbicacionDaoTest {
 
     private val dao: UbicacionDAO = HibernateUbicacionDAO()
+    private val datadao: DataDAO = HibernateDataDAO()
     private val serviceVect: VectorService = VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO())
     private val serviceUbi: UbicacionService = UbicacionServiceImp(HibernateUbicacionDAO(),
             HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO()))
@@ -33,7 +35,6 @@ class UbicacionDaoTest {
 
     @Before
     fun crearModelo() {
-        serviceUbi.clear()
         //se instancian 4 ciudades
         ubicacionA = Ubicacion("La Plata")
         ubicacionB = Ubicacion("City Bell")
@@ -96,9 +97,6 @@ class UbicacionDaoTest {
 
     @After
     fun cleanup() {
-        serviceUbi.clear()
-        //Destroy cierra la session factory y fuerza a que, la proxima vez, una nueva tenga
-        //que ser creada.
-
+        runTrx { datadao.clear() }
     }
 }

@@ -5,14 +5,13 @@ import ar.edu.unq.eperdemic.modelo.Especie
 import ar.edu.unq.eperdemic.modelo.Patogeno
 import ar.edu.unq.eperdemic.modelo.StrategyVectores.StrategyHumano
 import ar.edu.unq.eperdemic.modelo.StrategyVectores.StrategyAnimal
-import ar.edu.unq.eperdemic.modelo.StrategyVectores.StrategyInsecto
-import ar.edu.unq.eperdemic.modelo.Ubicacion
 import ar.edu.unq.eperdemic.modelo.Vector
 import ar.edu.unq.eperdemic.persistencia.dao.hibernate.*
-import ar.edu.unq.eperdemic.services.PatogenoService
-import ar.edu.unq.eperdemic.services.runner.PatogenoServiceImp
-import ar.edu.unq.eperdemic.services.runner.UbicacionServiceImp
-import ar.edu.unq.eperdemic.services.runner.VectorServiceImp
+import ar.edu.unq.eperdemic.services.impl.PatogenoServiceImp
+import ar.edu.unq.eperdemic.services.impl.UbicacionServiceImp
+import ar.edu.unq.eperdemic.services.impl.VectorServiceImp
+import ar.edu.unq.eperdemic.utils.DataService
+import ar.edu.unq.eperdemic.utils.Impl.DataServiceImp
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -23,6 +22,7 @@ class VectorServiceTest {
     lateinit var servicePatog: PatogenoServiceImp
     lateinit var serviceVect: VectorServiceImp
     lateinit var serviceUbic: UbicacionServiceImp
+    lateinit var serviceData: DataService
     lateinit var vectorA: Vector
     lateinit var vectorB: Vector
     lateinit var vectorC: Vector
@@ -43,7 +43,8 @@ class VectorServiceTest {
         this.servicePatog = PatogenoServiceImp(HibernatePatogenoDAO(), HibernateDataDAO())
         this.serviceVect = VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO())
         this.serviceUbic = UbicacionServiceImp(HibernateUbicacionDAO(), HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO()))
-        serviceVect.clear()
+        this.serviceData = DataServiceImp(HibernateDataDAO())
+
         estrategia = StrategyHumano()
         estrategia1 = StrategyAnimal()
         patogeno = Patogeno("Virus", 80, 80, 80)
@@ -115,8 +116,6 @@ class VectorServiceTest {
 
     @After
     fun cleanup() {
-        //Destroy cierra la session factory y fuerza a que, la proxima vez, una nueva tenga
-        //que ser creada.
-        serviceVect.clear()
+        serviceData.eliminarTodo()
     }
 }

@@ -45,7 +45,5 @@ class MutacionDaoTest {
     @After
     fun cleanup() {
         runTrx { datadao.clear() }
-        //Destroy cierra la session factory y fuerza a que, la proxima vez, una nueva tenga
-        //que ser creada.
     }
 }

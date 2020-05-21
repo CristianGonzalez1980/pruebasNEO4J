@@ -7,7 +7,10 @@ import ar.edu.unq.eperdemic.services.MutacionService
 import ar.edu.unq.eperdemic.services.PatogenoService
 import ar.edu.unq.eperdemic.services.UbicacionService
 import ar.edu.unq.eperdemic.services.VectorService
-import ar.edu.unq.eperdemic.services.runner.*
+import ar.edu.unq.eperdemic.services.impl.MutacionServiceImp
+import ar.edu.unq.eperdemic.services.impl.PatogenoServiceImp
+import ar.edu.unq.eperdemic.services.impl.UbicacionServiceImp
+import ar.edu.unq.eperdemic.services.impl.VectorServiceImp
 import ar.edu.unq.eperdemic.utils.DataService
 import ar.edu.unq.eperdemic.utils.Impl.DataServiceImp
 import org.junit.After
@@ -44,13 +47,12 @@ class MutacionServiceTest {
 
     @Before
     fun crearModelo() {
-        this.servicePatog = PatogenoServiceImp(HibernatePatogenoDAO(), HibernateDataDAO()/* ,HibernateEspecieDAO(),*/ )
+        this.servicePatog = PatogenoServiceImp(HibernatePatogenoDAO(), HibernateDataDAO()/* ,HibernateEspecieDAO(),*/)
         this.serviceData = DataServiceImp(HibernateDataDAO())
         this.serviceMut = MutacionServiceImp(HibernateDataDAO(), HibernateMutacionDAO(), HibernateEspecieDAO(), HibernatePatogenoDAO())
         this.serviceVec = VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO()/*, HibernateEspecieDAO()*/, HibernatePatogenoDAO())
         this.serviceUbi = UbicacionServiceImp(HibernateUbicacionDAO(), HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO()/*, HibernateEspecieDAO()*/, HibernatePatogenoDAO()))
 
-        serviceData.eliminarTodo()
         //se persisten mutaciones
         mutacion1 = serviceMut.crearMutacion(Mutacion(1, mutableListOf(), mutableListOf(), Potencialidad.Letalidad))
         mutacion2 = serviceMut.crearMutacion(Mutacion(2, mutableListOf(), mutableListOf(), Potencialidad.Contagio))
@@ -158,7 +160,5 @@ class MutacionServiceTest {
     @After
     fun cleanup() {
         serviceData.eliminarTodo()
-        //Destroy cierra la session factory y fuerza a que, la proxima vez, una nueva tenga
-        //que ser creada.
     }
 }

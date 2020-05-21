@@ -1,16 +1,17 @@
 package ar.edu.unq.eperdemic
 
 import ar.edu.unq.eperdemic.dto.VectorFrontendDTO
-import ar.edu.unq.eperdemic.modelo.Especie
 import ar.edu.unq.eperdemic.modelo.Patogeno
 import ar.edu.unq.eperdemic.modelo.Vector
 import ar.edu.unq.eperdemic.persistencia.dao.hibernate.*
 import ar.edu.unq.eperdemic.services.PatogenoService
 import ar.edu.unq.eperdemic.services.UbicacionService
 import ar.edu.unq.eperdemic.services.VectorService
-import ar.edu.unq.eperdemic.services.runner.PatogenoServiceImp
-import ar.edu.unq.eperdemic.services.runner.UbicacionServiceImp
-import ar.edu.unq.eperdemic.services.runner.VectorServiceImp
+import ar.edu.unq.eperdemic.services.impl.PatogenoServiceImp
+import ar.edu.unq.eperdemic.services.impl.UbicacionServiceImp
+import ar.edu.unq.eperdemic.services.impl.VectorServiceImp
+import ar.edu.unq.eperdemic.utils.DataService
+import ar.edu.unq.eperdemic.utils.Impl.DataServiceImp
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -25,6 +26,7 @@ class PatogenoServiceTest {
     lateinit var patogeno3: Patogeno
     lateinit var serviceVec: VectorService
     lateinit var serviceUbic: UbicacionService
+    lateinit var serviceData: DataService
 
     @Before
     fun crearModelo() {
@@ -35,7 +37,7 @@ class PatogenoServiceTest {
 
         this.serviceVec = VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO())
         this.serviceUbic = UbicacionServiceImp(HibernateUbicacionDAO(), HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO()))
-
+        this.serviceData = DataServiceImp(HibernateDataDAO())
     }
 
     @Test
@@ -79,8 +81,8 @@ class PatogenoServiceTest {
          var especie = service.agregarEspecie(id, "cruza", "Ecuador", 44)
 
         Assert.assertEquals(especie, (service.recuperarEspecie(especie.id!!.toInt())))
-
     }
+
     @Test
     fun verificoLaCantidadDeInfectadosDeUnPatogeno(){
         patogeno = Patogeno("1", 100, 50, 12)
@@ -121,9 +123,8 @@ class PatogenoServiceTest {
         Assert.assertEquals(true, (service.esPandemia(especie.id!!.toInt())))
     }
 
-
     @After
     fun cleanup() {
-        service.clear()
+        serviceData.eliminarTodo()
     }
 }
