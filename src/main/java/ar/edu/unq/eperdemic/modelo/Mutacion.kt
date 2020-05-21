@@ -2,7 +2,7 @@ package ar.edu.unq.eperdemic.modelo
 
 import javax.persistence.*
 
-//class Mutacion(var id: Int?) {   Originalmente estaba así, lo dejo por las dudas
+
 @Entity(name = "mutacion")
 @Table(name = "mutacion")
 class Mutacion() {

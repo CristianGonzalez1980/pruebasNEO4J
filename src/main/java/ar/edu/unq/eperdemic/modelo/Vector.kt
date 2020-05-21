@@ -23,9 +23,6 @@ class Vector() {
     @ManyToOne
     var location: Ubicacion? = null
 
-/*    @ManyToOne
-    var especie: Especie? = null*/
-
     @ManyToMany(mappedBy = "vectores", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     var enfermedades: MutableSet<Especie> = HashSet()
 
@@ -39,11 +36,6 @@ class Vector() {
         this.initEstrategia()
     }
 
-    /*fun contagiar(vectorInfectado: Vector, vectores: List<Vector>) {
-        for (v: Vector in vectores) {
-            estrategiaDeContagio?.darContagio(vectorInfectado, v)!!
-        }
-    }*/
     fun cantidadEnfermedades(): Int {
         return (this.enfermedades.size)
     }
@@ -67,10 +59,4 @@ class Vector() {
             this.estrategiaDeContagio = StrategyInsecto()
         }
     }
-
-/*    fun agregarEnfermedad(unaEspecie: Especie) {
-        this.especie = unaEspecie
-        this.enfermedades.add(especie!!)
-
-    }*/
 }

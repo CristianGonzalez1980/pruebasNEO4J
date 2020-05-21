@@ -51,7 +51,6 @@ class UbicacionServiceTest {
         this.servicePatog = PatogenoServiceImp(HibernatePatogenoDAO(), HibernateDataDAO())
 
         service.clear()
-        //ubi1 = service.crearUbicacion("Bernal" )
         estrategia = StrategyHumano()
         estrategia1 = StrategyAnimal()
         patogeno = Patogeno("Virus", 80, 80, 80)
@@ -59,7 +58,6 @@ class UbicacionServiceTest {
         patogeno = servicePatog.recuperarPatogeno(id)
         especie1 =servicePatog.agregarEspecie(patogeno.id!!.toInt(),"Dengue", "Argentina", 15)
         especie2 = servicePatog.agregarEspecie(patogeno.id!!.toInt(),"Covid19", "China", 20)
-        //var esp2Pers = servicePatog.agregarEspecie(patogeno.id!!.toInt(), "Hanta Virus", "EE:UU", 30)
         ubi3 = service.crearUbicacion("La Plata")
         ubi2 = service.crearUbicacion("Quilmes")
         vectorA = Vector(ubi3, VectorFrontendDTO.TipoDeVector.Persona)

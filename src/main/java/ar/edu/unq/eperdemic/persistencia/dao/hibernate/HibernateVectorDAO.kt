@@ -14,7 +14,6 @@ open class HibernateVectorDAO : HibernateDAO<Vector>(Vector::class.java), Vector
     override fun recuperar(idDelVector: Int): Vector {
         val vector = this.recuperar(idDelVector.toLong())
         vector.initEstrategia()
-        //vector.enfermedades = this.enfermedades(vector.id!!.toInt()).toMutableSet()
         return vector
     }
 
@@ -38,13 +37,6 @@ open class HibernateVectorDAO : HibernateDAO<Vector>(Vector::class.java), Vector
         val vectorRec: Vector = this.recuperar(vectorId)
         vectorRec.estrategiaDeContagio!!.infectar(vectorRec, especie)
         this.actualizar(vectorRec)
-
-        /*val session = TransactionRunner.currentSession
-        val hql = ("insert into vector_especie(:idDelVector, :idDeLaEspecie)")
-        val query = session.createQuery(hql)
-        query.setParameter("idDelVector", vectorId)
-        query.setParameter("idDeLaEspecie", especieId)
-        query.executeUpdate()*/
     }
 
     override fun actualizar(vector: Vector): Vector {

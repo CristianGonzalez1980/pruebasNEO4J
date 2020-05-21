@@ -36,6 +36,5 @@ class Ubicacion() {
         for(v  : Vector in vectores){
             vectorInfectado.estrategiaDeContagio!!.darContagio(vectorInfectado ,v )
         }
-
     }
 }

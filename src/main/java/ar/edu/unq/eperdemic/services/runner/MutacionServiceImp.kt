@@ -24,6 +24,7 @@ class MutacionServiceImp(
             val especie: Especie = especieDAO.recuperarEspecie(especieId)
             val patogeno: Patogeno = patogenoDAO.recuperar(especie.owner!!.id)
             especie.agregarMutacion(mutacion)
+            especieDAO.actualizar(especie)
             patogenoDAO.actualizar(patogeno)
             //entiendo que la especie se persiste y la mutacion tambien!!!
         }

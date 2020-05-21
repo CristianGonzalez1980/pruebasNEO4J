@@ -76,7 +76,7 @@ class EstadisticaServiceTest {
         serviceUbi.actualizar(ubi2)
 
         //se crea el patogeno "Virus"
-        var patogenoid: Int = servicePatog.crearPatogeno(Patogeno("virus", 66, 30, 30))
+        val patogenoid: Int = servicePatog.crearPatogeno(Patogeno("virus", 66, 30, 30))
         //se agregan especies al patogeno
         especie1 = servicePatog.agregarEspecie(patogenoid, "Varicela", "Bulgaria", 15)
         especie2 = servicePatog.agregarEspecie(patogenoid, "Viruela", "Francia", 25)
@@ -87,7 +87,7 @@ class EstadisticaServiceTest {
         especie7 = servicePatog.agregarEspecie(patogenoid, "Covid19", "EE:UU", 65)
 
         //se crea el patogeno "Bacteria"
-        var patogenoid2: Int = servicePatog.crearPatogeno(Patogeno("bacteria", 65, 20, 50))
+        val patogenoid2: Int = servicePatog.crearPatogeno(Patogeno("bacteria", 65, 20, 50))
         //se agregan especies al patogeno2
         especie8 = servicePatog.agregarEspecie(patogenoid2, "Colera", "Mexico", 75)
         especie9 = servicePatog.agregarEspecie(patogenoid2, "Fiebre Amarilla", "Uruguay", 85)
@@ -202,13 +202,12 @@ class EstadisticaServiceTest {
         //bernal: vectores B,C,E y F (presentes e infectados) lider: covid19
         //wilde: vectores D y A (presentes e infectados) lideres: (varicela, anthrax, sarampion)
         //verificar vacios    //que pasa si hay empates?
-        var vectoresPresente = mutableListOf<Vector>(vectorB, vectorC, vectorA, vectorF)
-        var vectoresInfectados = mutableListOf<Vector>(vectorB, vectorC, vectorA)
-        var especieLider = especie3
+        val vectoresPresente = mutableListOf<Vector>(vectorB, vectorC, vectorA, vectorF)
+        val vectoresInfectados = mutableListOf<Vector>(vectorB, vectorC, vectorA)
+        val especieLider = especie3
         Assert.assertEquals(serviceEst.reporteDeContagios("Bernal").vectoresPresentes, vectoresPresente.size)
         Assert.assertEquals(serviceEst.reporteDeContagios("Bernal").vectoresInfecatods, vectoresInfectados.size)
         Assert.assertEquals(serviceEst.reporteDeContagios("Bernal").nombreDeEspecieMasInfecciosa, especieLider.nombre)
 
     }
-
 }

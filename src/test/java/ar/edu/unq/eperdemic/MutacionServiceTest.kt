@@ -89,11 +89,11 @@ class MutacionServiceTest {
 
     @Test
     fun Infecta5VectoresyObtiene1puntoDeAdn() {
-        var vector1: Vector = serviceVec.crearVector(Vector(serviceUbi.crearUbicacion("Mar del Plata"), VectorFrontendDTO.TipoDeVector.Persona))
-        var vector2: Vector = serviceVec.crearVector(Vector(vector1.location!!, VectorFrontendDTO.TipoDeVector.Persona))
-        var vector3: Vector = serviceVec.crearVector(Vector(vector1.location!!, VectorFrontendDTO.TipoDeVector.Persona))
-        var vector4: Vector = serviceVec.crearVector(Vector(vector1.location!!, VectorFrontendDTO.TipoDeVector.Persona))
-        var vector5: Vector = serviceVec.crearVector(Vector(vector1.location!!, VectorFrontendDTO.TipoDeVector.Persona))
+        val vector1: Vector = serviceVec.crearVector(Vector(serviceUbi.crearUbicacion("Mar del Plata"), VectorFrontendDTO.TipoDeVector.Persona))
+        val vector2: Vector = serviceVec.crearVector(Vector(vector1.location!!, VectorFrontendDTO.TipoDeVector.Persona))
+        val vector3: Vector = serviceVec.crearVector(Vector(vector1.location!!, VectorFrontendDTO.TipoDeVector.Persona))
+        val vector4: Vector = serviceVec.crearVector(Vector(vector1.location!!, VectorFrontendDTO.TipoDeVector.Persona))
+        val vector5: Vector = serviceVec.crearVector(Vector(vector1.location!!, VectorFrontendDTO.TipoDeVector.Persona))
         serviceVec.infectar(vector1, especie2)
         serviceVec.contagiar(vector1, mutableListOf(vector2, vector3, vector4, vector5))
         especie2 = servicePatog.recuperarEspecie(especie2.id!!.toInt())
@@ -101,7 +101,7 @@ class MutacionServiceTest {
     }
 
     @Test
-    fun MutaySeCorroboraLaCantidadDeAdnRestante() {
+    fun MutaYSeCorroboraLaCantidadDeAdnRestante() {
         Assert.assertEquals(2, especie3.adn)
         serviceMut.mutar(especie3.id!!.toInt(), mutacion1.id!!.toInt())
         especie3 = servicePatog.recuperarEspecie(especie3.id!!.toInt())
@@ -141,6 +141,18 @@ class MutacionServiceTest {
         serviceMut.mutar(especie5.id!!.toInt(), mutacion6.id!!.toInt())
         patogeno2 = servicePatog.recuperarPatogeno(2)
         Assert.assertEquals(100, patogeno2.defensa)
+    }
+
+    @Test
+    fun intentaAdquirirUnaMutacionYaAdquiridaPreviamente() { //Da amarillo porque no se estan persistiendo las mutaciones adquiridas, al recuperar especie siempre tiene la lista de mutaciones vacías.
+        val especie3RecuperadaPrev = servicePatog.recuperarEspecie(especie3.id!!.toInt())
+        Assert.assertTrue(especie3RecuperadaPrev.mutaciones.isEmpty()) //Antes de mutar
+        serviceMut.mutar(especie3.id!!.toInt(), mutacion1.id!!.toInt())
+        val especie3RecuperadaPost = servicePatog.recuperarEspecie(especie3.id!!.toInt())
+        Assert.assertEquals(1, especie3RecuperadaPost.mutaciones.size) //Despues de mutar
+        serviceMut.mutar(especie3.id!!.toInt(), mutacion1.id!!.toInt())
+        val especie3RecuperadaPostB = servicePatog.recuperarEspecie(especie3.id!!.toInt())
+        Assert.assertEquals(1, especie3RecuperadaPostB.mutaciones.size) //Despues de intentar mutar otra vez verifica que quede igual por ya tenerla previamente
     }
 
     @After

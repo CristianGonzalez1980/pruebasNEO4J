@@ -57,9 +57,6 @@ class Patogeno() {
         this.especies.add(nuevaEspecie)
         return nuevaEspecie
     }
-/*    fun agregarEspecie(especie: Especie) {
-        this.especies.add(especie)
-    }*/
 
     fun incrementarCapacidadDeContagio() {
         this.capacidadContagio = this.incrementarValor(this.capacidadContagio!!)

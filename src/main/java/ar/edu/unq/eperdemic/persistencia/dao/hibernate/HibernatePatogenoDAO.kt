@@ -39,8 +39,6 @@ open class HibernatePatogenoDAO : HibernateDAO<Patogeno>(Patogeno::class.java), 
     override fun esPandemia(especieId: Int): Boolean {
 
         var especie = this.recuperarEspecie(especieId)
-        //var ubicaciones : MutableSet<Ubicacion> = HashSet()
-
 
         val session = TransactionRunner.currentSession
         val hql1 = """ select distinct (v.location)

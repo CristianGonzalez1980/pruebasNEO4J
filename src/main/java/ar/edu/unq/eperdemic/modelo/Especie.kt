@@ -24,9 +24,6 @@ class Especie() : Serializable {
     @Column(nullable = false, length = 500)
     var countIncAdn: Int = 0
 
-/*    @ManyToOne
-    var vector : Vector? = null*/
-
     @OneToMany(mappedBy = "owner", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     val mutaciones: MutableList<Mutacion> = ArrayList()
 
@@ -78,10 +75,4 @@ class Especie() : Serializable {
         val especie = o as Especie?
         return owner!!.id == (especie!!.owner!!).id
     }
-/*
-    fun agregarVector(unVector: Vector) {
-        this.vector = unVector
-        this.vectores.add(vector!!)
-*/
-
 }

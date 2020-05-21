@@ -93,11 +93,6 @@ class PatogenoServiceTest {
         vectorB = serviceVec.crearVector(vectorB)
         serviceVec.infectar(vectorA,especie)
         serviceVec.infectar(vectorB,especie)
-        val especieRecu = service.recuperarEspecie(especie.id!!.toInt())
-        //vectorB.enfermedades.add(especie)
-        //especie.vectores.add(vectorA)
-        //especie.vectores.add(vectorB)
- //       println(especieRecu.vectores)
         Assert.assertEquals(2, (service.cantidadDeInfectados(especie.id!!.toInt())))
     }
 
@@ -105,7 +100,7 @@ class PatogenoServiceTest {
     fun verificoSiEsPandemiaUnaEspecieEnUnPatogeno(){
         patogeno = Patogeno("1", 100, 50, 12)
         val id = service.crearPatogeno(patogeno)
-        var especie = service.agregarEspecie(id, "rb", "Ecuador", 50)
+        val especie = service.agregarEspecie(id, "rb", "Ecuador", 50)
         val ubicacion1 = serviceUbic.crearUbicacion("Quilmes")
         val ubicacion2 = serviceUbic.crearUbicacion("La Plata")
         val ubicacion3 = serviceUbic.crearUbicacion("Hudson")
@@ -123,11 +118,6 @@ class PatogenoServiceTest {
         serviceVec.infectar(vectorB,especie)
         serviceVec.infectar(vectorC,especie)
 
-        val especieRecu = service.recuperarEspecie(especie.id!!.toInt())
-        //vectorB.enfermedades.add(especie)
-        //especie.vectores.add(vectorA)
-        //especie.vectores.add(vectorB)
-//        println(especieRecu.vectores)
         Assert.assertEquals(true, (service.esPandemia(especie.id!!.toInt())))
     }
 
