@@ -17,6 +17,7 @@ import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import javax.persistence.PersistenceException
 import kotlin.properties.Delegates
 
 class MutacionServiceTest {
@@ -79,6 +80,7 @@ class MutacionServiceTest {
         especie4 = servicePatog.agregarEspecie(1, "H1N1", "Francia", 10)
         especie5 = servicePatog.agregarEspecie(2, "Ebola", "Congo", 7)
     }
+
 
     @Test
     fun intentaMutarUnaEspecieNotieneAdnSuficiente() {

@@ -16,6 +16,7 @@ import ar.edu.unq.eperdemic.services.impl.UbicacionServiceImp
 import ar.edu.unq.eperdemic.services.impl.VectorServiceImp
 import ar.edu.unq.eperdemic.utils.DataService
 import ar.edu.unq.eperdemic.utils.Impl.DataServiceImp
+import javax.persistence.PersistenceException
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -74,6 +75,12 @@ class UbicacionServiceTest {
         vectorB = serviceVec.crearVector(vectorB)
         vectorC = serviceVec.crearVector(vectorC)
         vectorA = serviceVec.recuperarVector(vectorA.id!!.toInt())
+    }
+
+    @Test(expected = PersistenceException::class)
+    fun IntentoCrearUnaUbicacionQueYaFueCreadaYNoMeLoPermitePorqueNoPuedoTenerDosUbicacionesConElMismoNombre(){
+        service.crearUbicacion("La Plata")
+
     }
 
     @Test

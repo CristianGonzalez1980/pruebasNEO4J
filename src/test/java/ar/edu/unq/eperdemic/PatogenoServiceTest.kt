@@ -3,7 +3,10 @@ package ar.edu.unq.eperdemic
 import ar.edu.unq.eperdemic.dto.VectorFrontendDTO
 import ar.edu.unq.eperdemic.modelo.Patogeno
 import ar.edu.unq.eperdemic.modelo.Vector
-import ar.edu.unq.eperdemic.persistencia.dao.hibernate.*
+import ar.edu.unq.eperdemic.persistencia.dao.hibernate.HibernateDataDAO
+import ar.edu.unq.eperdemic.persistencia.dao.hibernate.HibernatePatogenoDAO
+import ar.edu.unq.eperdemic.persistencia.dao.hibernate.HibernateUbicacionDAO
+import ar.edu.unq.eperdemic.persistencia.dao.hibernate.HibernateVectorDAO
 import ar.edu.unq.eperdemic.services.PatogenoService
 import ar.edu.unq.eperdemic.services.UbicacionService
 import ar.edu.unq.eperdemic.services.VectorService
@@ -16,6 +19,7 @@ import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import org.hibernate.exception.ConstraintViolationException
 
 
 class PatogenoServiceTest {
@@ -47,6 +51,15 @@ class PatogenoServiceTest {
         Assert.assertEquals(1, id)
     }
 
+    @Test(expected = ConstraintViolationException::class)
+    fun seCreaUnPatogenoYLuegoSeIntentaCrearUnSegundoPatogenoPeroNoSeCreaPorqueTienenElMismoTipoDelPrimerPatogeno() {
+        patogeno = Patogeno("Virus", 20, 10, 12)
+        service.crearPatogeno(patogeno)
+        patogeno2 = Patogeno("Virus", 20, 10, 12)
+
+        service.crearPatogeno(patogeno2)
+    }
+
     @Test
     fun seCreaUnPatogenoYLuegoAlRecuperarUnPatogenoVerificoQueSeaElMismo() {
         patogeno = Patogeno("Virus", 20, 10, 12)
@@ -55,12 +68,28 @@ class PatogenoServiceTest {
     }
 
     @Test
+    fun seIntentaRecuperarUnPatogenoQueNoFueCreadoYMeDevuelveNull() {
+        service.recuperarPatogeno(35)
+        Assert.assertEquals(null, service.recuperarPatogeno(35))
+    }
+
+
+    @Test
     fun seAgregaUnaEspecieAUnPatogenoYSeCorroboraQueSeHallaAgregado() {
         patogeno = Patogeno("Covid", 60, 70, 90)
         val id = service.crearPatogeno(patogeno)
         val especie = service.agregarEspecie(id, "Rojo", "Mexico", 23)
         val patogenoRecuperado = service.recuperarPatogeno(id)
         Assert.assertEquals(patogenoRecuperado, especie.owner)
+    }
+
+    @Test(expected = ConstraintViolationException::class)
+    fun seAgregaUnaEspecieAUnPatogenoYCuandoQuieroAgregarUnaSegundaEspecieNoMeLoPermitePorqueElNombreNoSePuedeRepetir() {
+        patogeno = Patogeno("Covid", 60, 70, 90)
+        val id = service.crearPatogeno(patogeno)
+        val especie1 = service.agregarEspecie(id, "Rojo", "Mexico", 23)
+        service.agregarEspecie(id, "Rojo", "Mexico", 23)
+
     }
 
     @Test
