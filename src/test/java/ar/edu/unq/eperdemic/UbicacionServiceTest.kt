@@ -66,21 +66,23 @@ class UbicacionServiceTest {
         vectorC = Vector(ubi2, VectorFrontendDTO.TipoDeVector.Persona)
         vectorD = Vector(ubi3, VectorFrontendDTO.TipoDeVector.Persona)
         vectorE = Vector(ubi3, VectorFrontendDTO.TipoDeVector.Persona)
-        vectorD = serviceVec.crearVector(vectorD)
-        vectorE = serviceVec.crearVector(vectorE)
-        serviceVec.infectar(vectorD, especie1)
         vectorA = serviceVec.crearVector(vectorA)
-        service.actualizar(ubi3)
-        service.actualizar(ubi2)
         vectorB = serviceVec.crearVector(vectorB)
         vectorC = serviceVec.crearVector(vectorC)
+        vectorD = serviceVec.crearVector(vectorD)
+        vectorE = serviceVec.crearVector(vectorE)
+
+        serviceVec.infectar(vectorD, especie1)
+
+        service.actualizar(ubi3)
+        service.actualizar(ubi2)
+
         vectorA = serviceVec.recuperarVector(vectorA.id!!.toInt())
     }
 
     @Test(expected = PersistenceException::class)
     fun IntentoCrearUnaUbicacionQueYaFueCreadaYNoMeLoPermitePorqueNoPuedoTenerDosUbicacionesConElMismoNombre(){
         service.crearUbicacion("La Plata")
-
     }
 
     @Test
@@ -92,7 +94,6 @@ class UbicacionServiceTest {
     fun cambioDeUbicacion() {
         Assert.assertEquals("La Plata", vectorA.location!!.nombreDeLaUbicacion)
         service.mover(vectorA.id!!.toInt(), "Quilmes")
-
         val vectorARecuperado = serviceVec.recuperarVector(vectorA.id!!.toInt())
         Assert.assertEquals("Quilmes", vectorARecuperado.location!!.nombreDeLaUbicacion)
     }
@@ -126,7 +127,6 @@ class UbicacionServiceTest {
         service.expandir("Quilmes")
         val vectores: MutableList<Vector> = service.recuperar("Quilmes").vectores.toMutableList()
         val totalDeInfectados = vectores.count { it.estaInfectado() }
-
         Assert.assertEquals(0, totalDeInfectados)
     }
 

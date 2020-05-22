@@ -54,14 +54,21 @@ class MutacionServiceTest {
         this.serviceVec = VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO())
         this.serviceUbi = UbicacionServiceImp(HibernateUbicacionDAO(), HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO()))
 
-        //se persisten mutaciones
+        /*//se persisten mutaciones
         mutacion1 = serviceMut.crearMutacion(Mutacion(1, mutableListOf(), mutableListOf(), Potencialidad.Letalidad))
         mutacion2 = serviceMut.crearMutacion(Mutacion(2, mutableListOf(), mutableListOf(), Potencialidad.Contagio))
         mutacion3 = serviceMut.crearMutacion(Mutacion(3, mutableListOf(), mutableListOf(), Potencialidad.Defensa))
         mutacion4 = serviceMut.crearMutacion(Mutacion(4, mutableListOf(), mutableListOf(), Potencialidad.Letalidad))
         mutacion5 = serviceMut.crearMutacion(Mutacion(5, mutableListOf(mutacion1, mutacion2), mutableListOf(), Potencialidad.Contagio))
         mutacion6 = serviceMut.crearMutacion(Mutacion(6, mutableListOf(), mutableListOf(), Potencialidad.Defensa))
-        mutacion7 = serviceMut.crearMutacion(Mutacion(7, mutableListOf(), mutableListOf(), Potencialidad.Letalidad))
+        mutacion7 = serviceMut.crearMutacion(Mutacion(7, mutableListOf(), mutableListOf(), Potencialidad.Letalidad))*/
+        mutacion1 = serviceMut.crearMutacion(Mutacion(1, mutableListOf(), Potencialidad.Letalidad))
+        mutacion2 = serviceMut.crearMutacion(Mutacion(2, mutableListOf(), Potencialidad.Contagio))
+        mutacion3 = serviceMut.crearMutacion(Mutacion(3, mutableListOf(), Potencialidad.Defensa))
+        mutacion4 = serviceMut.crearMutacion(Mutacion(4, mutableListOf(), Potencialidad.Letalidad))
+        mutacion5 = serviceMut.crearMutacion(Mutacion(5, mutableListOf(mutacion1, mutacion2), Potencialidad.Contagio))
+        mutacion6 = serviceMut.crearMutacion(Mutacion(6, mutableListOf(), Potencialidad.Defensa))
+        mutacion7 = serviceMut.crearMutacion(Mutacion(7, mutableListOf(), Potencialidad.Letalidad))
 
         //se instancian patogenos
         patogeno1 = Patogeno("Bacteria", 10, 10, 10)
@@ -76,7 +83,7 @@ class MutacionServiceTest {
         //se persisten especies
         especie1 = servicePatog.agregarEspecie(1, "Covid19", "China", 0)
         especie2 = servicePatog.agregarEspecie(2, "H5N1", "Espania", 0)
-        especie3 = servicePatog.agregarEspecie(3, "Degue", "Brasil", 2)
+        especie3 = servicePatog.agregarEspecie(3, "Dengue", "Brasil", 2)
         especie4 = servicePatog.agregarEspecie(1, "H1N1", "Francia", 10)
         especie5 = servicePatog.agregarEspecie(2, "Ebola", "Congo", 7)
     }

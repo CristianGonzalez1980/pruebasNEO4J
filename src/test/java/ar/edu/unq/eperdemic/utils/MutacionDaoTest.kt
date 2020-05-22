@@ -20,13 +20,15 @@ class MutacionDaoTest {
 
     @Before
     fun crearModelo() {
-        val mutacion1 = Mutacion(45, mutableListOf(), mutableListOf(), Potencialidad.Letalidad)
+        //val mutacion1 = Mutacion(45, mutableListOf(), mutableListOf(), Potencialidad.Letalidad)
+        val mutacion1 = Mutacion(45, mutableListOf(), Potencialidad.Letalidad)
         mutacionCreada = runTrx { dao.crear(mutacion1) }
     }
 
     @Test
     fun creoUnaMutacionVerificoSuPersistencia() {
-        val mutacion2 = Mutacion(15, mutableListOf(), mutableListOf(), Potencialidad.Contagio)
+        //val mutacion2 = Mutacion(15, mutableListOf(), mutableListOf(), Potencialidad.Contagio)
+        val mutacion2 = Mutacion(15, mutableListOf(), Potencialidad.Contagio)
         val mutacionPersistida = runTrx { dao.crear(mutacion2) }
         Assert.assertEquals(mutacion2.puntosAdnNecesarios, mutacionPersistida.puntosAdnNecesarios)
         Assert.assertEquals(mutacion2.potencialidad!!.name, mutacionPersistida.potencialidad!!.name)

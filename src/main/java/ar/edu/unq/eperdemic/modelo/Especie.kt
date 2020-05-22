@@ -24,7 +24,7 @@ class Especie() : Serializable {
     @Column(nullable = false, length = 500)
     var countIncAdn: Int = 0
 
-    @OneToMany(mappedBy = "owner", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     val mutaciones: MutableList<Mutacion> = ArrayList()
 
     @ManyToMany( cascade = [CascadeType.ALL], fetch = FetchType.EAGER)

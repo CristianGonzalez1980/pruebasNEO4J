@@ -12,9 +12,8 @@ import ar.edu.unq.eperdemic.services.runner.TransactionRunner
 open class HibernatePatogenoDAO : HibernateDAO<Patogeno>(Patogeno::class.java), PatogenoDAO {
 
     override fun crear(patogeno: Patogeno): Int {
-
-            this.guardar(patogeno)
-            return (this.recuperar(patogeno.id).id!!.toInt())
+        this.guardar(patogeno)
+        return (this.recuperar(patogeno.id).id!!.toInt())
     }
 
     override fun recuperar(idDelPatogeno: Int): Patogeno {
