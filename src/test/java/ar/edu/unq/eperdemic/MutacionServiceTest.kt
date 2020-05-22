@@ -54,14 +54,7 @@ class MutacionServiceTest {
         this.serviceVec = VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO())
         this.serviceUbi = UbicacionServiceImp(HibernateUbicacionDAO(), HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO()))
 
-        /*//se persisten mutaciones
-        mutacion1 = serviceMut.crearMutacion(Mutacion(1, mutableListOf(), mutableListOf(), Potencialidad.Letalidad))
-        mutacion2 = serviceMut.crearMutacion(Mutacion(2, mutableListOf(), mutableListOf(), Potencialidad.Contagio))
-        mutacion3 = serviceMut.crearMutacion(Mutacion(3, mutableListOf(), mutableListOf(), Potencialidad.Defensa))
-        mutacion4 = serviceMut.crearMutacion(Mutacion(4, mutableListOf(), mutableListOf(), Potencialidad.Letalidad))
-        mutacion5 = serviceMut.crearMutacion(Mutacion(5, mutableListOf(mutacion1, mutacion2), mutableListOf(), Potencialidad.Contagio))
-        mutacion6 = serviceMut.crearMutacion(Mutacion(6, mutableListOf(), mutableListOf(), Potencialidad.Defensa))
-        mutacion7 = serviceMut.crearMutacion(Mutacion(7, mutableListOf(), mutableListOf(), Potencialidad.Letalidad))*/
+        //se persisten mutaciones
         mutacion1 = serviceMut.crearMutacion(Mutacion(1, mutableListOf(), Potencialidad.Letalidad))
         mutacion2 = serviceMut.crearMutacion(Mutacion(2, mutableListOf(), Potencialidad.Contagio))
         mutacion3 = serviceMut.crearMutacion(Mutacion(3, mutableListOf(), Potencialidad.Defensa))
@@ -119,10 +112,6 @@ class MutacionServiceTest {
         Assert.assertEquals(1, especie3.adn)
     }
 
-    /*
-        @Test
-        fun MutaySeHabilitanNuevasMutaciones() {}
-
     @Test
     fun intentaMutarUnaEspecieNotieneMutacionesPrevias() {
         //tiene el adn muta y no requiere mutaciones previas
@@ -133,9 +122,8 @@ class MutacionServiceTest {
         serviceMut.mutar(especie4.id!!.toInt(), mutacion5.id!!.toInt())
         especie4 = servicePatog.recuperarEspecie(especie4.id!!.toInt())
         Assert.assertEquals(1, especie4.mutaciones.size)
-
     }
-    */
+
     @Test
     fun MutaEIncrementaElAtributoCorrepondiente() {
         patogeno3 = servicePatog.recuperarPatogeno(3)
@@ -155,7 +143,7 @@ class MutacionServiceTest {
     }
 
     @Test
-    fun intentaAdquirirUnaMutacionYaAdquiridaPreviamente() { //Da amarillo porque no se estan persistiendo las mutaciones adquiridas, al recuperar especie siempre tiene la lista de mutaciones vacías.
+    fun intentaAdquirirUnaMutacionYaAdquiridaPreviamente() {
         val especie3RecuperadaPrev = servicePatog.recuperarEspecie(especie3.id!!.toInt())
         Assert.assertTrue(especie3RecuperadaPrev.mutaciones.isEmpty()) //Antes de mutar
         serviceMut.mutar(especie3.id!!.toInt(), mutacion1.id!!.toInt())

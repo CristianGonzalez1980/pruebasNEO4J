@@ -15,16 +15,11 @@ class Mutacion() {
     @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     var mutacionesNecesarias: MutableList<Mutacion> = mutableListOf()
 
-    //@ManyToMany
-    //var mutacionesHabilitadas: MutableList<Mutacion> = mutableListOf()
-
     var potencialidad: Potencialidad? = null
 
-    //constructor(puntos: Int, mutacionesNecesarias: MutableList<Mutacion>, mutacionesHabilitadas: MutableList<Mutacion>, potencialidad: Potencialidad) : this() {
     constructor(puntos: Int, mutacionesNecesarias: MutableList<Mutacion>, potencialidad: Potencialidad) : this() {
         this.puntosAdnNecesarios = puntos
         this.mutacionesNecesarias = mutacionesNecesarias
-        //this.mutacionesHabilitadas = mutacionesHabilitadas
         this.potencialidad = potencialidad
     }
 
@@ -35,6 +30,7 @@ class Mutacion() {
     fun mutacionesNecesarias(): List<Mutacion> {
         return (this.mutacionesNecesarias)
     }
+
     fun potenciarEspecie(especie: Especie) {
 
         if (this.potencialidad!!.name == "Contagio") {

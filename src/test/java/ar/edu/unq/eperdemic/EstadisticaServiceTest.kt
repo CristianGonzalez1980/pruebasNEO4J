@@ -58,9 +58,6 @@ class EstadisticaServiceTest {
         this.serviceEst = EstadisticaServiceImp(HibernatePatogenoDAO(), HibernateUbicacionDAO(), UbicacionServiceImp(HibernateUbicacionDAO(),
                 HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO())))
 
-        //se elimina tdo tipo de informacion persistida hasta el momento
-       // serviceData.eliminarTodo()
-
         //se crea "Bernal" y se persiste con el service
         ubi1 = serviceUbi.crearUbicacion("Bernal")
         //se crean 3 vectores con dicha ubicacion se persiste
@@ -126,43 +123,6 @@ class EstadisticaServiceTest {
         *
         * */
 
-        //esto lo saque no use el mover
-        //se muda el vectorA a Wilde
-        //serviceUbi.mover(vectorA.id!!.toInt(), "Wilde")
-        /*  intentara contagia a residentes vectorD y vectorE
-        *   solo pone en riesgo a vectorD ya que es humano (vectorE es animal)
-        *   por el momento que solo la estrategia define contagio exitoso
-        *   porcentaje mayor a 70 (ya tenemos 5 por falso random)
-        *   Verificamos:
-        *   patogenos con capacidad de contagio mayores a 65:
-        *   patogeno1 66 (contagio exitoso)
-        *   patogeno2 65 (contagio fallido)
-        *   enfermedades de vector A: varicela, Anthrax, sarampion
-        *
-        *   enfermedades de vector D finales:
-        *   varicela, sarampion,
-        *   anthrax, salmonela, paludismo
-        */
-
-
-        //no  use el mover
-        //se muda el vectorE a Bernal
-        // serviceUbi.mover(vectorE.id!!.toInt(), "Bernal")
-        /*  intentara contagia a residentes vectorB y vectorC
-        *   solo pone en riesgo a vectorB ya que es insecto (vectorC es animal)
-        *   por el momento que solo la estrategia define contagio exitoso
-        *   porcentaje mayor a 70 (ya tenemos 5 por falso random)
-        *   Verificamos:
-        *   patogenos con capacidad de contagio mayores a 65:
-        *   patogeno1 66 (contagio exitoso)
-        *   patogeno2 65 (contagio fallido)
-        *   enfermedades de vector E: varicela, viruela, sarampion, covid19
-        *
-        *   enfermedades de vector B finales:
-        *   varicela, viruela, sarampion, covid19
-        *   paperas, h1n1, escarlatina
-        */
-
         //se crea un vector sano en Bernal
         vectorF = serviceVec.crearVector(Vector(ubi1, VectorFrontendDTO.TipoDeVector.Animal))
 
@@ -171,19 +131,6 @@ class EstadisticaServiceTest {
         serviceVec.infectar(vectorG, especie10)
     }
 
-    /* ----insecto   B: paperas, h1n1, escarlatina, varicela, viruela, sarampion, covid19
-    *
-    * varicela 3-
-    * Anthrax 3-
-    * sarampion 3-
-    * covid19 2-
-    * paludismo-
-    * salmonela-
-    * colera-
-    * fiebre amarilla-
-    * viruela-
-    *
-    */
     @Test
     fun `se verifica especie que infecto mas humanos`() {
         //      vectorA, vectorD y vectorG son humanos (anthrax tienen todos)

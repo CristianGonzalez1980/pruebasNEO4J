@@ -103,7 +103,7 @@ class UbicacionServiceTest {
         service.mover(vectorD.id!!.toInt(), "Quilmes")
         val vectores: MutableList<Vector> = service.recuperar("Quilmes").vectores.toMutableList()
         val totalDeInfectados = vectores.count { it.estaInfectado() }
-        Assert.assertEquals(3, totalDeInfectados)
+        Assert.assertEquals(2, totalDeInfectados)
     }
 
     @Test
