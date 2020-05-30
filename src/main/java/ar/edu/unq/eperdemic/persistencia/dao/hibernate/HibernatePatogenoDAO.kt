@@ -104,15 +104,14 @@ open class HibernatePatogenoDAO : HibernateDAO<Patogeno>(Patogeno::class.java), 
         val especie = this.recuperarEspecie(especieId)
         val session = TransactionRunner.currentSession
         val hql = """ 
-                  select vector
+                  select count(distinct vector.id)
                   from especie e join e.vectores vector  where e = :unaEspecie 
 
                   """
 
-        val query = session.createQuery(hql, Vector::class.java)
+        val query = session.createQuery(hql, Number::class.java)
         query.setParameter("unaEspecie", especie)
-        val res = query.resultList.size
-        return res
+        return query.singleResult.toInt()
     }
 
     override fun esPandemia(especieId: Int): Boolean {
