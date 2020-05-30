@@ -18,7 +18,7 @@ class EstadisticaServiceImp(private val patogenoDAO: PatogenoDAO, private val ub
     }
 
     override fun reporteDeContagios(nombreUbicacion: String): ReporteDeContagios {
-        val presentes: Int = ubicacionServiceImp.recuperar(nombreUbicacion).vectores.size
+        val presentes: Int = runTrx { ubicacionDAO.cantVectoresPresentes(nombreUbicacion) }
         val infectados: Int = runTrx { ubicacionDAO.cantVectoresInfectados(nombreUbicacion) }
         val masInfecciosa: String = runTrx { ubicacionDAO.nomEspecieMasInfecciosa(nombreUbicacion) }
 

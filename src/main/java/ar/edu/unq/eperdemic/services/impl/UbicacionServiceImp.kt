@@ -7,6 +7,7 @@ import ar.edu.unq.eperdemic.persistencia.dao.UbicacionDAO
 import ar.edu.unq.eperdemic.persistencia.dao.VectorDAO
 import ar.edu.unq.eperdemic.services.UbicacionService
 import ar.edu.unq.eperdemic.services.runner.TransactionRunner.runTrx
+import kotlin.math.roundToInt
 
 class UbicacionServiceImp(
         private val ubicacionDAO: UbicacionDAO,
@@ -41,12 +42,12 @@ class UbicacionServiceImp(
     override fun expandir(nombreUbicacion: String) {
         val ubicacion: Ubicacion = this.recuperar(nombreUbicacion)
         val vectores: MutableList<Vector> = ubicacion.vectores.toMutableList()
+        val vectoresInfectados: MutableList<Vector> = vectores.filter { it.estaInfectado() }.toMutableList()
 
-        if(vectores.filter {it.estaInfectado()}.isNotEmpty()){
-        val vectorInfectado: Vector = vectores.filter {it.estaInfectado() }[0]
-        // vectorServiceImp.contagiar(vectorInfectado, vectores)
-        ubicacion.actualizarInfectadoseEnUbicacion(vectorInfectado , vectores)
-        runTrx { ubicacionDAO.actualizar(ubicacion) }
+        if (vectoresInfectados.isNotEmpty()) {
+            val vectorInfectado: Vector = vectoresInfectados[Math.floor(Math.random()*(vectoresInfectados.size)).toInt()]
+            ubicacion.actualizarInfectadoseEnUbicacion(vectorInfectado, vectores)
+            runTrx { ubicacionDAO.actualizar(ubicacion) }
         }
     }
 

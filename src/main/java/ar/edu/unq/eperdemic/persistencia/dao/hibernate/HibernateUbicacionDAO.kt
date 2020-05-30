@@ -32,7 +32,7 @@ open class HibernateUbicacionDAO : HibernateDAO<Ubicacion>(Ubicacion::class.java
             from especie especie
                 join especie.vectores v where v.location.nombreDeLaUbicacion = :id
                 group by especie
-                order by count(especie) desc
+                order by count(v) desc
          """
         val query = session.createQuery(hql, Especie::class.java)
         query.setParameter("id", nombreDeLaUbicacion)
@@ -40,12 +40,24 @@ open class HibernateUbicacionDAO : HibernateDAO<Ubicacion>(Ubicacion::class.java
         return query.singleResult.toString()
     }
 
+    override fun cantVectoresPresentes(nombreDeLaUbicacion: String): Int {
+        val session = TransactionRunner.currentSession
+        val hql = """
+            select count(v)
+            from ubicacion ubicacion
+                join ubicacion.vectores v where ubicacion.nombreDeLaUbicacion = :id
+         """
+        val query = session.createQuery(hql, Number::class.java)
+        query.setParameter("id", nombreDeLaUbicacion)
+        return query.singleResult.toInt()
+    }
+
     override fun cantVectoresInfectados(nombreDeLaUbicacion: String): Int {
         val session = TransactionRunner.currentSession
         val hql = """
             select count(distinct vector.id)
             from vector vector
-                right join vector.enfermedades e where vector.location.nombreDeLaUbicacion = :id
+                join vector.enfermedades e where vector.location.nombreDeLaUbicacion = :id
          """
         val query = session.createQuery(hql, Number::class.java)
         query.setParameter("id", nombreDeLaUbicacion)

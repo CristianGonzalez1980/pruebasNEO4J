@@ -8,5 +8,6 @@ interface UbicacionDAO {
     fun recuperar(nombreDeLaUbicacion: String): Ubicacion
     fun actualizar(ubicacion: Ubicacion)
     fun nomEspecieMasInfecciosa(nombreDeLaUbicacion: String) : String
+    fun cantVectoresPresentes(nombreDeLaUbicacion: String): Int
     fun cantVectoresInfectados(nombreDeLaUbicacion: String) : Int
 }

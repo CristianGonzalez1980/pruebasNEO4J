@@ -142,7 +142,6 @@ class EstadisticaServiceTest {
     fun `se obtiene lista de 10 especies con mayor infeccion en humanos y animales`() {
         //       varicela, sarampion esta en ambos grupos solamente
         //       no se consideran que hayan infectado humanos y animales por separado, solo combinados?
-        println(serviceEst.lideres())
         Assert.assertEquals(serviceEst.lideres(), mutableListOf(especie1, especie3))//falta comparar con la salida
     }
 

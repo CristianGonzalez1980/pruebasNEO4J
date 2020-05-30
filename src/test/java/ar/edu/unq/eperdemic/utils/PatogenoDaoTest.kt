@@ -60,14 +60,6 @@ class PatogenoDaoTest {
         Assert.assertEquals("Bacteria", patogeno.tipo)
     }
 
-/*    @Test
-    fun crearUnPatogenoCuandoLoActualizoMeRespondeQueNoPuedeSerActualizado() {
-        val patogenoRaro = Patogeno("Hongo", 80, 80, 48)
-        val idPatogeno = dao.crear(patogenoRaro)
-        println(dao.actualizar(patogenoRaro))
-        Assert.assertEquals(0, dao.recuperar(idPatogeno).cantidadDeEspecies)
-    }*/
-
     @Test
     fun seAgregaUnaEspecieSeCorroboraLaActualizacionDelPatogeno() {
         val patogeno: Patogeno = runTrx { dao.recuperar(1) }

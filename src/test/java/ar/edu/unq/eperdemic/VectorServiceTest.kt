@@ -98,7 +98,7 @@ class VectorServiceTest {
     }
 
     @Test
-    fun enfermedadesDelVector(){
+    fun seVerificaLaCantidadDeEnfermedadesDelVector(){
         val vectorERecuperadoPost = serviceVect.recuperarVector(vectorE.id!!.toInt())
         Assert.assertEquals(3,vectorERecuperadoPost.enfermedades.size)
     }
