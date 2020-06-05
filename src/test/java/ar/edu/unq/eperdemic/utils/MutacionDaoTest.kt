@@ -26,7 +26,7 @@ class MutacionDaoTest {
     }
 
     @Test
-    fun creoUnaMutacionVerificoSuPersistencia() {
+    fun creoMutacionYVerificoSuPersistencia() {
         //val mutacion2 = Mutacion(15, mutableListOf(), mutableListOf(), Potencialidad.Contagio)
         val mutacion2 = Mutacion(15, mutableListOf(), Potencialidad.Contagio)
         val mutacionPersistida = runTrx { dao.crear(mutacion2) }
@@ -36,7 +36,7 @@ class MutacionDaoTest {
     }
 
     @Test
-    fun VerificoRecuperoDeUnaMutacion() {
+    fun verificaRecuperacionDeMutacion() {
         val mutacionRecuperada = runTrx { dao.recuperarMut(mutacionCreada.id!!.toInt()) }
         Assert.assertEquals(mutacionCreada.puntosAdnNecesarios, mutacionRecuperada.puntosAdnNecesarios)
         Assert.assertEquals(mutacionCreada.potencialidad!!.name, mutacionRecuperada.potencialidad!!.name)

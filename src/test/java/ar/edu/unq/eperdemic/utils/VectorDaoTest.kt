@@ -53,14 +53,14 @@ class VectorDaoTest {
     }
 
     @Test
-    fun sePruebaCrearVector() {
+    fun creaVectorLuegoRecuperaYVerificaId() {
         val vecGuardado: Vector = serviceVect.crearVector(vectorA)//
         val vecRecuperado: Vector = serviceVect.recuperarVector(vecGuardado.id!!.toInt())
         Assert.assertEquals(vecGuardado.id, vecRecuperado.id)
     }
 
     @Test
-    fun sePruebaActualizaryRecuperarVector() {
+    fun sePruebaActualizarYRecuperarVector() {
         serviceUbi.mover(vectorB.id!!.toInt(), "Ranelagh")
         val vecRecuperado: Vector = serviceVect.recuperarVector(vectorB.id!!.toInt())
         Assert.assertEquals("Ranelagh", vecRecuperado.location!!.nombreDeLaUbicacion)

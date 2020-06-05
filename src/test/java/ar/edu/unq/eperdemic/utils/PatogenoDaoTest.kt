@@ -36,20 +36,20 @@ class PatogenoDaoTest {
     }
 
     @Test
-    fun crearUnPatogenoSeCorroboraNumeroDeId() {
+    fun crearPatogenoYCorroborarId() {
         val patogenoRaro = Patogeno("Priones", 30, 20, 15)
         Assert.assertEquals(4, runTrx { dao.crear(patogenoRaro) })
     }
 
     @Test(expected = ConstraintViolationException::class)
-    fun crearUnSegundoPatogenoConUnTipoYaExistenteYNoMeLoPermite() {
+    fun crearPatogenoConTipoYaExistenteSinExito() {
         val patogenoRaro = Patogeno("Bacteria", 50, 84, 98)
         val idPatogeno: Int = runTrx { dao.crear(patogenoRaro) }
         Assert.assertEquals(2, idPatogeno)
     }
 
     @Test(expected = NullPointerException::class)
-    fun pruebaRecuperarPatogenoQueNoFueCreadoYMeRespondeQueEsNulo() {
+    fun intentoDeRecuperarPatogenoNuncaCreadoRespondeQueEsNulo() {
         val patogenoRaro2 = runTrx { dao.recuperar(4) }
         Assert.assertEquals("Virus", patogenoRaro2.tipo)
     }
@@ -61,7 +61,7 @@ class PatogenoDaoTest {
     }
 
     @Test
-    fun seAgregaUnaEspecieSeCorroboraLaActualizacionDelPatogeno() {
+    fun agregaUnaEspecieYCorroboraActualizacionDelPatogeno() {
         val patogeno: Patogeno = runTrx { dao.recuperar(1) }
         val especie = patogeno.agregarEspecie("Vaca Loca","Francia", 5)
         runTrx { dao.actualizar(patogeno) }
@@ -70,7 +70,7 @@ class PatogenoDaoTest {
     }
 
     @Test
-    fun seRecuperanTodosLosPatogenosSeCorroboraCantidad() {
+    fun recuperaTodosLosPatogenosYCorroboraCantidad() {
         val patogenos: List<Patogeno> = runTrx { dao.recuperarATodos() }
         Assert.assertEquals(3, patogenos.size)
     }

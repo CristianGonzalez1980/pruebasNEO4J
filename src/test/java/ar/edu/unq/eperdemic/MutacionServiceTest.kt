@@ -83,7 +83,7 @@ class MutacionServiceTest {
 
 
     @Test
-    fun intentaMutarUnaEspecieNotieneAdnSuficiente() {
+    fun intentaMutarUnaEspecieSinTenerAdnSuficiente() {
         serviceMut.mutar(especie1.id!!.toInt(), mutacion7.id!!.toInt())
         especie1 = servicePatog.recuperarEspecie(especie1.id!!.toInt())
         patogeno1 = servicePatog.recuperarPatogeno(idPat1)
@@ -92,7 +92,7 @@ class MutacionServiceTest {
     }
 
     @Test
-    fun Infecta5VectoresyObtiene1puntoDeAdn() {
+    fun infecta5VectoresYObtiene1PuntoDeAdn() {
         val vector1: Vector = serviceVec.crearVector(Vector(serviceUbi.crearUbicacion("Mar del Plata"), VectorFrontendDTO.TipoDeVector.Persona))
         val vector2: Vector = serviceVec.crearVector(Vector(vector1.location!!, VectorFrontendDTO.TipoDeVector.Persona))
         val vector3: Vector = serviceVec.crearVector(Vector(vector1.location!!, VectorFrontendDTO.TipoDeVector.Persona))
@@ -105,7 +105,7 @@ class MutacionServiceTest {
     }
 
     @Test
-    fun MutaYSeCorroboraLaCantidadDeAdnRestante() {
+    fun mutaYSeCorroboraLaCantidadDeAdnRestante() {
         Assert.assertEquals(2, especie3.adn)
         serviceMut.mutar(especie3.id!!.toInt(), mutacion1.id!!.toInt())
         especie3 = servicePatog.recuperarEspecie(especie3.id!!.toInt())
@@ -113,7 +113,7 @@ class MutacionServiceTest {
     }
 
     @Test
-    fun intentaMutarUnaEspecieNotieneMutacionesPrevias() {
+    fun mutaEintentaMutarOtraEspecieSinTenerLasMutacionesRequeridas() {
         //tiene el adn muta y no requiere mutaciones previas
         serviceMut.mutar(especie4.id!!.toInt(), mutacion1.id!!.toInt())
         especie4 = servicePatog.recuperarEspecie(especie4.id!!.toInt())
@@ -125,7 +125,7 @@ class MutacionServiceTest {
     }
 
     @Test
-    fun MutaEIncrementaElAtributoCorrepondiente() {
+    fun mutaEIncrementaElAtributoCorrepondiente() {
         patogeno3 = servicePatog.recuperarPatogeno(3)
         Assert.assertEquals(30, patogeno3.letalidad)
         serviceMut.mutar(especie3.id!!.toInt(), mutacion1.id!!.toInt())
@@ -134,7 +134,7 @@ class MutacionServiceTest {
     }
 
     @Test
-    fun AlMutarVerficaQueElValorDelAtributoYaEs100YNoHaceNada() {
+    fun alMutarVerficaQueElValorDelAtributoYaEs100YNoHaceNada() {
         patogeno2 = servicePatog.recuperarPatogeno(2)
         Assert.assertEquals(100, patogeno2.defensa)
         serviceMut.mutar(especie5.id!!.toInt(), mutacion6.id!!.toInt())
@@ -143,7 +143,7 @@ class MutacionServiceTest {
     }
 
     @Test
-    fun intentaAdquirirUnaMutacionYaAdquiridaPreviamente() {
+    fun sinExitoIntentaAdquirirUnaMutacionYaAdquiridaPreviamente() {
         val especie3RecuperadaPrev = servicePatog.recuperarEspecie(especie3.id!!.toInt())
         Assert.assertTrue(especie3RecuperadaPrev.mutaciones.isEmpty()) //Antes de mutar
         serviceMut.mutar(especie3.id!!.toInt(), mutacion1.id!!.toInt())

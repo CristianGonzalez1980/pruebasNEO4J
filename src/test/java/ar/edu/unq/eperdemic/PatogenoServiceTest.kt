@@ -52,7 +52,7 @@ class PatogenoServiceTest {
     }
 
     @Test(expected = ConstraintViolationException::class)
-    fun seCreaUnPatogenoYLuegoSeIntentaCrearUnSegundoPatogenoPeroNoSeCreaPorqueTienenElMismoTipoDelPrimerPatogeno() {
+    fun creaPatogenoEIntentaCrearOtroSinExitoPorTenerElMismoTipo() {
         patogeno = Patogeno("Virus", 20, 10, 12)
         service.crearPatogeno(patogeno)
         patogeno2 = Patogeno("Virus", 20, 10, 12)
@@ -61,21 +61,20 @@ class PatogenoServiceTest {
     }
 
     @Test
-    fun seCreaUnPatogenoYLuegoAlRecuperarUnPatogenoVerificoQueSeaElMismo() {
+    fun creaUnPatogenoYAlRecuperarloVerificaQueSeaElMismo() {
         patogeno = Patogeno("Virus", 20, 10, 12)
         val id = service.crearPatogeno(patogeno)
         Assert.assertEquals(patogeno.tipo, service.recuperarPatogeno(id).tipo)
     }
 
     @Test
-    fun seIntentaRecuperarUnPatogenoQueNoFueCreadoYMeDevuelveNull() {
+    fun intentaRecuperarPatogenoNuncaCreadoYDevuelveNull() {
         service.recuperarPatogeno(35)
         Assert.assertEquals(null, service.recuperarPatogeno(35))
     }
 
-
     @Test
-    fun seAgregaUnaEspecieAUnPatogenoYSeCorroboraQueSeHallaAgregado() {
+    fun agregarEspecieAPatogenoYCorroboraQueEsteAgregada() {
         patogeno = Patogeno("Covid", 60, 70, 90)
         val id = service.crearPatogeno(patogeno)
         val especie = service.agregarEspecie(id, "Rojo", "Mexico", 23)
@@ -84,7 +83,7 @@ class PatogenoServiceTest {
     }
 
     @Test(expected = ConstraintViolationException::class)
-    fun seAgregaUnaEspecieAUnPatogenoYCuandoQuieroAgregarUnaSegundaEspecieNoMeLoPermitePorqueElNombreNoSePuedeRepetir() {
+    fun agregarEspecieAPatogenoEIntentaAgregarOtraRepetidaSinExito() {
         patogeno = Patogeno("Covid", 60, 70, 90)
         val id = service.crearPatogeno(patogeno)
         val especie1 = service.agregarEspecie(id, "Rojo", "Mexico", 23)
@@ -107,7 +106,7 @@ class PatogenoServiceTest {
     fun agregarEspecieAPatogenoYRecuperarEspecie() {
         patogeno = Patogeno("1-12", 20, 50, 12)
          val id = service.crearPatogeno(patogeno)
-         var especie = service.agregarEspecie(id, "cruza", "Ecuador", 44)
+         val especie = service.agregarEspecie(id, "cruza", "Ecuador", 44)
 
         Assert.assertEquals(especie, (service.recuperarEspecie(especie.id!!.toInt())))
     }
@@ -116,7 +115,7 @@ class PatogenoServiceTest {
     fun verificoLaCantidadDeInfectadosDeUnPatogeno(){
         patogeno = Patogeno("1", 100, 50, 12)
         val id = service.crearPatogeno(patogeno)
-        var especie = service.agregarEspecie(id, "rb", "Ecuador", 50)
+        val especie = service.agregarEspecie(id, "rb", "Ecuador", 50)
         val ubicacion1 = serviceUbic.crearUbicacion("Argentina")
         var vectorA = Vector(ubicacion1, VectorFrontendDTO.TipoDeVector.Persona)
         var vectorB = Vector(ubicacion1, VectorFrontendDTO.TipoDeVector.Persona)

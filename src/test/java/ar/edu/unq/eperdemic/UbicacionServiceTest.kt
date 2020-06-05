@@ -81,12 +81,12 @@ class UbicacionServiceTest {
     }
 
     @Test(expected = PersistenceException::class)
-    fun IntentoCrearUnaUbicacionQueYaFueCreadaYNoMeLoPermitePorqueNoPuedoTenerDosUbicacionesConElMismoNombre(){
+    fun intentoDeCrearUbicacionConNombreRepetido(){
         service.crearUbicacion("La Plata")
     }
 
     @Test
-    fun recuperarCantidadDeUbicacion() {
+    fun recuperarCantidadDeVectoresEnUbicacion() {
         Assert.assertEquals(3, service.recuperar("La Plata").vectores.size)
     }
 
@@ -107,7 +107,7 @@ class UbicacionServiceTest {
     }
 
     @Test
-    fun cambiaUbicacionVectorSanoNoInfectaVectores() {
+    fun cambiaUbicacionDeVectorSanoYNoInfectaVectores() {
         service.mover(vectorE.id!!.toInt(), "Quilmes")
         val vectores: MutableList<Vector> = service.recuperar("Quilmes").vectores.toMutableList()
         val totalDeInfectados = vectores.count { it.estaInfectado() }
@@ -115,7 +115,7 @@ class UbicacionServiceTest {
     }
 
     @Test
-    fun expandeLasEnfermedadesEnLaUbicacion() {
+    fun expandeEnfermedadesEnUbicacion() {
         service.expandir("La Plata")
         val vectores: MutableList<Vector> = service.recuperar("La Plata").vectores.toMutableList()
         val totalDeInfectados = vectores.count { it.estaInfectado() }
@@ -123,7 +123,7 @@ class UbicacionServiceTest {
     }
 
     @Test
-    fun intentaExpandirEnfermedadPeroNoLoLogra() {
+    fun intentaExpandirEnfermedadSinExito() {
         service.expandir("Quilmes")
         val vectores: MutableList<Vector> = service.recuperar("Quilmes").vectores.toMutableList()
         val totalDeInfectados = vectores.count { it.estaInfectado() }

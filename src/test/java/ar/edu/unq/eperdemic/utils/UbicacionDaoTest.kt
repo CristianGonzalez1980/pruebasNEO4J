@@ -83,7 +83,7 @@ class UbicacionDaoTest {
     }
 
     @Test
-    fun moverDeUbicacionVectores() {
+    fun moverDeUbicacionVectoresLuegoRecuperarUbiacionYVerificarCambios() {
         serviceUbi.crearUbicacion(ubicacionD.nombreDeLaUbicacion!!)//se persiste Ringuelet
         var ringuelet: Ubicacion = serviceUbi.recuperar(ubicacionD.nombreDeLaUbicacion!!)//se recupera Ringuelet
         var ubiAnterior: Ubicacion? = vectorC.location
