@@ -87,6 +87,22 @@ class UbicacionNeo4jDao {
         }
     }
 
+    fun conectados(nombreDeUbicacion:String): List<Ubicacion> {
+        return driver.session().use { session ->
+            val query = """
+                MATCH (ubi:Ubicacion {nombreUbicacion: ${'$'}nombreDeUbicacion}) 
+                MATCH (conectada)-[:camino]->(ubi)
+                RETURN conectada
+            """
+            val result = session.run(query, Values.parameters("nombreDeUbicacion", nombreDeUbicacion))
+            result.list { record: Record ->
+                val conectada = record[0]
+                val nombreUbicacion = conectada["nombreUbicacion"].asString()
+                Ubicacion(nombreUbicacion)
+            }
+        }
+    }
+
     fun clear() {
         return driver.session().use { session ->
             session.run("MATCH (n) DETACH DELETE n")

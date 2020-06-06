@@ -25,20 +25,34 @@ class UbicacionNeo4jTest {
     }
 
     @Test
-    fun creoUnaUbicacionYverificoQueSeCreoElGrafo(){
+    fun creoUnaUbicacionYverificoQueSeCreoElGrafo() {
 
         var ubicacion = Ubicacion("La Plata")
         dao.crearUbicacion(ubicacion)
 
-        Assert.assertEquals(true,dao.existeUbicacion(ubicacion))
+        Assert.assertEquals(true, dao.existeUbicacion(ubicacion))
     }
 
+/*    @Test
+    fun conecto2UbicacionesPorCaminoAereoVerificoLaRelacion() {
+
+        dao.conectar(ubicacionA.nombreDeLaUbicacion!!, ubicacionC.nombreDeLaUbicacion!!, TipoDeCamino.Terrestre.name)
+
+           Assert.assertEquals(true,dao.estaConectadaPorCamino(ubicacionA, ubicacionC, TipoDeCamino.Terrestre)) DA SIEMPRE VERDE CORREGIR
+    }*/
+
     @Test
-    fun conecto2UbicacionesPorCaminoAereoVerificoLaRelacion(){
+    fun verificoUbicacionesConectadas() {
 
-        dao.conectar(ubicacionA.nombreDeLaUbicacion!!, ubicacionC.nombreDeLaUbicacion!!, TipoDeCamino.Terrestre.name )
+        dao.conectar(ubicacionA.nombreDeLaUbicacion!!, ubicacionB.nombreDeLaUbicacion!!, TipoDeCamino.Maritimo.name)
+        dao.conectar(ubicacionA.nombreDeLaUbicacion!!, ubicacionC.nombreDeLaUbicacion!!, TipoDeCamino.Terrestre.name)
 
-     //   Assert.assertEquals(true,dao.estaConectadaPorCamino(ubicacionA, ubicacionC, TipoDeCamino.Terrestre)) DA SIEMPRE VERDE CORREGIR
+        val conectados = dao.conectados(ubicacionA.nombreDeLaUbicacion!!)
+        val nombresConectados = conectados.map { it.nombreDeLaUbicacion }
+
+        Assert.assertEquals(2, conectados.size)
+        Assert.assertTrue(nombresConectados.contains("Maldonado"))
+        Assert.assertTrue(nombresConectados.contains("Colonia"))
     }
 
 }
