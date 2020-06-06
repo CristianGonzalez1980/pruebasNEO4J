@@ -37,4 +37,17 @@ class Ubicacion() {
             vectorInfectado.estrategiaDeContagio!!.darContagio(vectorInfectado ,v )
         }
     }
+    override fun equals(obj: Any?): Boolean {
+        if (obj === this) {
+            return true
+        }
+        if (obj is Ubicacion) {
+            return nombreDeLaUbicacion == obj.nombreDeLaUbicacion
+        }
+        return false
+    }
+
+    override fun hashCode(): Int {
+        return nombreDeLaUbicacion.hashCode()
+    }
 }
