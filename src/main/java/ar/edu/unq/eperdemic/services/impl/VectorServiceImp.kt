@@ -32,6 +32,28 @@ class VectorServiceImp(
         }
     }
 
+    override fun contagiarSimulPositivo(vectorInfectado: Vector, vectores: List<Vector>) {
+        var vecAInfect: Vector
+        for (vectorAInfect: Vector in vectores) {
+            vecAInfect = vectorAInfect
+            if (vecAInfect != vectorInfectado) {
+                vectorInfectado.estrategiaDeContagio!!.darContagioSimularPositivo(vectorInfectado, vecAInfect)
+                runTrx { vectorDAO.actualizar(vecAInfect) }
+            }
+        }
+    }
+
+    override fun contagiarSimulNegativo(vectorInfectado: Vector, vectores: List<Vector>) {
+        var vecAInfect: Vector
+        for (vectorAInfect: Vector in vectores) {
+            vecAInfect = vectorAInfect
+            if (vecAInfect != vectorInfectado) {
+                vectorInfectado.estrategiaDeContagio!!.darContagioSimularNegativo(vectorInfectado, vecAInfect)
+                runTrx { vectorDAO.actualizar(vecAInfect) }
+            }
+        }
+    }
+
     override fun infectar(vector: Vector, especie: Especie) {
         runTrx {
             vector.estrategiaDeContagio!!.infectar(vector, especie)

@@ -76,18 +76,27 @@ class VectorServiceTest {
     fun verificarContagioExitoso() {
         vectores.add(vectorB)
         Assert.assertTrue(vectorB.enfermedades.isEmpty())
-        serviceVect.contagiar(vectorA, vectores)
+        serviceVect.contagiarSimulPositivo(vectorA, vectores)
         val vectorBRecuperadoPost = serviceVect.recuperarVector(vectorB.id!!.toInt())
         Assert.assertEquals(1, vectorBRecuperadoPost.cantidadEnfermedades())
     }
 
     @Test
-    fun verificarContagioNoExitoso() {
+    fun verificarContagioNoExitosoPorTipo() {
         vectores.add(vectorD)
         Assert.assertTrue(vectorD.enfermedades.isEmpty())
-        serviceVect.contagiar(vectorC, vectores)
+        serviceVect.contagiarSimulPositivo(vectorC, vectores)
         val vectorDRecuperadoPost = serviceVect.recuperarVector(vectorD.id!!.toInt())
         Assert.assertEquals(0, (serviceVect.enfermedades(vectorDRecuperadoPost.id!!.toInt()).size))
+    }
+
+    @Test
+    fun verificarContagioNoExitosoPorProbabilidad() {
+        vectores.add(vectorB)
+        Assert.assertTrue(vectorB.enfermedades.isEmpty())
+        serviceVect.contagiarSimulNegativo(vectorA, vectores)
+        val vectorBRecuperadoPost = serviceVect.recuperarVector(vectorB.id!!.toInt())
+        Assert.assertEquals(0, vectorBRecuperadoPost.cantidadEnfermedades())
     }
 
     @Test

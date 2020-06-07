@@ -18,4 +18,16 @@ class StrategyHumano : StrategySuperClase() {
             super.darContagio(vectorInfectado, vectorAContagiar)
         }
     }
+
+    override fun darContagioSimularPositivo(vectorInfectado: Vector, vectorAContagiar: Vector) {
+        if (this.poneEnRiesgoA(vectorAContagiar)) {
+            super.darContagioSimularPositivo(vectorInfectado, vectorAContagiar)
+        }
+    }
+
+    override fun darContagioSimularNegativo(vectorInfectado: Vector, vectorAContagiar: Vector) {
+        if (this.poneEnRiesgoA(vectorAContagiar)) {
+            super.darContagioSimularNegativo(vectorInfectado, vectorAContagiar)
+        }
+    }
 }

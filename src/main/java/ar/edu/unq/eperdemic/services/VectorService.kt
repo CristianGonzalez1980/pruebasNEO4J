@@ -8,6 +8,8 @@ import ar.edu.unq.eperdemic.modelo.Vector
 interface VectorService {
 
     fun contagiar(vectorInfectado: Vector, vectores: List<Vector>)
+    fun contagiarSimulPositivo(vectorInfectado: Vector, vectores: List<Vector>)
+    fun contagiarSimulNegativo(vectorInfectado: Vector, vectores: List<Vector>)
     fun infectar(vector: Vector, especie: Especie)
     fun enfermedades(vectorId: Int): List<Especie>
 
