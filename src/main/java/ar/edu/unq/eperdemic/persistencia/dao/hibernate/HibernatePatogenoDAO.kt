@@ -119,15 +119,15 @@ open class HibernatePatogenoDAO : HibernateDAO<Patogeno>(Patogeno::class.java), 
         var especie = this.recuperarEspecie(especieId)
 
         val session = TransactionRunner.currentSession
-        val hql1 = """ select distinct (v.location)
+        val hql1 = """ select count ( distinct v.location)
                  from especie e join e.vectores v where e.id = :unId"""
-        val query1 = session.createQuery(hql1, Ubicacion::class.java)
+        val query1 = session.createQuery(hql1, Number::class.java)
         query1.setParameter("unId", especie.id!!.toLong())
-        var ubicaciones = query1.resultList.size
+        var ubicaciones = query1.singleResult.toInt()
 
-        val hql2 = "from ubicacion u " + " order by u.id"
-        val query2 = session.createQuery(hql2, Ubicacion::class.java)
-        var cantUbicacion = (query2.resultList.size) / 2
+        val hql2 = """ select count(*) from ubicacion"""
+        val query2 = session.createQuery(hql2, Number::class.java)
+        var cantUbicacion = query2.singleResult.toInt() / 2
 
         return ubicaciones > cantUbicacion
     }
