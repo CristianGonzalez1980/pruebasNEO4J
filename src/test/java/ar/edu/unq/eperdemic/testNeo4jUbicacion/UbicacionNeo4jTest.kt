@@ -29,7 +29,7 @@ class UbicacionNeo4jTest {
         dao.crearUbicacion(ubicacionC)
     }
 
-    @Test
+    /*@Test
     fun creoUnaUbicacionYverificoQueSeCreoElGrafo() {
 
         var ubicacion = Ubicacion("La Plata")
@@ -75,16 +75,18 @@ class UbicacionNeo4jTest {
         dao.relacionarUbicacion(vectorB, ubicacionA)
         Assert.assertEquals(true, dao.ubicacionesDeVector(vectorB.tipo!!.name).contains(ubicacionA))
 
-    }
+    }*/
 
     @Test
     fun muevoUnVectorHaciaUnaUbicacion() {
 
         dao.conectar(ubicacionC.nombreDeLaUbicacion!!, "La Plata", TipoDeCamino.Maritimo.name)
+        dao.conectar(ubicacionB.nombreDeLaUbicacion!!, "La Plata",TipoDeCamino.Maritimo.name)
 
         dao.relacionarUbicacion(vectorB, ubicacionB)
 
-        //dao.moverMasCorto(vectorB.tipo!!.name, ubicacionB.nombreDeLaUbicacion!!)
+        dao.moverMasCorto(vectorB.tipo!!.name, "La Plata")
+        //Assert.assertEquals(true, dao.ubicacionesDeVector(vectorB.tipo!!.name).contains(ubicacionA))
 
 
     }

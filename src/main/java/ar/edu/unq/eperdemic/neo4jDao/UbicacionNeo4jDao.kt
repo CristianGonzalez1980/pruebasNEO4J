@@ -177,45 +177,18 @@ class UbicacionNeo4jDao {
 
     fun moverMasCorto(vectorId: String, nombreDeUbicacion: String) {
 
-        var ubicaciones = this.ubicacionesDeVector(vectorId)
-        var ubicacion = this.encontarUbicacionEnUbicacionMasCercana(nombreDeUbicacion,ubicaciones)
 
+        return driver.session().use { session ->
+            val query = """
+                MATCH (vec:Vector  { tipo: ${'$'}unTipo}),(ubi:Ubicacion { nombreUbicacion: ${'$'} unaUbicacion}), p = shortestPath((vec)-[*..15]-(ubi))
+                RETURN p
+               
+            """
+            val result = session.run(query, Values.parameters("unTipo", vectorId, "unaUbicacion", nombreDeUbicacion))
 
+        }
 
     }
-
-    private fun encontarUbicacionEnUbicacionMasCercana(nombreDeUbicacion: String, ubicaciones: List<Ubicacion>): Ubicacion {
-
-        var res : Ubicacion? = null
-        var cantDePasos = 0
-        for (ubi: Ubicacion in ubicaciones){
-
-            if (cantDePasos > (this.cantidadDepasosHastaUbi(ubi, nombreDeUbicacion))) {
-                   cantDePasos += this.cantidadDepasosHastaUbi(ubi, nombreDeUbicacion)
-                   res = ubi
-            }
-            else cantDePasos +=1
-        }
-        return res!!
-    }
-
-    private fun cantidadDepasosHastaUbi(ubi: Ubicacion, nombreDeUbicacion: String): Int {
-       // var ubibacionBuscada = Ubicacion(nombreDeUbicacion)
-        var cant = 0
-       var  ubicacionesConectadas = conectados(ubi.nombreDeLaUbicacion!!)
-        for (ubicacion :Ubicacion in ubicacionesConectadas){
-
-            if (ubicacion.nombreDeLaUbicacion != nombreDeUbicacion){
-
-                cant += 1
-            }
-
-        }
-
-        return cant
-        }
-
-
     }
 
 
