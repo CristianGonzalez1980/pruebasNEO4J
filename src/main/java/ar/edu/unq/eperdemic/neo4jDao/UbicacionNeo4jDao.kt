@@ -2,6 +2,7 @@ package ar.edu.unq.eperdemic.neo4jDao
 
 import ar.edu.unq.eperdemic.modelo.TipoDeCamino
 import ar.edu.unq.eperdemic.modelo.Ubicacion
+import ar.edu.unq.eperdemic.modelo.Vector
 import org.neo4j.driver.*
 
 class UbicacionNeo4jDao {
@@ -10,7 +11,7 @@ class UbicacionNeo4jDao {
 
     init {
         val env = System.getenv()
-        val url = env.getOrDefault("URL", "bolt://localhost:11005")
+        val url = env.getOrDefault("URL", "bolt://localhost:7687")
         val username = env.getOrDefault("USERe", "neo4j")
         val password = env.getOrDefault("PASSWORD", "root")
 
@@ -109,4 +110,117 @@ class UbicacionNeo4jDao {
         }
     }
 
-}
+    fun crearVector(vector: Vector) {
+
+        driver.session().use { session ->
+            session.writeTransaction {
+                val query = "MERGE (vec:Vector { tipo: ${'$'}unTipo  }) "
+                it.run(query, Values.parameters(
+                        "unTipo", vector.tipo!!.name
+                ))
+            }
+        }
+    }
+
+    fun existeVector(vector: Vector): Any? {
+
+        driver.session().use { session ->
+            //{nombreUbicacion: ${'$'}unaUbicacion}
+            val query = """  MATCH (vec:Vector { tipo: ${'$'}unTipo  }) RETURN vec """
+            val result = session.run(
+                    query, Values.parameters(
+                    "unTipo", vector.tipo!!.name
+            )
+            )
+            return result.single().size() == 1
+        }
+
+    }
+
+    fun relacionarUbicacion(vector: Vector, ubicacion: Ubicacion) {
+
+        driver.session().use { session ->
+            val query = """
+                MATCH (ubi:Ubicacion {nombreUbicacion: ${'$'}unaUbicacion}) 
+                MATCH (vec:Vector { tipo: ${'$'}unTipo})
+                MERGE (vec)-[:ubicacionActual]->(ubi)
+                
+            """
+            session.run(
+                    query, Values.parameters(
+                    "unaUbicacion", ubicacion.nombreDeLaUbicacion,
+                    "unTipo", vector.tipo!!.name
+
+            )
+            )
+        }
+
+    }
+
+    fun ubicacionesDeVector(vector: String): List<Ubicacion> {
+
+        return driver.session().use { session ->
+            val query = """
+                MATCH (vec:Vector { tipo: ${'$'}unTipo})
+                MATCH (vec)-[:ubicacionActual]->(ubi)
+                RETURN ubi
+            """
+            val result = session.run(query, Values.parameters("unTipo", vector))
+            result.list { record: Record ->
+                val ubi = record[0]
+                val nombreUbicacion = ubi["nombreUbicacion"].asString()
+                Ubicacion(nombreUbicacion)
+            }
+        }
+
+    }
+
+    fun moverMasCorto(vectorId: String, nombreDeUbicacion: String) {
+
+        var ubicaciones = this.ubicacionesDeVector(vectorId)
+        var ubicacion = this.encontarUbicacionEnUbicacionMasCercana(nombreDeUbicacion,ubicaciones)
+
+
+
+    }
+
+    private fun encontarUbicacionEnUbicacionMasCercana(nombreDeUbicacion: String, ubicaciones: List<Ubicacion>): Ubicacion {
+
+        var res : Ubicacion? = null
+        var cantDePasos = 0
+        for (ubi: Ubicacion in ubicaciones){
+
+            if (cantDePasos > (this.cantidadDepasosHastaUbi(ubi, nombreDeUbicacion))) {
+                   cantDePasos += this.cantidadDepasosHastaUbi(ubi, nombreDeUbicacion)
+                   res = ubi
+            }
+            else cantDePasos +=1
+        }
+        return res!!
+    }
+
+    private fun cantidadDepasosHastaUbi(ubi: Ubicacion, nombreDeUbicacion: String): Int {
+       // var ubibacionBuscada = Ubicacion(nombreDeUbicacion)
+        var cant = 0
+       var  ubicacionesConectadas = conectados(ubi.nombreDeLaUbicacion!!)
+        for (ubicacion :Ubicacion in ubicacionesConectadas){
+
+            if (ubicacion.nombreDeLaUbicacion != nombreDeUbicacion){
+
+                cant += 1
+            }
+
+        }
+
+        return cant
+        }
+
+
+    }
+
+
+
+
+
+
+

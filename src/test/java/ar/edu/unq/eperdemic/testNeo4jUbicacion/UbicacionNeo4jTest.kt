@@ -1,8 +1,10 @@
 package ar.edu.unq.eperdemic.testNeo4jUbicacion
 
 
+import ar.edu.unq.eperdemic.dto.VectorFrontendDTO
 import ar.edu.unq.eperdemic.modelo.TipoDeCamino
 import ar.edu.unq.eperdemic.modelo.Ubicacion;
+import ar.edu.unq.eperdemic.modelo.Vector
 import ar.edu.unq.eperdemic.neo4jDao.UbicacionNeo4jDao;
 import org.junit.Assert;
 import org.junit.Before;
@@ -14,11 +16,14 @@ class UbicacionNeo4jTest {
     val ubicacionA = Ubicacion("Quilmes")
     val ubicacionB = Ubicacion("Colonia")
     val ubicacionC = Ubicacion("Maldonado")
+    var vectorA = Vector(ubicacionA, VectorFrontendDTO.TipoDeVector.Persona)
+    var vectorB = Vector(ubicacionA, VectorFrontendDTO.TipoDeVector.Insecto)
+
 
     @Before
     fun setUp() {
         dao = UbicacionNeo4jDao()
-        dao.clear()
+       // dao.clear()
         dao.crearUbicacion(ubicacionA)
         dao.crearUbicacion(ubicacionB)
         dao.crearUbicacion(ubicacionC)
@@ -55,4 +60,33 @@ class UbicacionNeo4jTest {
         Assert.assertTrue(nombresConectados.contains("Colonia"))
     }
 
+    @Test
+    fun creoUnVectorYVerificoQueSeCreoElGrafoVector() {
+
+        dao.crearVector(vectorA)
+        Assert.assertEquals(true, dao.existeVector(vectorA))
+
+    }
+
+    @Test
+    fun creoUnaRelacionEntreUnVectorYUnaUbicacion() {
+
+        dao.crearVector(vectorB)
+        dao.relacionarUbicacion(vectorB, ubicacionA)
+        Assert.assertEquals(true, dao.ubicacionesDeVector(vectorB.tipo!!.name).contains(ubicacionA))
+
+    }
+
+    @Test
+    fun muevoUnVectorHaciaUnaUbicacion() {
+
+        dao.conectar(ubicacionC.nombreDeLaUbicacion!!, "La Plata", TipoDeCamino.Maritimo.name)
+
+        dao.relacionarUbicacion(vectorB, ubicacionB)
+
+        //dao.moverMasCorto(vectorB.tipo!!.name, ubicacionB.nombreDeLaUbicacion!!)
+
+
+    }
 }
+
