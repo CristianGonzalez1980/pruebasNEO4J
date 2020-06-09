@@ -131,8 +131,8 @@ class UbicacionServiceTest {
         Assert.assertEquals(0, totalDeInfectados)
     }
 
-    /*@After
+    @After
     fun cleanup() {
         serviceData.eliminarTodo()
-    }*/
+    }
 }

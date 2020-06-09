@@ -4,14 +4,14 @@ import org.hibernate.Session
 import org.hibernate.SessionFactory
 import org.hibernate.cfg.Configuration
 
-class SessionFactoryProvider private constructor() {
+class HibernateSessionFactoryProvider private constructor() {
 
     private val sessionFactory: SessionFactory?
 
     init {
         val env = System.getenv()
-        val user = "matias"//env.getOrDefault("USER", "root")
-        val password = "pass1"//env.getOrDefault("PASSWORD", "root")
+        val user = "root"//env.getOrDefault("USER", "root")
+        val password = "root"//env.getOrDefault("PASSWORD", "root")
         val dataBase = env.getOrDefault("DATA_BASE", "epers_hibernate")
         val host = env.getOrDefault("HOST", "localhost")
 
@@ -30,12 +30,12 @@ class SessionFactoryProvider private constructor() {
 
     companion object {
 
-        private var INSTANCE: SessionFactoryProvider? = null
+        private var INSTANCE: HibernateSessionFactoryProvider? = null
 
-        val instance: SessionFactoryProvider
+        val instance: HibernateSessionFactoryProvider
             get() {
                 if (INSTANCE == null) {
-                    INSTANCE = SessionFactoryProvider()
+                    INSTANCE = HibernateSessionFactoryProvider()
                 }
                 return INSTANCE!!
             }

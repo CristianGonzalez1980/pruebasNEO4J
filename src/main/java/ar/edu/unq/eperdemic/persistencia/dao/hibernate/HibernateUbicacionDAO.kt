@@ -3,7 +3,7 @@ package ar.edu.unq.eperdemic.persistencia.dao.hibernate
 import ar.edu.unq.eperdemic.modelo.Especie
 import ar.edu.unq.eperdemic.modelo.Ubicacion
 import ar.edu.unq.eperdemic.persistencia.dao.UbicacionDAO
-import ar.edu.unq.eperdemic.services.runner.TransactionRunner
+import ar.edu.unq.eperdemic.services.runner.HibernateTransaction
 
 open class HibernateUbicacionDAO : HibernateDAO<Ubicacion>(Ubicacion::class.java), UbicacionDAO {
 
@@ -14,7 +14,7 @@ open class HibernateUbicacionDAO : HibernateDAO<Ubicacion>(Ubicacion::class.java
     }
 
     override fun recuperar(nombreDeLaUbicacion: String): Ubicacion {
-        val session = TransactionRunner.currentSession
+        val session = HibernateTransaction.currentSession
         val hql = ("from ubicacion " + " where nombreDeLaUbicacion = :id")
         val query = session.createQuery(hql, Ubicacion::class.java)
         query.setParameter("id", nombreDeLaUbicacion)
@@ -22,12 +22,12 @@ open class HibernateUbicacionDAO : HibernateDAO<Ubicacion>(Ubicacion::class.java
     }
 
     override fun actualizar(ubicacion: Ubicacion) {
-        val session = TransactionRunner.currentSession
+        val session = HibernateTransaction.currentSession
         session.saveOrUpdate(ubicacion)
     }
 
     override fun nomEspecieMasInfecciosa(nombreDeLaUbicacion: String): String {
-        val session = TransactionRunner.currentSession
+        val session = HibernateTransaction.currentSession
         val hql = """
             select especie 
             from especie especie
@@ -42,7 +42,7 @@ open class HibernateUbicacionDAO : HibernateDAO<Ubicacion>(Ubicacion::class.java
     }
 
     override fun cantVectoresPresentes(nombreDeLaUbicacion: String): Int {
-        val session = TransactionRunner.currentSession
+        val session = HibernateTransaction.currentSession
         val hql = """
             select count(v)
             from ubicacion ubicacion
@@ -54,7 +54,7 @@ open class HibernateUbicacionDAO : HibernateDAO<Ubicacion>(Ubicacion::class.java
     }
 
     override fun cantVectoresInfectados(nombreDeLaUbicacion: String): Int {
-        val session = TransactionRunner.currentSession
+        val session = HibernateTransaction.currentSession
         val hql = """
             select count(distinct vector.id)
             from vector vector

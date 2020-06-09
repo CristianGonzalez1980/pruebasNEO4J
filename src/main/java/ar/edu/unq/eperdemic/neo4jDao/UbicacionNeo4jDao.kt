@@ -9,7 +9,7 @@ class UbicacionNeo4jDao {
 
     init {
         val env = System.getenv()
-        val url = env.getOrDefault("URL", "bolt://localhost:7687")
+        val url = env.getOrDefault("URL", "bolt://localhost:11005")
         val username = env.getOrDefault("USERe", "neo4j")
         val password = env.getOrDefault("PASSWORD", "root")
 

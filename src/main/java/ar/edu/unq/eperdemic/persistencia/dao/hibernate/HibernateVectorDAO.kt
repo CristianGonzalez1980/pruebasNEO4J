@@ -3,7 +3,7 @@ package ar.edu.unq.eperdemic.persistencia.dao.hibernate
 import ar.edu.unq.eperdemic.modelo.Especie
 import ar.edu.unq.eperdemic.modelo.Vector
 import ar.edu.unq.eperdemic.persistencia.dao.VectorDAO
-import ar.edu.unq.eperdemic.services.runner.TransactionRunner
+import ar.edu.unq.eperdemic.services.runner.HibernateTransaction
 
 
 open class HibernateVectorDAO : HibernateDAO<Vector>(Vector::class.java), VectorDAO {
@@ -15,7 +15,7 @@ open class HibernateVectorDAO : HibernateDAO<Vector>(Vector::class.java), Vector
     }
 
     override fun enfermedades(idDelVector: Int): List<Especie> {
-        val session = TransactionRunner.currentSession
+        val session = HibernateTransaction.currentSession
         val hql = """
         select enfermedad 
         from vector v join v.enfermedades enfermedad where v.id = :idVector"""
@@ -37,14 +37,14 @@ open class HibernateVectorDAO : HibernateDAO<Vector>(Vector::class.java), Vector
     }
 
     override fun actualizar(vector: Vector): Vector {
-        val session = TransactionRunner.currentSession
+        val session = HibernateTransaction.currentSession
         session.saveOrUpdate(vector)
         return this.recuperar(vector.id)
     }
 
     override fun eliminar(idDelVector: Int) {
         val vector = this.recuperar(idDelVector)
-        val session = TransactionRunner.currentSession
+        val session = HibernateTransaction.currentSession
         vector.location!!.desAlojarVector(vector)
         vector.enfermedades.map { it.vectores.remove(vector) }
         session.delete(vector)
