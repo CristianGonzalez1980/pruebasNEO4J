@@ -37,6 +37,7 @@ class Ubicacion() {
             vectorInfectado.estrategiaDeContagio!!.darContagio(vectorInfectado ,v )
         }
     }
+
     override fun equals(obj: Any?): Boolean {
         if (obj === this) {
             return true

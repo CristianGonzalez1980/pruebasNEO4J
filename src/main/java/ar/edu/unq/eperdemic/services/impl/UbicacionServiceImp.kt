@@ -2,6 +2,7 @@ package ar.edu.unq.eperdemic.services.impl
 
 import ar.edu.unq.eperdemic.modelo.Ubicacion
 import ar.edu.unq.eperdemic.modelo.Vector
+import ar.edu.unq.eperdemic.neo4jDao.UbicacionNeo4jDao
 import ar.edu.unq.eperdemic.persistencia.dao.DataDAO
 import ar.edu.unq.eperdemic.persistencia.dao.UbicacionDAO
 import ar.edu.unq.eperdemic.persistencia.dao.VectorDAO
@@ -11,6 +12,7 @@ import kotlin.math.roundToInt
 
 class UbicacionServiceImp(
         private val ubicacionDAO: UbicacionDAO,
+        private val ubicacionNeoDao: UbicacionNeo4jDao,
         private val dataDAO: DataDAO,
         private val vectorDAO: VectorDAO,
         private val vectorServiceImp: VectorServiceImp
@@ -54,6 +56,7 @@ class UbicacionServiceImp(
     override fun crearUbicacion(nombre: String): Ubicacion {
         return runTrx {
             val ubicacion = Ubicacion(nombre)
+            ubicacionNeoDao.crearUbicacion(ubicacion)
             ubicacionDAO.crear(ubicacion)
         }
     }

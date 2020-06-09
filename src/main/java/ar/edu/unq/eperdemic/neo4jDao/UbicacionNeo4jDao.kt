@@ -1,6 +1,4 @@
 package ar.edu.unq.eperdemic.neo4jDao
-
-import ar.edu.unq.eperdemic.modelo.TipoDeCamino
 import ar.edu.unq.eperdemic.modelo.Ubicacion
 import ar.edu.unq.eperdemic.modelo.Vector
 import org.neo4j.driver.*
@@ -21,7 +19,6 @@ class UbicacionNeo4jDao {
     }
 
     fun crearUbicacion(ubicacion: Ubicacion) {
-
         driver.session().use { session ->
             session.writeTransaction {
                 val query = "MERGE (ubi:Ubicacion {nombreUbicacion: ${'$'}unaUbicacion}) "
@@ -54,46 +51,52 @@ class UbicacionNeo4jDao {
 //        var ubi2 = Ubicacion(ubicacion2)
 //        this.crearUbicacion(ubi1)
 //        this.crearUbicacion(ubi2)
+
+        val camino = tipoCamino
+
         driver.session().use { session ->
             val query = """
                 MATCH (conectar:Ubicacion {nombreUbicacion: ${'$'}unaUbicacion})
                 MATCH (conectado:Ubicacion {nombreUbicacion: ${'$'}otraUbicacion})
-                MERGE (conectar)-[:camino {type: ${'$'}tCamino}]->(conectado)
-                MERGE (conectado)-[:camino {type: ${'$'}tCamino}]->(conectar)
+                MERGE (conectar)-[:""" + camino + """ {type: ${'$'}tCamino}]->(conectado)
             """
+
             session.run(
                     query, Values.parameters(
                     "unaUbicacion", ubicacion1/*ubi1.nombreDeLaUbicacion*/,
                     "otraUbicacion", ubicacion2/*ubi2.nombreDeLaUbicacion*/,
                     "tCamino", tipoCamino
-            )
+                    )
             )
         }
     }
 
-    fun estaConectadaPorCamino(ubicacion1: Ubicacion, ubicacion2: Ubicacion, tipoCamino: TipoDeCamino): Boolean {
+    fun estanConectadasPorCamino(nombreUbicacionBase: String, nombreUbicacionDestino: String, nombreTipoCamino: String): Boolean {
         return driver.session().use { session ->
             val query = """
-                MATCH (ubi1:Ubicacion {nombreUbicacion: ${'$'}nombreUbi1})
-                MATCH (ubi2:Ubicacion {nombreUbicacion: ${'$'}nombreUbi2})
-                MATCH (ubi1)-[:camino {type: ${'$'}tCamino}]->(ubi2)
-                RETURN ubi2
+                MATCH (ubicBase {nombreUbicacion:${'$'}nombreUbicBase})-[caminos]->(ubicDestino {nombreUbicacion:${'$'}nombreUbicDestino})
+                RETURN caminos.type = ${'$'}tipoCaminoBuscado
             """
-            val result = session.run(query, Values.parameters(
-                    "nombreUbi1", ubicacion1.nombreDeLaUbicacion,
-                    "nombreUbi2", ubicacion2.nombreDeLaUbicacion,
-                    "tCamino", tipoCamino.name
-            ))
-            return (result != null) //revisar query da siempre verde
+            /*val query = """
+                MATCH (ubicBase {nombreUbicacion:${'$'}nombreUbicBase})-[caminosEncontrados]->(ubicDestino {nombreUbicacion:${'$'}nombreUbicDestino})
+                RETURN caminosEncontrados.type = ${'$'}tipoCaminoBuscado
+            """*/
+            val result = session.run(
+                    query, Values.parameters(
+                    "nombreUbicBase", nombreUbicacionBase,
+                    "nombreUbicDestino", nombreUbicacionDestino,
+                    "tipoCaminoBuscado", nombreTipoCamino
+                    )
+            )
+            return true
         }
     }
 
     fun conectados(nombreDeUbicacion:String): List<Ubicacion> {
         return driver.session().use { session ->
             val query = """
-                MATCH (ubi:Ubicacion {nombreUbicacion: ${'$'}nombreDeUbicacion}) 
-                MATCH (conectada)-[:camino]->(ubi)
-                RETURN conectada
+                MATCH ({nombreUbicacion:${'$'}nombreDeUbicacion})-[]->(r)
+                RETURN r
             """
             val result = session.run(query, Values.parameters("nombreDeUbicacion", nombreDeUbicacion))
             result.list { record: Record ->
@@ -101,12 +104,6 @@ class UbicacionNeo4jDao {
                 val nombreUbicacion = conectada["nombreUbicacion"].asString()
                 Ubicacion(nombreUbicacion)
             }
-        }
-    }
-
-    fun clear() {
-        return driver.session().use { session ->
-            session.run("MATCH (n) DETACH DELETE n")
         }
     }
 
@@ -176,20 +173,23 @@ class UbicacionNeo4jDao {
     }
 
     fun moverMasCorto(vectorId: String, nombreDeUbicacion: String) {
-
-
         return driver.session().use { session ->
             val query = """
-                MATCH (vec:Vector  { tipo: ${'$'}unTipo}),(ubi:Ubicacion { nombreUbicacion: ${'$'} unaUbicacion}), p = shortestPath((vec)-[*..15]-(ubi))
+                MATCH (vec:Vector  { tipo: ${'$'}unTipo}),
+                (ubi:Ubicacion { nombreUbicacion: ${'$'} unaUbicacion}),
+                p = shortestPath((vec)-[*..15]-(ubi))
                 RETURN p
-               
             """
             val result = session.run(query, Values.parameters("unTipo", vectorId, "unaUbicacion", nombreDeUbicacion))
-
+            }
         }
 
+    fun clear() {
+        return driver.session().use { session ->
+            session.run("MATCH (n) DETACH DELETE n")
+        }
     }
-    }
+}
 
 
 

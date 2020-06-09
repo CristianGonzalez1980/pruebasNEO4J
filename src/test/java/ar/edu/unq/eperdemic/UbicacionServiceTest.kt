@@ -7,6 +7,7 @@ import ar.edu.unq.eperdemic.modelo.StrategyVectores.StrategyAnimal
 import ar.edu.unq.eperdemic.modelo.StrategyVectores.StrategyHumano
 import ar.edu.unq.eperdemic.modelo.Ubicacion
 import ar.edu.unq.eperdemic.modelo.Vector
+import ar.edu.unq.eperdemic.neo4jDao.UbicacionNeo4jDao
 import ar.edu.unq.eperdemic.persistencia.dao.hibernate.*
 import ar.edu.unq.eperdemic.services.PatogenoService
 import ar.edu.unq.eperdemic.services.UbicacionService
@@ -46,7 +47,7 @@ class UbicacionServiceTest {
 
     @Before
     fun crearModelo() {
-        this.service = UbicacionServiceImp(HibernateUbicacionDAO(),
+        this.service = UbicacionServiceImp(HibernateUbicacionDAO(), UbicacionNeo4jDao(),
                 HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO()))
         this.serviceVec = VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO())
         this.servicePatog = PatogenoServiceImp(HibernatePatogenoDAO(), HibernateDataDAO())
@@ -130,8 +131,8 @@ class UbicacionServiceTest {
         Assert.assertEquals(0, totalDeInfectados)
     }
 
-    @After
+    /*@After
     fun cleanup() {
         serviceData.eliminarTodo()
-    }
+    }*/
 }

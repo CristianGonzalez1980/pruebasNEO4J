@@ -2,6 +2,7 @@ package ar.edu.unq.eperdemic
 
 import ar.edu.unq.eperdemic.dto.VectorFrontendDTO
 import ar.edu.unq.eperdemic.modelo.*
+import ar.edu.unq.eperdemic.neo4jDao.UbicacionNeo4jDao
 import ar.edu.unq.eperdemic.persistencia.dao.hibernate.*
 import ar.edu.unq.eperdemic.services.MutacionService
 import ar.edu.unq.eperdemic.services.PatogenoService
@@ -52,7 +53,7 @@ class MutacionServiceTest {
         this.serviceData = DataServiceImp(HibernateDataDAO())
         this.serviceMut = MutacionServiceImp(HibernateDataDAO(), HibernateMutacionDAO(), HibernatePatogenoDAO())
         this.serviceVec = VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO())
-        this.serviceUbi = UbicacionServiceImp(HibernateUbicacionDAO(), HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO()))
+        this.serviceUbi = UbicacionServiceImp(HibernateUbicacionDAO(), UbicacionNeo4jDao(), HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO()))
 
         //se persisten mutaciones
         mutacion1 = serviceMut.crearMutacion(Mutacion(1, mutableListOf(), Potencialidad.Letalidad))

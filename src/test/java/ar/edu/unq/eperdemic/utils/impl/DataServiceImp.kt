@@ -5,6 +5,7 @@ import ar.edu.unq.eperdemic.modelo.Especie
 import ar.edu.unq.eperdemic.modelo.Patogeno
 import ar.edu.unq.eperdemic.modelo.Ubicacion
 import ar.edu.unq.eperdemic.modelo.Vector
+import ar.edu.unq.eperdemic.neo4jDao.UbicacionNeo4jDao
 import ar.edu.unq.eperdemic.persistencia.dao.DataDAO
 import ar.edu.unq.eperdemic.persistencia.dao.hibernate.*
 import ar.edu.unq.eperdemic.services.PatogenoService
@@ -20,7 +21,7 @@ class DataServiceImp(private val dataDAO: DataDAO) : DataService {
     override fun crearSetDeDatosIniciales() {
         val patservice: PatogenoService = PatogenoServiceImp(HibernatePatogenoDAO(), HibernateDataDAO())
         val vecservice: VectorService = VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO() /*HibernateEspecieDAO()*/)
-        val ubiservice: UbicacionService = UbicacionServiceImp(HibernateUbicacionDAO(), HibernateDataDAO(), HibernateVectorDAO(), vecservice as VectorServiceImp)
+        val ubiservice: UbicacionService = UbicacionServiceImp(HibernateUbicacionDAO(), UbicacionNeo4jDao(), HibernateDataDAO(), HibernateVectorDAO(), vecservice as VectorServiceImp)
         val idpatogeno = patservice.crearPatogeno(Patogeno("Virus", 50, 50, 50))
         val especie: Especie = patservice.agregarEspecie(idpatogeno, "Vaca Loca", "Holanda", 15)
         val maracaibo: Ubicacion = ubiservice.crearUbicacion("Maracaibo")

@@ -3,6 +3,7 @@ package ar.edu.unq.eperdemic.utils
 import ar.edu.unq.eperdemic.dto.VectorFrontendDTO
 import ar.edu.unq.eperdemic.modelo.Ubicacion
 import ar.edu.unq.eperdemic.modelo.Vector
+import ar.edu.unq.eperdemic.neo4jDao.UbicacionNeo4jDao
 import ar.edu.unq.eperdemic.persistencia.dao.DataDAO
 import ar.edu.unq.eperdemic.persistencia.dao.UbicacionDAO
 import ar.edu.unq.eperdemic.persistencia.dao.hibernate.*
@@ -22,7 +23,7 @@ class UbicacionDaoTest {
     private val datadao: DataDAO = HibernateDataDAO()
     private val serviceVect: VectorService = VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO())
     private val serviceUbi: UbicacionService = UbicacionServiceImp(HibernateUbicacionDAO(),
-            HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO()))
+            UbicacionNeo4jDao(), HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO()))
     lateinit var ubicacionA: Ubicacion
     lateinit var ubicacionB: Ubicacion
     lateinit var ubicacionC: Ubicacion

@@ -2,6 +2,7 @@ package ar.edu.unq.eperdemic
 
 import ar.edu.unq.eperdemic.dto.VectorFrontendDTO
 import ar.edu.unq.eperdemic.modelo.*
+import ar.edu.unq.eperdemic.neo4jDao.UbicacionNeo4jDao
 import ar.edu.unq.eperdemic.persistencia.dao.hibernate.*
 import ar.edu.unq.eperdemic.services.EstadisticasService
 import ar.edu.unq.eperdemic.services.PatogenoService
@@ -50,12 +51,12 @@ class EstadisticaServiceTest {
 
     @Before
     fun crearModelo() {
-        this.serviceUbi = UbicacionServiceImp(HibernateUbicacionDAO(),
+        this.serviceUbi = UbicacionServiceImp(HibernateUbicacionDAO(), UbicacionNeo4jDao(),
                 HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO()))
         this.serviceVec = VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO())
         this.servicePatog = PatogenoServiceImp(HibernatePatogenoDAO(), HibernateDataDAO())
         this.serviceData = DataServiceImp(HibernateDataDAO())
-        this.serviceEst = EstadisticaServiceImp(HibernatePatogenoDAO(), HibernateUbicacionDAO(), UbicacionServiceImp(HibernateUbicacionDAO(),
+        this.serviceEst = EstadisticaServiceImp(HibernatePatogenoDAO(), HibernateUbicacionDAO(), UbicacionServiceImp(HibernateUbicacionDAO(), UbicacionNeo4jDao(),
                 HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO())))
 
         //se crea "Bernal" y se persiste con el service
