@@ -48,4 +48,5 @@ open class StrategySuperClase() {
         especie.vectores.add(vector)
         especie.sumarAdn()
     }
+
 }

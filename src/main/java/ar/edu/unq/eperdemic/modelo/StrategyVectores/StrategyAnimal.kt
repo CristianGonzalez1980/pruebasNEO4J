@@ -30,4 +30,8 @@ class StrategyAnimal : StrategySuperClase() {
             super.darContagioSimularNegativo(vectorInfectado, vectorAContagiar)
         }
     }
+
+    fun puedePasarPor(tipoDeCamino: String): Boolean {
+        return ((tipoDeCamino == "Terrestre") or (tipoDeCamino == "Maritimo") or (tipoDeCamino == "Aereo"))
+    }
 }

@@ -31,4 +31,8 @@ class StrategyInsecto : StrategySuperClase() {
             super.darContagioSimularNegativo(vectorInfectado, vectorAContagiar)
         }
     }
+
+    fun puedePasarPor(tipoDeCamino: String): Boolean {
+        return ((tipoDeCamino == "Terrestre") or (tipoDeCamino == "Aereo"))
+    }
 }

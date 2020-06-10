@@ -52,13 +52,21 @@ class UbicacionNeo4jTest {
     }
 
     @Test
-    fun conecto2UbicacionesPorCaminoAereoVerificoLaRelacion() {
+    fun conectoUbicacionesYVerificoPorTipoCamino() {
         dao.conectar(ubicacionA.nombreDeLaUbicacion!!, ubicacionB.nombreDeLaUbicacion!!, TipoDeCamino.Maritimo.name)
         dao.conectar(ubicacionB.nombreDeLaUbicacion!!, ubicacionC.nombreDeLaUbicacion!!, TipoDeCamino.Terrestre.name)
         Assert.assertTrue(dao.estanConectadasPorCamino(ubicacionA.nombreDeLaUbicacion!!, ubicacionB.nombreDeLaUbicacion!!, TipoDeCamino.Maritimo.name))
         Assert.assertFalse(dao.estanConectadasPorCamino(ubicacionA.nombreDeLaUbicacion!!, ubicacionB.nombreDeLaUbicacion!!, TipoDeCamino.Aereo.name))
         Assert.assertTrue(dao.estanConectadasPorCamino(ubicacionB.nombreDeLaUbicacion!!, ubicacionC.nombreDeLaUbicacion!!, TipoDeCamino.Terrestre.name))
         Assert.assertFalse(dao.estanConectadasPorCamino(ubicacionB.nombreDeLaUbicacion!!, ubicacionC.nombreDeLaUbicacion!!, TipoDeCamino.Maritimo.name))
+    }
+
+    @Test
+    fun conectoUbicacionesYVerificoElTipoCamino() {
+        dao.conectar(ubicacionA.nombreDeLaUbicacion!!, ubicacionB.nombreDeLaUbicacion!!, TipoDeCamino.Maritimo.name)
+        dao.conectar(ubicacionB.nombreDeLaUbicacion!!, ubicacionC.nombreDeLaUbicacion!!, TipoDeCamino.Terrestre.name)
+        Assert.assertEquals("Maritimo", dao.tipoCaminoEntre(ubicacionA.nombreDeLaUbicacion!!, ubicacionB.nombreDeLaUbicacion!!))
+        Assert.assertEquals("Terrestre", dao.tipoCaminoEntre(ubicacionB.nombreDeLaUbicacion!!, ubicacionC.nombreDeLaUbicacion!!))
     }
 
     @Test
@@ -69,11 +77,18 @@ class UbicacionNeo4jTest {
     }
 
     @Test
+    fun creoVectorRecuperoYVerificoPorId() {
+        dao.relacionarUbicacion(vectorA, ubicacionA)
+        val vectorARecuperado = dao.recuperarVector(vectorA.id!!.toInt())
+        Assert.assertEquals(vectorA.id!!.toInt(), vectorARecuperado.id!!.toInt())
+    }
+
+    @Test
     fun creoYVerificoRelacionEntreVectorYUbicacion() {
         dao.relacionarUbicacion(vectorB, ubicacionA)
-        Assert.assertTrue(dao.ubicacionesDeVector(vectorB.id!!.toInt()).contains(ubicacionA))
-        Assert.assertFalse(dao.ubicacionesDeVector(vectorB.id!!.toInt()).contains(ubicacionB))
-        Assert.assertFalse(dao.ubicacionesDeVector(vectorB.id!!.toInt()).contains(ubicacionC))
+        Assert.assertEquals(ubicacionA.nombreDeLaUbicacion, dao.ubicacionDeVector(vectorB.id!!.toInt()).nombreDeLaUbicacion)
+        Assert.assertNotEquals(ubicacionB.nombreDeLaUbicacion, dao.ubicacionDeVector(vectorB.id!!.toInt()).nombreDeLaUbicacion)
+        Assert.assertNotEquals(ubicacionC.nombreDeLaUbicacion, dao.ubicacionDeVector(vectorB.id!!.toInt()).nombreDeLaUbicacion)
     }
 
     @Test
@@ -93,7 +108,7 @@ class UbicacionNeo4jTest {
     }
 
     @After
-    fun limpiar(){
+    fun limpiar() {
         dao.clear()
     }
 }

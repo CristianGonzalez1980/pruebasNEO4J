@@ -1,4 +1,5 @@
 package ar.edu.unq.eperdemic.neo4jDao
+import ar.edu.unq.eperdemic.dto.VectorFrontendDTO
 import ar.edu.unq.eperdemic.modelo.TipoDeCamino
 import ar.edu.unq.eperdemic.modelo.Ubicacion
 import ar.edu.unq.eperdemic.modelo.Vector
@@ -13,7 +14,7 @@ class UbicacionNeo4jDao {
         val env = System.getenv()
         val url = env.getOrDefault("URL", "bolt://localhost:7687")
         val username = env.getOrDefault("USERe", "neo4j")
-        val password = env.getOrDefault("PASSWORD", "root")
+        val password = env.getOrDefault("PASSWORD", "pass1")
 
         driver = GraphDatabase.driver(url, AuthTokens.basic(username, password),
                 Config.builder().withLogging(Logging.slf4j()).build()
@@ -32,7 +33,6 @@ class UbicacionNeo4jDao {
     }
 
     fun existeUbicacion(ubicacion: Ubicacion): Boolean {
-
         driver.session().use { session ->
             //{nombreUbicacion: ${'$'}unaUbicacion}
             val query = """  MATCH (ubi:Ubicacion {nombreUbicacion: ${'$'}unaUbicacion }) RETURN ubi """
@@ -51,7 +51,7 @@ class UbicacionNeo4jDao {
             val query = """
                 MATCH (conectar:Ubicacion { nombreUbicacion:${'$'}unaUbicacion })
                 MATCH (conectado:Ubicacion { nombreUbicacion:${'$'}otraUbicacion })
-                MERGE (conectar)-[:""" + camino + "{ type:${'$'}tCamino }]->(conectado)"
+                MERGE (conectar)-[:""" + camino + "{ tipo:${'$'}tCamino }]->(conectado)"
             session.run(
                     query, Values.parameters(
                         "unaUbicacion", ubicacion1,
@@ -66,7 +66,7 @@ class UbicacionNeo4jDao {
          driver.session().use { session ->
             val query = """
                 MATCH (ubicBase { nombreUbicacion:${'$'}nombreUbicBase })-[caminos]->(ubicDestino { nombreUbicacion:${'$'}nombreUbicDestino })
-                RETURN caminos.type = ${'$'}tipoCaminoBuscado
+                RETURN caminos.tipo = ${'$'}tipoCaminoBuscado
             """
             val result = session.run(
                         query, Values.parameters(
@@ -75,8 +75,25 @@ class UbicacionNeo4jDao {
                         "tipoCaminoBuscado", nombreTipoCamino
                     )
             )
-            return (result.list() { record: Record -> record[0] })[0].asBoolean()
+            return (result.list { record: Record -> record[0] })[0].asBoolean()
          }
+    }
+
+    fun tipoCaminoEntre(nombreUbicacionBase: String, nombreUbicacionDestino: String): String{
+        driver.session().use { session ->
+            val query = """
+                MATCH (ubicBase { nombreUbicacion:${'$'}nombreUbicBase })-[relacion]->(ubicDestino { nombreUbicacion:${'$'}nombreUbicDestino })
+                RETURN relacion.tipo
+            """
+            val result = session.run(
+                    query, Values.parameters(
+                        "nombreUbicBase", nombreUbicacionBase,
+                        "nombreUbicDestino", nombreUbicacionDestino
+                    )
+            )
+            val resultado = (result.list { record: Record -> record[0]})[0].asString()
+            return resultado
+        }
     }
 
     fun conectados(nombreDeUbicacion:String): List<Ubicacion> {
@@ -110,6 +127,27 @@ class UbicacionNeo4jDao {
         return vector
     }
 
+    fun recuperarVector(vectorId: Int): Vector{
+        driver.session().use { session ->
+            val query = """
+            MATCH (vector:Vector { id: ${'$'}idBuscado }) RETURN vector.tipo
+            """
+            val result = session.run(query, Values.parameters("idBuscado", vectorId))
+            val nombreTipoVector = (result.list { record: Record -> record[0]})[0].asString()
+            var tipoACrear = VectorFrontendDTO.TipoDeVector.Persona
+            if (nombreTipoVector == "Animal"){
+                tipoACrear = VectorFrontendDTO.TipoDeVector.Animal
+            }
+            if (nombreTipoVector == "Insecto"){
+                tipoACrear = VectorFrontendDTO.TipoDeVector.Insecto
+            }
+            val ubicacion = this.ubicacionDeVector(vectorId)
+            val vectorRecuperado = Vector(ubicacion, tipoACrear)
+            vectorRecuperado.setId(vectorId.toLong())
+            return vectorRecuperado
+        }
+    }
+
     fun existeVector(vectorIdBuscado: Int): Boolean {
         driver.session().use { session ->
             //val query = """  MATCH (vec:Vector { tipo: ${'$'}unTipo  }) RETURN vec """
@@ -124,7 +162,7 @@ class UbicacionNeo4jDao {
             )
             )
             //return result.single().size() == 1
-            return ! (result.list().isEmpty())
+            return result.list().isNotEmpty()
         }
     }
 
@@ -140,7 +178,6 @@ class UbicacionNeo4jDao {
                     query, Values.parameters(
                     "unaUbicacion", ubicacion.nombreDeLaUbicacion,
                     "unTipo", vector.tipo!!.name
-
             )
             )
         }
@@ -179,20 +216,28 @@ class UbicacionNeo4jDao {
         }
     }
 
-    fun moverMasCorto(vectorId: Int, nombreDeUbicacion: String) {
+    fun moverMasCorto(vectorId: Long, nombreDeUbicacion: String) { //Revisar si es int o long el vectorId!!!
+        val vector = this.recuperarVector(vectorId.toInt())
+        val ubicActual = this.ubicacionDeVector(vectorId.toInt())
+        val ubicConectadas = this.conectados(ubicActual.nombreDeLaUbicacion!!)
+        for (ubicDestino in ubicConectadas){
+            val tipoCamino = tipoCaminoEntre(ubicActual.nombreDeLaUbicacion!!, ubicDestino.nombreDeLaUbicacion!!)
+            //if (vector.estrategiaDeContagio!!.puedePasarPor(tipoCamino))
+            // No se puede usar la funcion porque no esta en la super clase pero tampoco se puede ponerla
+        }
         return driver.session().use { session ->
             val query = """
-                MATCH (vec:Vector  { tipo:${'$'}unTipo }),
+                MATCH (vec:Vector  { id:${'$'}unId }),
                 (ubi:Ubicacion { nombreUbicacion:${'$'}unaUbicacion }),
                 p = shortestPath((vec)-[*..15]-(ubi))
                 RETURN p
             """
             val result = session.run(query, Values.parameters(
-                    "unTipo", vectorId,
+                    "unId", vectorId,
                     "unaUbicacion", nombreDeUbicacion
             ))
-            }
         }
+    }
 
     fun clear() {
         return driver.session().use { session ->

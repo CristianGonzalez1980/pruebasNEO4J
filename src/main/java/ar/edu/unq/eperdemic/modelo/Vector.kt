@@ -34,6 +34,10 @@ class Vector() {
         this.initEstrategia()
     }
 
+    fun setId(idNuevo: Long) {
+        this.id = idNuevo
+    }
+
     fun cantidadEnfermedades(): Int {
         return (this.enfermedades.size)
     }
