@@ -12,6 +12,7 @@ import ar.edu.unq.eperdemic.services.VectorService
 import ar.edu.unq.eperdemic.services.runner.TransactionRunner.runTrx
 import ar.edu.unq.eperdemic.services.impl.UbicacionServiceImp
 import ar.edu.unq.eperdemic.services.impl.VectorServiceImp
+import ar.edu.unq.eperdemic.services.runner.TransactionType
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -98,6 +99,6 @@ class UbicacionDaoTest {
 
     @After
     fun cleanup() {
-        runTrx { datadao.clear() }
+        runTrx ({ datadao.clear() }, listOf(TransactionType.HIBERNATE))
     }
 }

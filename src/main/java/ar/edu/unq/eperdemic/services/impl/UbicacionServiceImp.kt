@@ -1,3 +1,4 @@
+
 package ar.edu.unq.eperdemic.services.impl
 
 import ar.edu.unq.eperdemic.modelo.Ubicacion
@@ -8,6 +9,7 @@ import ar.edu.unq.eperdemic.persistencia.dao.UbicacionDAO
 import ar.edu.unq.eperdemic.persistencia.dao.VectorDAO
 import ar.edu.unq.eperdemic.services.UbicacionService
 import ar.edu.unq.eperdemic.services.runner.TransactionRunner.runTrx
+import ar.edu.unq.eperdemic.services.runner.TransactionType
 import kotlin.math.roundToInt
 
 class UbicacionServiceImp(
@@ -27,9 +29,10 @@ class UbicacionServiceImp(
 
         vectorRecuperado.cambiarDeUbicacion(ubicacionNueva)
         //vectorDAO.actualizar(vector) La comente porque estamos actualizando con el mismo vector que nos pasan, no tiene mucho sentido
-/*        if (ubicacionVieja != null) {
+       /* if (ubicacionVieja != null) {
             ubicacionDAO.actualizar(ubicacionVieja)
         }*/
+
         //this.actualizar(ubicacionVieja!!)
         this.actualizar(ubicacionNueva)
         if (vectorRecuperado.estaInfectado()) {
@@ -38,7 +41,7 @@ class UbicacionServiceImp(
     }
 
     override fun actualizar(ubicacion: Ubicacion) {
-        runTrx { ubicacionDAO.actualizar(ubicacion) }
+        runTrx ({ ubicacionDAO.actualizar(ubicacion) }, listOf(TransactionType.HIBERNATE))
     }
 
     override fun expandir(nombreUbicacion: String) {
@@ -49,19 +52,19 @@ class UbicacionServiceImp(
         if (vectoresInfectados.isNotEmpty()) {
             val vectorInfectado: Vector = vectoresInfectados[Math.floor(Math.random()*(vectoresInfectados.size)).toInt()]
             ubicacion.actualizarInfectadoseEnUbicacion(vectorInfectado, vectores)
-            runTrx { ubicacionDAO.actualizar(ubicacion) }
+            runTrx ({ ubicacionDAO.actualizar(ubicacion) }, listOf(TransactionType.HIBERNATE))
         }
     }
 
     override fun crearUbicacion(nombre: String): Ubicacion {
-        return runTrx {
+        return runTrx ({
             val ubicacion = Ubicacion(nombre)
          //   ubicacionNeoDao.crearUbicacion(ubicacion)
             ubicacionDAO.crear(ubicacion)
-        }
+        }, listOf(TransactionType.HIBERNATE))
     }
 
     override fun recuperar(ubicacion: String): Ubicacion {
-        return runTrx { ubicacionDAO.recuperar(ubicacion) }
+        return runTrx ({ ubicacionDAO.recuperar(ubicacion) }, listOf(TransactionType.HIBERNATE))
     }
 }

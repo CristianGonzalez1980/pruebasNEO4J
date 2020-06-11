@@ -1,3 +1,4 @@
+
 package ar.edu.unq.eperdemic.dto
 
 import ar.edu.unq.eperdemic.modelo.Ubicacion

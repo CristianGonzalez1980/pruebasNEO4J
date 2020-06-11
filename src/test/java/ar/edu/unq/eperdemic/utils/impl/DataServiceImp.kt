@@ -15,6 +15,7 @@ import ar.edu.unq.eperdemic.services.impl.PatogenoServiceImp
 import ar.edu.unq.eperdemic.services.runner.TransactionRunner.runTrx
 import ar.edu.unq.eperdemic.services.impl.UbicacionServiceImp
 import ar.edu.unq.eperdemic.services.impl.VectorServiceImp
+import ar.edu.unq.eperdemic.services.runner.TransactionType
 import ar.edu.unq.eperdemic.utils.DataService
 
 class DataServiceImp(private val dataDAO: DataDAO) : DataService {
@@ -31,7 +32,7 @@ class DataServiceImp(private val dataDAO: DataDAO) : DataService {
     }
 
     override fun eliminarTodo() {
-        runTrx { dataDAO.clear() }
+        runTrx ({ dataDAO.clear() }, listOf(TransactionType.HIBERNATE))
     }
 }
 
