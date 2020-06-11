@@ -94,14 +94,11 @@ class UbicacionNeo4jTest {
     @Test
     fun muevoUnVectorHaciaUnaUbicacion() {
         dao.conectar(ubicacionA.nombreDeLaUbicacion!!, ubicacionB.nombreDeLaUbicacion!!, TipoDeCamino.Terrestre.name)
+        dao.conectar(ubicacionB.nombreDeLaUbicacion!!, "La Plata", TipoDeCamino.Maritimo.name)
         dao.conectar(ubicacionB.nombreDeLaUbicacion!!, ubicacionC.nombreDeLaUbicacion!!,TipoDeCamino.Maritimo.name)
         dao.relacionarUbicacion(vectorB, ubicacionA)
-        var ubicActualRecuperadaDeVectorB = dao.ubicacionDeVector(vectorB.id!!.toInt()) //Antes de moverse
-        Assert.assertEquals(ubicacionA.nombreDeLaUbicacion, ubicActualRecuperadaDeVectorB.nombreDeLaUbicacion)
-        Assert.assertNotEquals(ubicacionB.nombreDeLaUbicacion, ubicActualRecuperadaDeVectorB.nombreDeLaUbicacion)
-        Assert.assertNotEquals(ubicacionC.nombreDeLaUbicacion, ubicActualRecuperadaDeVectorB.nombreDeLaUbicacion)
-        /*dao.moverMasCorto(vectorB.id!!.toInt(), ubicacionC.nombreDeLaUbicacion!!) //Falta hacerlo funcionar y utilizar las excepciones en cada caso
-        ubicActualRecuperadaDeVectorB = dao.ubicacionDeVector(vectorB.id!!.toInt()) //Despues de moverse
+        dao.moverMasCorto(vectorB.id!!, "La Plata") //Falta hacerlo funcionar y utilizar las excepciones en cada caso
+        /*ubicActualRecuperadaDeVectorB = dao.ubicacionDeVector(vectorB.id!!.toInt()) //Despues de moverse
         Assert.assertNotEquals(ubicacionA.nombreDeLaUbicacion, ubicActualRecuperadaDeVectorB.nombreDeLaUbicacion)
         Assert.assertNotEquals(ubicacionB.nombreDeLaUbicacion, ubicActualRecuperadaDeVectorB.nombreDeLaUbicacion)
         Assert.assertEquals(ubicacionC.nombreDeLaUbicacion, ubicActualRecuperadaDeVectorB.nombreDeLaUbicacion)*/
@@ -109,7 +106,7 @@ class UbicacionNeo4jTest {
 
     @After
     fun limpiar() {
-        dao.clear()
+        //dao.clear()
     }
 }
 

@@ -14,7 +14,7 @@ class UbicacionNeo4jDao {
         val env = System.getenv()
         val url = env.getOrDefault("URL", "bolt://localhost:7687")
         val username = env.getOrDefault("USERe", "neo4j")
-        val password = env.getOrDefault("PASSWORD", "pass1")
+        val password = env.getOrDefault("PASSWORD", "root")
 
         driver = GraphDatabase.driver(url, AuthTokens.basic(username, password),
                 Config.builder().withLogging(Logging.slf4j()).build()
@@ -217,27 +217,66 @@ class UbicacionNeo4jDao {
     }
 
     fun moverMasCorto(vectorId: Long, nombreDeUbicacion: String) { //Revisar si es int o long el vectorId!!!
-        val vector = this.recuperarVector(vectorId.toInt())
-        val ubicActual = this.ubicacionDeVector(vectorId.toInt())
-        val ubicConectadas = this.conectados(ubicActual.nombreDeLaUbicacion!!)
+        val idVector = vectorId.toInt()
+        val listCaminos = this.caminosDeVector(vectorId).toMutableList()
+        println(listCaminos)
+
+        //val ubicActual = this.ubicacionDeVector(vectorId.toInt())
+        /*val ubicConectadas = this.conectados(ubicActual.nombreDeLaUbicacion!!)
         for (ubicDestino in ubicConectadas){
             val tipoCamino = tipoCaminoEntre(ubicActual.nombreDeLaUbicacion!!, ubicDestino.nombreDeLaUbicacion!!)
             //if (vector.estrategiaDeContagio!!.puedePasarPor(tipoCamino))
             // No se puede usar la funcion porque no esta en la super clase pero tampoco se puede ponerla
-        }
-        return driver.session().use { session ->
+        }*/
+        //
+         driver.session().use { session ->
             val query = """
-                MATCH (vec:Vector  { id:${'$'}unId }),
-                (ubi:Ubicacion { nombreUbicacion:${'$'}unaUbicacion }),
-                p = shortestPath((vec)-[*..15]-(ubi))
+                MATCH (vec:Vector  { id: ${'$'}unId }), 
+                 (ubi:Ubicacion { nombreUbicacion:${'$'}unaUbicacion }),
+                 p = shortestPath((vec)-[*..15]-(ubi))
+                 MATCH ()-[r]->(ubi) WHERE r.tipo IN  (relacion)
                 RETURN p
-            """
-            val result = session.run(query, Values.parameters(
-                    "unId", vectorId,
-                    "unaUbicacion", nombreDeUbicacion
+
+              """
+             session.run(query, Values.parameters(
+                    "unId", idVector,
+                    "unaUbicacion", nombreDeUbicacion,
+                     "relacion",listCaminos
+
             ))
         }
     }
+
+    private fun caminosDeVector(vectorId: Long): List<String> {
+
+        val vector = this.recuperarVector(vectorId.toInt())
+        val tipoVector = vector.tipo!!.name
+        var caminos: ArrayList<String> = ArrayList()
+
+           if(tipoVector == "Persona") {
+                caminos.add("Terreste")
+                caminos.add("Maritimo")
+               return caminos
+            }
+           if(tipoVector == "Insecto") {
+                caminos.add("Terrestre")
+                caminos.add("Aereo")
+                return caminos
+
+           }
+           if(tipoVector == "Animal") {
+                caminos.add("Terrestre")
+                caminos.add("Maritimo")
+                caminos.add("Aereo")
+                return caminos
+
+
+            }
+            return caminos
+        }
+
+
+
 
     fun clear() {
         return driver.session().use { session ->
