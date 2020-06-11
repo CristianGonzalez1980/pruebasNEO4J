@@ -56,7 +56,7 @@ class UbicacionServiceImp(
     override fun crearUbicacion(nombre: String): Ubicacion {
         return runTrx {
             val ubicacion = Ubicacion(nombre)
-            ubicacionNeoDao.crearUbicacion(ubicacion)
+         //   ubicacionNeoDao.crearUbicacion(ubicacion)
             ubicacionDAO.crear(ubicacion)
         }
     }

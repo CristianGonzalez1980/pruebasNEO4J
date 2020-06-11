@@ -1,28 +1,20 @@
 package ar.edu.unq.eperdemic.neo4jDao
+
 import ar.edu.unq.eperdemic.dto.VectorFrontendDTO
 import ar.edu.unq.eperdemic.modelo.TipoDeCamino
 import ar.edu.unq.eperdemic.modelo.Ubicacion
 import ar.edu.unq.eperdemic.modelo.Vector
+import ar.edu.unq.eperdemic.services.runner.Neo4jSessionFactoryProvider
 import org.neo4j.driver.*
 
 class UbicacionNeo4jDao {
 
-    private val driver: Driver
     private var contadorIdVector: Int = -1 //Forma rapida de tener un control de ids para vectores creados
 
-    init {
-        val env = System.getenv()
-        val url = env.getOrDefault("URL", "bolt://localhost:7687")
-        val username = env.getOrDefault("USERe", "neo4j")
-        val password = env.getOrDefault("PASSWORD", "root")
-
-        driver = GraphDatabase.driver(url, AuthTokens.basic(username, password),
-                Config.builder().withLogging(Logging.slf4j()).build()
-        )
-    }
 
     fun crearUbicacion(ubicacion: Ubicacion) {
-        driver.session().use { session ->
+        var session: Session = Neo4jSessionFactoryProvider.instance.createSession()
+        session.use { session ->
             session.writeTransaction {
                 val query = "MERGE (ubi:Ubicacion {nombreUbicacion: ${'$'}unaUbicacion}) "
                 it.run(query, Values.parameters(
@@ -33,7 +25,8 @@ class UbicacionNeo4jDao {
     }
 
     fun existeUbicacion(ubicacion: Ubicacion): Boolean {
-        driver.session().use { session ->
+        var session: Session = Neo4jSessionFactoryProvider.instance.createSession()
+        session.use { session ->
             //{nombreUbicacion: ${'$'}unaUbicacion}
             val query = """  MATCH (ubi:Ubicacion {nombreUbicacion: ${'$'}unaUbicacion }) RETURN ubi """
             val result = session.run(
@@ -46,58 +39,62 @@ class UbicacionNeo4jDao {
     }
 
     fun conectar(ubicacion1: String, ubicacion2: String, tipoCamino: String) {
+        var session: Session = Neo4jSessionFactoryProvider.instance.createSession()
         val camino = tipoCamino
-        driver.session().use { session ->
+        session.use { session ->
             val query = """
                 MATCH (conectar:Ubicacion { nombreUbicacion:${'$'}unaUbicacion })
                 MATCH (conectado:Ubicacion { nombreUbicacion:${'$'}otraUbicacion })
                 MERGE (conectar)-[:""" + camino + "{ tipo:${'$'}tCamino }]->(conectado)"
             session.run(
                     query, Values.parameters(
-                        "unaUbicacion", ubicacion1,
-                        "otraUbicacion", ubicacion2,
-                        "tCamino", tipoCamino
-                    )
+                    "unaUbicacion", ubicacion1,
+                    "otraUbicacion", ubicacion2,
+                    "tCamino", tipoCamino
+            )
             )
         }
     }
 
     fun estanConectadasPorCamino(nombreUbicacionBase: String, nombreUbicacionDestino: String, nombreTipoCamino: String): Boolean {
-         driver.session().use { session ->
+        var session: Session = Neo4jSessionFactoryProvider.instance.createSession()
+        session.use { session ->
             val query = """
                 MATCH (ubicBase { nombreUbicacion:${'$'}nombreUbicBase })-[caminos]->(ubicDestino { nombreUbicacion:${'$'}nombreUbicDestino })
                 RETURN caminos.tipo = ${'$'}tipoCaminoBuscado
             """
             val result = session.run(
-                        query, Values.parameters(
-                        "nombreUbicBase", nombreUbicacionBase,
-                        "nombreUbicDestino", nombreUbicacionDestino,
-                        "tipoCaminoBuscado", nombreTipoCamino
-                    )
+                    query, Values.parameters(
+                    "nombreUbicBase", nombreUbicacionBase,
+                    "nombreUbicDestino", nombreUbicacionDestino,
+                    "tipoCaminoBuscado", nombreTipoCamino
+            )
             )
             return (result.list { record: Record -> record[0] })[0].asBoolean()
-         }
+        }
     }
 
-    fun tipoCaminoEntre(nombreUbicacionBase: String, nombreUbicacionDestino: String): String{
-        driver.session().use { session ->
+    fun tipoCaminoEntre(nombreUbicacionBase: String, nombreUbicacionDestino: String): String {
+        var session: Session = Neo4jSessionFactoryProvider.instance.createSession()
+        session.use { session ->
             val query = """
                 MATCH (ubicBase { nombreUbicacion:${'$'}nombreUbicBase })-[relacion]->(ubicDestino { nombreUbicacion:${'$'}nombreUbicDestino })
                 RETURN relacion.tipo
             """
             val result = session.run(
                     query, Values.parameters(
-                        "nombreUbicBase", nombreUbicacionBase,
-                        "nombreUbicDestino", nombreUbicacionDestino
-                    )
+                    "nombreUbicBase", nombreUbicacionBase,
+                    "nombreUbicDestino", nombreUbicacionDestino
             )
-            val resultado = (result.list { record: Record -> record[0]})[0].asString()
+            )
+            val resultado = (result.list { record: Record -> record[0] })[0].asString()
             return resultado
         }
     }
 
-    fun conectados(nombreDeUbicacion:String): List<Ubicacion> {
-        return driver.session().use { session ->
+    fun conectados(nombreDeUbicacion: String): List<Ubicacion> {
+        var session: Session = Neo4jSessionFactoryProvider.instance.createSession()
+        return session.use { session ->
             val query = """
                 MATCH ({ nombreUbicacion:${'$'}nombreDeUbicacion })-[]->(r)
                 RETURN r
@@ -112,9 +109,10 @@ class UbicacionNeo4jDao {
     }
 
     fun crearVector(vector: Vector): Vector {
+        var session: Session = Neo4jSessionFactoryProvider.instance.createSession()
         val idVector = contadorIdVector + 1
         val tipoVector = vector.tipo!!.name
-        driver.session().use { session ->
+        session.use { session ->
             session.writeTransaction {
                 val query = "MERGE (vec:Vector { id:${'$'}idDeVectorACrear, tipo:${'$'}unTipo })"
                 it.run(query, Values.parameters(
@@ -127,18 +125,19 @@ class UbicacionNeo4jDao {
         return vector
     }
 
-    fun recuperarVector(vectorId: Int): Vector{
-        driver.session().use { session ->
+    fun recuperarVector(vectorId: Int): Vector {
+        var session: Session = Neo4jSessionFactoryProvider.instance.createSession()
+        session.use { session ->
             val query = """
             MATCH (vector:Vector { id: ${'$'}idBuscado }) RETURN vector.tipo
             """
             val result = session.run(query, Values.parameters("idBuscado", vectorId))
-            val nombreTipoVector = (result.list { record: Record -> record[0]})[0].asString()
+            val nombreTipoVector = (result.list { record: Record -> record[0] })[0].asString()
             var tipoACrear = VectorFrontendDTO.TipoDeVector.Persona
-            if (nombreTipoVector == "Animal"){
+            if (nombreTipoVector == "Animal") {
                 tipoACrear = VectorFrontendDTO.TipoDeVector.Animal
             }
-            if (nombreTipoVector == "Insecto"){
+            if (nombreTipoVector == "Insecto") {
                 tipoACrear = VectorFrontendDTO.TipoDeVector.Insecto
             }
             val ubicacion = this.ubicacionDeVector(vectorId)
@@ -149,7 +148,8 @@ class UbicacionNeo4jDao {
     }
 
     fun existeVector(vectorIdBuscado: Int): Boolean {
-        driver.session().use { session ->
+        var session: Session = Neo4jSessionFactoryProvider.instance.createSession()
+        session.use { session ->
             //val query = """  MATCH (vec:Vector { tipo: ${'$'}unTipo  }) RETURN vec """
             val query = "MATCH (vector:Vector { id: ${'$'}idBuscado }) RETURN vector"
             /*val result = session.run(
@@ -167,7 +167,8 @@ class UbicacionNeo4jDao {
     }
 
     fun relacionarUbicacion(vector: Vector, ubicacion: Ubicacion) {
-        driver.session().use { session ->
+        var session: Session = Neo4jSessionFactoryProvider.instance.createSession()
+        session.use { session ->
             val query = """
                 MATCH (ubi:Ubicacion {nombreUbicacion: ${'$'}unaUbicacion}) 
                 MATCH (vec:Vector { tipo: ${'$'}unTipo})
@@ -181,11 +182,11 @@ class UbicacionNeo4jDao {
             )
             )
         }
-
     }
 
     fun ubicacionesDeVector(vectorId: Int): List<Ubicacion> {
-        return driver.session().use { session ->
+        var session: Session = Neo4jSessionFactoryProvider.instance.createSession()
+        return session.use { session ->
             val query = """
                 MATCH (vec:Vector { id: ${'$'}unId})
                 MATCH (vec)-[:ubicacionActual]->(ubi)
@@ -201,7 +202,8 @@ class UbicacionNeo4jDao {
     }
 
     fun ubicacionDeVector(vectorId: Int): Ubicacion {
-            driver.session().use { session ->
+        var session: Session = Neo4jSessionFactoryProvider.instance.createSession()
+        session.use { session ->
             val query = """
                 MATCH (vec:Vector { id: ${'$'}unId})
                 MATCH (vec)-[:ubicacionActual]->(ubi)
@@ -217,6 +219,7 @@ class UbicacionNeo4jDao {
     }
 
     fun moverMasCorto(vectorId: Long, nombreDeUbicacion: String) { //Revisar si es int o long el vectorId!!!
+        var session: Session = Neo4jSessionFactoryProvider.instance.createSession()
         val idVector = vectorId.toInt()
         val listCaminos = this.caminosDeVector(vectorId).toMutableList()
         println(listCaminos)
@@ -229,7 +232,7 @@ class UbicacionNeo4jDao {
             // No se puede usar la funcion porque no esta en la super clase pero tampoco se puede ponerla
         }*/
         //
-         driver.session().use { session ->
+        session.use { session ->
             val query = """
                 MATCH (vec:Vector  { id: ${'$'}unId }), 
                  (ubi:Ubicacion { nombreUbicacion:${'$'}unaUbicacion }),
@@ -238,11 +241,10 @@ class UbicacionNeo4jDao {
                 RETURN p
 
               """
-             session.run(query, Values.parameters(
+            session.run(query, Values.parameters(
                     "unId", idVector,
                     "unaUbicacion", nombreDeUbicacion,
-                     "relacion",listCaminos
-
+                    "relacion", listCaminos
             ))
         }
     }
@@ -253,41 +255,32 @@ class UbicacionNeo4jDao {
         val tipoVector = vector.tipo!!.name
         var caminos: ArrayList<String> = ArrayList()
 
-           if(tipoVector == "Persona") {
-                caminos.add("Terreste")
-                caminos.add("Maritimo")
-               return caminos
-            }
-           if(tipoVector == "Insecto") {
-                caminos.add("Terrestre")
-                caminos.add("Aereo")
-                return caminos
-
-           }
-           if(tipoVector == "Animal") {
-                caminos.add("Terrestre")
-                caminos.add("Maritimo")
-                caminos.add("Aereo")
-                return caminos
-
-
-            }
+        if (tipoVector == "Persona") {
+            caminos.add("Terreste")
+            caminos.add("Maritimo")
             return caminos
         }
 
+        if (tipoVector == "Insecto") {
+            caminos.add("Terrestre")
+            caminos.add("Aereo")
+            return caminos
+        }
 
+        if (tipoVector == "Animal") {
+            caminos.add("Terrestre")
+            caminos.add("Maritimo")
+            caminos.add("Aereo")
+            return caminos
+        }
 
+        return caminos
+    }
 
     fun clear() {
-        return driver.session().use { session ->
+        var session: Session = Neo4jSessionFactoryProvider.instance.createSession()
+        return session.use { session ->
             session.run("MATCH (n) DETACH DELETE n")
         }
     }
 }
-
-
-
-
-
-
-

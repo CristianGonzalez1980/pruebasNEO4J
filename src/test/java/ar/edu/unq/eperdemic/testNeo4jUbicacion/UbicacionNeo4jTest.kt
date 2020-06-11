@@ -106,7 +106,7 @@ class UbicacionNeo4jTest {
 
     @After
     fun limpiar() {
-        //dao.clear()
+        dao.clear()
     }
 }
 
