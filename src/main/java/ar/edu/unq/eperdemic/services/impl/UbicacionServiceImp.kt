@@ -80,9 +80,8 @@ class UbicacionServiceImp(
         runTrx({ ubicacionNeoDao.moverMasCorto(vectorId, nombreDeUbicacion) }, listOf(TransactionType.NEO4J))
     }
 
-    override fun capacidadDeExpansion(vectorId: Long, nombreDeUbicacion: String, movimientos: Int): Int {
-        val vectorRecuperado = vectorServiceImp.recuperarVector(vectorId.toInt())
-        return runTrx({ ubicacionNeoDao.capacidadDeExpansion(vectorRecuperado, nombreDeUbicacion, movimientos) }, listOf(TransactionType.NEO4J))
+    override fun capacidadDeExpansion(vectorId: Long,movimientos: Int): Int {
+        return runTrx({ ubicacionNeoDao.capacidadDeExpansion(vectorId, movimientos) }, listOf(TransactionType.NEO4J))
     }
 
     override fun estanConectadasPorCamino(nombreUbicacionBase: String, nombreUbicacionDestino: String, nombreTipoCamino: String): Boolean {

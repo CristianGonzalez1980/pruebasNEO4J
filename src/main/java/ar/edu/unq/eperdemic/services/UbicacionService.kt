@@ -29,7 +29,7 @@ interface UbicacionService {
     fun moverMasCorto(vectorId: Long, nombreDeUbicacion: String)
     //que funcione como el mover, pero que el vector intente llegar a la ubicación dada en la menor cantidad de movimientos. Hay que tener en cuenta que: -No todos los tipos de vectores pueden moverse por los mismos tipos de caminos. -De no poder llegar de ninguna forma a la ubicacion destino se debera lanzar la excepcion UbicionNoAlcanzable
 
-    fun capacidadDeExpansion(vectorId: Long, nombreDeUbicacion: String, movimientos: Int): Int
+    fun capacidadDeExpansion(vectorId: Long, movimientos: Int): Int
     //que dado un vector, retorna la cantidad de diferentes ubicaciones a las que podria moverse el Vector dada una cierta cantidad de movimientos.
     fun estanConectadasPorCamino(nombreUbicacionBase: String, nombreUbicacionDestino: String, nombreTipoCamino: String): Boolean
 

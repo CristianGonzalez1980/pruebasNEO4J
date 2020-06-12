@@ -86,7 +86,7 @@ class UbicacionNeo4jTest {
         val vectorA = vectorHibernateService.crearVector(Vector(ubicacionA, VectorFrontendDTO.TipoDeVector.Persona))
         serviceUbi.conectar(ubicacionA.nombreDeLaUbicacion!!, ubicacionB.nombreDeLaUbicacion!!, TipoDeCamino.Maritimo.name)
         serviceUbi.conectar(ubicacionB.nombreDeLaUbicacion!!, ubicacionC.nombreDeLaUbicacion!!, TipoDeCamino.Terrestre.name)
-        dao.mover(vectorA.id!!, ubicacionC.nombreDeLaUbicacion!!)
+        serviceUbi.mover(vectorA.id, ubicacionC.nombreDeLaUbicacion!!)
     }
 
     @Test
@@ -122,6 +122,18 @@ class UbicacionNeo4jTest {
         Assert.assertNotEquals(ubicacionB.nombreDeLaUbicacion, ubicActualRecuperadaDeVectorB.nombreDeLaUbicacion)
         Assert.assertEquals(ubicacionC.nombreDeLaUbicacion, ubicActualRecuperadaDeVectorB.nombreDeLaUbicacion)
     }*/
+
+    @Test
+    fun dadoUnVectorSeExpandeYSiLePreguntoSuCapacidadDeExpansionConDosMovimientosMeDevuelveTresUbicaciones() {
+        val vectorA = vectorHibernateService.crearVector(Vector(ubicacionA, VectorFrontendDTO.TipoDeVector.Persona))
+        serviceUbi.crearUbicacion("La Plata")
+        serviceUbi.conectar(ubicacionA.nombreDeLaUbicacion!!, ubicacionB.nombreDeLaUbicacion!!, TipoDeCamino.Terrestre.name)
+        serviceUbi.conectar(ubicacionB.nombreDeLaUbicacion!!, ubicacionC.nombreDeLaUbicacion!!, TipoDeCamino.Maritimo.name)
+
+        Assert.assertEquals(3, dao.capacidadDeExpansion(vectorA.id!!,2))
+    }
+
+
 
     @After
     fun limpiar() {
