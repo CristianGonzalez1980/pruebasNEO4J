@@ -3,7 +3,7 @@ package ar.edu.unq.eperdemic.utils
 import ar.edu.unq.eperdemic.dto.VectorFrontendDTO
 import ar.edu.unq.eperdemic.modelo.Ubicacion
 import ar.edu.unq.eperdemic.modelo.Vector
-import ar.edu.unq.eperdemic.neo4jDao.UbicacionNeo4jDao
+import ar.edu.unq.eperdemic.persistencia.dao.neo4j.UbicacionNeo4jDao
 import ar.edu.unq.eperdemic.persistencia.dao.DataDAO
 import ar.edu.unq.eperdemic.persistencia.dao.UbicacionDAO
 import ar.edu.unq.eperdemic.persistencia.dao.hibernate.*
