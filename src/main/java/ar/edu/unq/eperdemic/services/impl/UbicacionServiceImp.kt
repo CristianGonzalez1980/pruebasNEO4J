@@ -76,12 +76,27 @@ class UbicacionServiceImp(
     }
 
     override fun moverMasCorto(vectorId: Long, nombreDeUbicacion: String) {
-        val vectorRecuperado = vectorServiceImp.recuperarVector(vectorId.toInt())
-        runTrx({ ubicacionNeoDao.moverMasCorto(vectorRecuperado, nombreDeUbicacion) }, listOf(TransactionType.NEO4J))
+        runTrx({ ubicacionNeoDao.moverMasCorto(vectorId, nombreDeUbicacion) }, listOf(TransactionType.NEO4J))
     }
 
     override fun capacidadDeExpansion(vectorId: Long, nombreDeUbicacion: String, movimientos: Int): Int {
         val vectorRecuperado = vectorServiceImp.recuperarVector(vectorId.toInt())
         return runTrx({ ubicacionNeoDao.capacidadDeExpansion(vectorRecuperado, nombreDeUbicacion, movimientos) }, listOf(TransactionType.NEO4J))
+    }
+
+    override fun estanConectadasPorCamino(nombreUbicacionBase: String, nombreUbicacionDestino: String, nombreTipoCamino: String): Boolean {
+        return runTrx({ ubicacionNeoDao.estanConectadasPorCamino(nombreUbicacionBase, nombreUbicacionDestino, nombreTipoCamino) }, listOf(TransactionType.NEO4J))
+    }
+
+    override fun tipoCaminoEntre(nombreUbicacionBase: String, nombreUbicacionDestino: String): String {
+        return runTrx({ ubicacionNeoDao.tipoCaminoEntre(nombreUbicacionBase, nombreUbicacionDestino)}, listOf(TransactionType.NEO4J))
+    }
+
+    override fun ubicacionDeVector(vector: Vector): Ubicacion {
+        return runTrx({ ubicacionNeoDao.ubicacionDeVector(vector)})
+    }
+
+    override fun existeUbicacion(ubicacionCreada: Ubicacion): Boolean {
+        return runTrx({ ubicacionNeoDao.existeUbicacion(ubicacionCreada)})
     }
 }

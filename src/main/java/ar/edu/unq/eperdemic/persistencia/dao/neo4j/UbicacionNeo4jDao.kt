@@ -1,13 +1,17 @@
 package ar.edu.unq.eperdemic.persistencia.dao.neo4j
 
-import ar.edu.unq.eperdemic.dto.VectorFrontendDTO
 import ar.edu.unq.eperdemic.modelo.Ubicacion
 import ar.edu.unq.eperdemic.modelo.Vector
+import ar.edu.unq.eperdemic.persistencia.dao.hibernate.HibernateDataDAO
+import ar.edu.unq.eperdemic.persistencia.dao.hibernate.HibernatePatogenoDAO
+import ar.edu.unq.eperdemic.persistencia.dao.hibernate.HibernateVectorDAO
+import ar.edu.unq.eperdemic.services.impl.VectorServiceImp
 import ar.edu.unq.eperdemic.services.runner.Neo4jSessionFactoryProvider
 import org.neo4j.driver.*
 
 class UbicacionNeo4jDao {
 
+    private val vectorServiceImp: VectorServiceImp = VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO())
     private var contadorIdVector: Int = -1 //Forma rapida de tener un control de ids para vectores creados
 
 
@@ -95,10 +99,10 @@ class UbicacionNeo4jDao {
         val session: Session = Neo4jSessionFactoryProvider.instance.createSession()
         return session.use { session ->
             val query = """
-                MATCH ({ nombreUbicacion:${'$'}nombreDeUbicacion })-[]->(r)
+                MATCH ({ nombreUbicacion:${'$'}nombreBuscado })-[]->(r)
                 RETURN r
             """
-            val result = session.run(query, Values.parameters("nombreDeUbicacion", nombreDeUbicacion))
+            val result = session.run(query, Values.parameters("nombreBuscado", nombreDeUbicacion))
             result.list { record: Record ->
                 val conectada = record[0]
                 val nombreUbicacion = conectada["nombreUbicacion"].asString()
@@ -107,42 +111,11 @@ class UbicacionNeo4jDao {
         }
     }
 
-    fun relacionarUbicacion(vector: Vector, ubicacion: Ubicacion) {
-        val session: Session = Neo4jSessionFactoryProvider.instance.createSession()
-        session.use { session ->
-            val query = """
-                MATCH (ubi:Ubicacion {nombreUbicacion: ${'$'}unaUbicacion}) 
-                MATCH (vec:Vector { tipo: ${'$'}unTipo})
-                MERGE (vec)-[:ubicacionActual]->(ubi)
-                
-            """
-            session.run(
-                    query, Values.parameters(
-                    "unaUbicacion", ubicacion.nombreDeLaUbicacion,
-                    "unTipo", vector.tipo!!.name
-            )
-            )
-        }
-    }
-
     fun ubicacionDeVector(vector: Vector): Ubicacion {
-        val nombreBuscado = vector.location!!.nombreDeLaUbicacion
-        val session: Session = Neo4jSessionFactoryProvider.instance.createSession()
-        session.use { session ->
-            val query = """
-                MATCH (ubicacion:Ubicacion { nombreUbicacion: ${'$'}unNombre})
-                RETURN ubicacion
-            """
-            val result = session.run(query, Values.parameters("unNombre", nombreBuscado))
-            return (result.list() { record: Record ->
-                val ubi = record[0]
-                val nombreUbicacion = ubi["nombreUbicacion"].asString()
-                Ubicacion(nombreUbicacion) //No estoy seguro si tiene que instanciar o recuperar de hiberante ese nombre
-            })[0]
-        }
+        return vector.location!!
     }
 
-    fun moverMasCorto(vector: Vector, nombreDeUbicacion: String) { //Revisar si es int o long el vectorId!!!
+    fun moverMasCorto(vectorId: Long, nombreDeUbicacion: String) { //Revisar si es int o long el vectorId!!!
         val session: Session = Neo4jSessionFactoryProvider.instance.createSession()
         val idVector = vectorId.toInt()
         val listCaminos = this.caminosDeVector(vectorId).toMutableList()
@@ -164,7 +137,7 @@ class UbicacionNeo4jDao {
     }
 
     private fun caminosDeVector(vectorId: Long): List<String> {
-        val vector = this.recuperarVector(vectorId)
+        val vector = vectorServiceImp.recuperarVector(vectorId.toInt())
         val tipoVector = vector.tipo!!.name
         val caminos: ArrayList<String> = ArrayList()
         if (tipoVector == "Persona") {

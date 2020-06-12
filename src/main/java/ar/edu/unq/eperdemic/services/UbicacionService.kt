@@ -1,6 +1,7 @@
 package ar.edu.unq.eperdemic.services
 
 import ar.edu.unq.eperdemic.modelo.Ubicacion
+import ar.edu.unq.eperdemic.modelo.Vector
 
 interface UbicacionService {
 
@@ -10,6 +11,7 @@ interface UbicacionService {
     //Arrojar una excepción UbicacionNoAlcanzable si se intenta mover a un vector a través de un tipo de camino que no puede atravesar.
 
     fun expandir(nombreUbicacion: String)
+
     fun actualizar(ubicacion: Ubicacion)
 
     /* Operaciones CRUD*/
@@ -29,4 +31,11 @@ interface UbicacionService {
 
     fun capacidadDeExpansion(vectorId: Long, nombreDeUbicacion: String, movimientos: Int): Int
     //que dado un vector, retorna la cantidad de diferentes ubicaciones a las que podria moverse el Vector dada una cierta cantidad de movimientos.
+    fun estanConectadasPorCamino(nombreUbicacionBase: String, nombreUbicacionDestino: String, nombreTipoCamino: String): Boolean
+
+    fun tipoCaminoEntre(nombreUbicacionBase: String, nombreUbicacionDestino: String): String
+
+    fun ubicacionDeVector(vector: Vector): Ubicacion
+
+    fun existeUbicacion(ubicacionCreada: Ubicacion): Boolean
 }
