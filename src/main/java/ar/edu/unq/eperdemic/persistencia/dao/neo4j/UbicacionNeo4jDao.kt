@@ -1,10 +1,13 @@
 package ar.edu.unq.eperdemic.persistencia.dao.neo4j
 
+import ar.edu.unq.eperdemic.modelo.Excepciones.UbicacionMuyLejana
 import ar.edu.unq.eperdemic.modelo.Ubicacion
 import ar.edu.unq.eperdemic.modelo.Vector
 import ar.edu.unq.eperdemic.persistencia.dao.hibernate.HibernateDataDAO
 import ar.edu.unq.eperdemic.persistencia.dao.hibernate.HibernatePatogenoDAO
+import ar.edu.unq.eperdemic.persistencia.dao.hibernate.HibernateUbicacionDAO
 import ar.edu.unq.eperdemic.persistencia.dao.hibernate.HibernateVectorDAO
+import ar.edu.unq.eperdemic.services.impl.UbicacionServiceImp
 import ar.edu.unq.eperdemic.services.impl.VectorServiceImp
 import ar.edu.unq.eperdemic.services.runner.Neo4jSessionFactoryProvider
 import org.neo4j.driver.*
@@ -12,6 +15,8 @@ import org.neo4j.driver.*
 class UbicacionNeo4jDao {
 
     private val vectorServiceImp: VectorServiceImp = VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO())
+    private val ubicacionServiceImp: UbicacionServiceImp = UbicacionServiceImp(HibernateUbicacionDAO(), UbicacionNeo4jDao(),
+            HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO()))
 
 
     fun crearUbicacion(ubicacion: Ubicacion) {
@@ -114,47 +119,61 @@ class UbicacionNeo4jDao {
         return vector.location!!
     }
 
-    fun moverMasCorto(vectorId: Long, nombreDeUbicacion: String) { //Revisar si es int o long el vectorId!!!
-        val session: Session = Neo4jSessionFactoryProvider.instance.createSession()
+    fun mover(vectorId: Long, nombreDeUbicacionDestino: String) {
         val vector = vectorServiceImp.recuperarVector(vectorId.toInt())
         val ubicActual = this.ubicacionDeVector(vector)
-        val listCaminos = this.caminosDeVector(vectorId).toMutableList()
-        println(listCaminos)
-        session.use { session ->
-            val query = """
-                MATCH (ubiP:Ubicacion { nombreUbicacion:${'$'}ubiActual })-[:r ${'$'}relacion]-(ubi:Ubicacion { nombreUbicacion:${'$'}unaUbicacion })
-              """
-            session.run(query, Values.parameters(
-                    "ubiActual", ubicActual.nombreDeLaUbicacion,
-                    "unaUbicacion", nombreDeUbicacion,
-                    "relacion", listCaminos
-            ))
+        val ubicacionesLindantes = this.conectados(ubicActual.nombreDeLaUbicacion!!)
+        val nombresConectados = ubicacionesLindantes.map { it.nombreDeLaUbicacion }
+        if (nombreDeUbicacionDestino !in nombresConectados){
+            UbicacionMuyLejana(ubicActual.nombreDeLaUbicacion!!, nombreDeUbicacionDestino)
+        }
+        else {
+            ubicacionServiceImp.mover(vector.id!!.toInt(), nombreDeUbicacionDestino)
         }
     }
 
-    private fun caminosDeVector(vectorId: Long): String {
-
+    fun moverMasCorto(vectorId: Long, nombreDeUbicacion: String) {
+        val session: Session = Neo4jSessionFactoryProvider.instance.createSession()
         val vector = vectorServiceImp.recuperarVector(vectorId.toInt())
+        val tiposCaminos = this.caminosDeVector(vector)
+        val ubicActual = this.ubicacionDeVector(vector)
+        print("------------------------------------------------------------------------------------------------------------------------------" + tiposCaminos)
+        session.use { session ->
+            val query = """
+                MATCH (ubicP:Ubicacion { nombreUbicacion: ${'$'}ubicActual }),(ubicL:Ubicacion { nombreUbicacion: ${'$'}unaUbicacion }), 
+                p = shortestPath((ubicP)-[${'$'}relacion]-(ubicL)) 
+                RETURN p
+              """
+            val result = session.run(query, Values.parameters(
+                    "ubicActual", ubicActual.nombreDeLaUbicacion,
+                    "unaUbicacion", nombreDeUbicacion,
+                    "relacion", tiposCaminos
+            ))
+            result.list { record: Record ->
+                val conectada = record[0]
+                val nombreUbicacion = conectada["nombreUbicacion"].asString()
+                Ubicacion(nombreUbicacion)
+            }
+            print("------------------------------------------------------------------------------------------------------RESULTADO:" + result)
+            //si la lista es vacia lanzar
+            // ubicacionNoAlcanzable
+        }
+    }
+
+    private fun caminosDeVector(vector: Vector): String {
+
         val tipoVector = vector.tipo!!.name
-        var caminos: ArrayList<String> = ArrayList()
 
         if (tipoVector == "Persona") {
-            /*caminos.add("Terreste")
-            caminos.add("Maritimo")*/
-            return "Terreste|Maritimo"
+            return ":Terreste|:Maritimo*"
         }
 
         if (tipoVector == "Insecto") {
-            /*caminos.add("Terrestre")
-            caminos.add("Aereo")*/
-            return "Terrestre|Aereo"
+            return ":Terrestre|:Aereo*"
         }
 
         if (tipoVector == "Animal") {
-            /*caminos.add("Terrestre")
-            caminos.add("Maritimo")
-            caminos.add("Aereo")*/
-            return "Terrestre|Maritimo|Aereo"
+            return ":Terrestre|:Maritimo|:Aereo*"
         }
 
         return ""

@@ -18,7 +18,7 @@ import ar.edu.unq.eperdemic.services.impl.VectorServiceImp
 import ar.edu.unq.eperdemic.services.runner.TransactionType
 import ar.edu.unq.eperdemic.utils.DataService
 
-class DataServiceImp(private val dataDAO: DataDAO) : DataService {
+class DataServiceImp(private val dataDAO: DataDAO, private val neo4jDao: UbicacionNeo4jDao = UbicacionNeo4jDao()) : DataService {
     override fun crearSetDeDatosIniciales() {
         val patservice: PatogenoService = PatogenoServiceImp(HibernatePatogenoDAO(), HibernateDataDAO())
         val vecservice: VectorService = VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO() /*HibernateEspecieDAO()*/)
@@ -33,6 +33,7 @@ class DataServiceImp(private val dataDAO: DataDAO) : DataService {
 
     override fun eliminarTodo() {
         runTrx ({ dataDAO.clear() }, listOf(TransactionType.HIBERNATE))
+        runTrx ({ neo4jDao.clear() }, listOf(TransactionType.NEO4J))
     }
 }
 

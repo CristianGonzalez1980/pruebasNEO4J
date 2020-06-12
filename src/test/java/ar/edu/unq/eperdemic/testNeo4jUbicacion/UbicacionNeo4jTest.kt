@@ -2,6 +2,7 @@ package ar.edu.unq.eperdemic.testNeo4jUbicacion
 
 
 import ar.edu.unq.eperdemic.dto.VectorFrontendDTO
+import ar.edu.unq.eperdemic.modelo.Excepciones.UbicacionMuyLejana
 import ar.edu.unq.eperdemic.modelo.TipoDeCamino
 import ar.edu.unq.eperdemic.modelo.Ubicacion
 import ar.edu.unq.eperdemic.modelo.Vector
@@ -17,6 +18,7 @@ import ar.edu.unq.eperdemic.services.runner.TransactionRunner.runTrx
 import ar.edu.unq.eperdemic.services.runner.TransactionType
 import ar.edu.unq.eperdemic.utils.DataService
 import ar.edu.unq.eperdemic.utils.Impl.DataServiceImp
+import org.hibernate.exception.ConstraintViolationException
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -27,7 +29,6 @@ class UbicacionNeo4jTest {
     lateinit var serviceUbi: UbicacionServiceImp
     lateinit var serviceData: DataServiceImp
     lateinit var vectorHibernateService: VectorServiceImp
-    lateinit var dao: UbicacionNeo4jDao
     lateinit var ubicacionA: Ubicacion
     lateinit var ubicacionB: Ubicacion
     lateinit var ubicacionC: Ubicacion
@@ -36,9 +37,8 @@ class UbicacionNeo4jTest {
     fun setUp() {
         serviceUbi = UbicacionServiceImp(HibernateUbicacionDAO(),
                 UbicacionNeo4jDao(), HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO()))
-        serviceData = DataServiceImp(HibernateDataDAO())
+        serviceData = DataServiceImp(HibernateDataDAO(), UbicacionNeo4jDao())
         vectorHibernateService = VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO())
-        dao = UbicacionNeo4jDao()
         ubicacionA = serviceUbi.crearUbicacion("Quilmes")
         ubicacionB = serviceUbi.crearUbicacion("Colonia")
         ubicacionC = serviceUbi.crearUbicacion("Maldonado")
@@ -79,24 +79,51 @@ class UbicacionNeo4jTest {
         Assert.assertEquals("Terrestre", serviceUbi.tipoCaminoEntre(ubicacionB.nombreDeLaUbicacion!!, ubicacionC.nombreDeLaUbicacion!!))
     }
 
+    @Test(expected = UbicacionMuyLejana::class)
+    fun prueboMoverVectorYLanzaExcepcionUbicacionMuyLejana() {
+        val vectorA = vectorHibernateService.crearVector(Vector(ubicacionA, VectorFrontendDTO.TipoDeVector.Persona))
+        serviceUbi.conectar(ubicacionA.nombreDeLaUbicacion!!, ubicacionB.nombreDeLaUbicacion!!, TipoDeCamino.Maritimo.name)
+        serviceUbi.conectar(ubicacionB.nombreDeLaUbicacion!!, ubicacionC.nombreDeLaUbicacion!!, TipoDeCamino.Terrestre.name)
+        serviceUbi.mover(vectorA.id!!.toInt(), ubicacionC.nombreDeLaUbicacion!!)
+    }
+
     @Test
     fun muevoUnVectorHaciaUnaUbicacion() {
         val vectorA = vectorHibernateService.crearVector(Vector(ubicacionA, VectorFrontendDTO.TipoDeVector.Persona))
         serviceUbi.crearUbicacion("La Plata")
+        serviceUbi.crearUbicacion("Bernal")
         serviceUbi.conectar(ubicacionA.nombreDeLaUbicacion!!, ubicacionB.nombreDeLaUbicacion!!, TipoDeCamino.Terrestre.name)
-        serviceUbi.conectar(ubicacionB.nombreDeLaUbicacion!!, "La Plata", TipoDeCamino.Maritimo.name)
         serviceUbi.conectar(ubicacionB.nombreDeLaUbicacion!!, ubicacionC.nombreDeLaUbicacion!!, TipoDeCamino.Maritimo.name)
-        //serviceUbi.moverMasCorto(vectorA.id!!, "La Plata")//Falta hacerlo funcionar y utilizar las excepciones en cada caso
+        serviceUbi.conectar(ubicacionC.nombreDeLaUbicacion!!, "La Plata", TipoDeCamino.Maritimo.name)
+        serviceUbi.conectar(ubicacionA.nombreDeLaUbicacion!!, "Bernal", TipoDeCamino.Terrestre.name)
+        serviceUbi.conectar("Bernal", "La Plata", TipoDeCamino.Terrestre.name)
+        serviceUbi.moverMasCorto(vectorA.id!!, "La Plata")
         val ubicActualRecuperadaDeVectorB = serviceUbi.ubicacionDeVector(vectorA) //Despues de moverse
-        //Assert.assertNotEquals(ubicacionA.nombreDeLaUbicacion, ubicActualRecuperadaDeVectorB.nombreDeLaUbicacion)
-        //Assert.assertNotEquals(ubicacionB.nombreDeLaUbicacion, ubicActualRecuperadaDeVectorB.nombreDeLaUbicacion)
-        //Assert.assertEquals(ubicacionC.nombreDeLaUbicacion, ubicActualRecuperadaDeVectorB.nombreDeLaUbicacion)
+        Assert.assertNotEquals(ubicacionA.nombreDeLaUbicacion, ubicActualRecuperadaDeVectorB.nombreDeLaUbicacion)
+        Assert.assertNotEquals(ubicacionB.nombreDeLaUbicacion, ubicActualRecuperadaDeVectorB.nombreDeLaUbicacion)
+        Assert.assertEquals(ubicacionC.nombreDeLaUbicacion, ubicActualRecuperadaDeVectorB.nombreDeLaUbicacion)
     }
+
+    /*@Test
+    fun muevoUnVectorHaciaUnaUbicacionIncalcanzable() { CAMBIAR PARA QUE DE INALCANZABLE
+        val vectorA = vectorHibernateService.crearVector(Vector(ubicacionA, VectorFrontendDTO.TipoDeVector.Persona))
+        serviceUbi.crearUbicacion("La Plata")
+        serviceUbi.crearUbicacion("Bernal")
+        serviceUbi.conectar(ubicacionA.nombreDeLaUbicacion!!, ubicacionB.nombreDeLaUbicacion!!, TipoDeCamino.Terrestre.name)
+        serviceUbi.conectar(ubicacionB.nombreDeLaUbicacion!!, ubicacionC.nombreDeLaUbicacion!!, TipoDeCamino.Maritimo.name)
+        serviceUbi.conectar(ubicacionC.nombreDeLaUbicacion!!, "La Plata", TipoDeCamino.Maritimo.name)
+        serviceUbi.conectar(ubicacionA.nombreDeLaUbicacion!!, "Bernal", TipoDeCamino.Terrestre.name)
+        serviceUbi.conectar("Bernal", "La Plata", TipoDeCamino.Terrestre.name)
+        serviceUbi.moverMasCorto(vectorA.id!!, "La Plata")
+        val ubicActualRecuperadaDeVectorB = serviceUbi.ubicacionDeVector(vectorA) //Despues de moverse
+        Assert.assertNotEquals(ubicacionA.nombreDeLaUbicacion, ubicActualRecuperadaDeVectorB.nombreDeLaUbicacion)
+        Assert.assertNotEquals(ubicacionB.nombreDeLaUbicacion, ubicActualRecuperadaDeVectorB.nombreDeLaUbicacion)
+        Assert.assertEquals(ubicacionC.nombreDeLaUbicacion, ubicActualRecuperadaDeVectorB.nombreDeLaUbicacion)
+    }*/
 
     @After
     fun limpiar() {
         serviceData.eliminarTodo()
-        dao.clear()
     }
 }
 
