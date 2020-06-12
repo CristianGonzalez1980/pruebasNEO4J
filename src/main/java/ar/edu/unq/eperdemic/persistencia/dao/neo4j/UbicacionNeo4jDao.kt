@@ -12,7 +12,6 @@ import org.neo4j.driver.*
 class UbicacionNeo4jDao {
 
     private val vectorServiceImp: VectorServiceImp = VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO())
-    private var contadorIdVector: Int = -1 //Forma rapida de tener un control de ids para vectores creados
 
 
     fun crearUbicacion(ubicacion: Ubicacion) {
