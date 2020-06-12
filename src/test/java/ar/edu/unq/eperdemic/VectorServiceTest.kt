@@ -4,7 +4,7 @@ import ar.edu.unq.eperdemic.dto.VectorFrontendDTO
 import ar.edu.unq.eperdemic.modelo.*
 import ar.edu.unq.eperdemic.modelo.StrategyVectores.StrategyHumano
 import ar.edu.unq.eperdemic.modelo.StrategyVectores.StrategyAnimal
-import ar.edu.unq.eperdemic.neo4jDao.UbicacionNeo4jDao
+import ar.edu.unq.eperdemic.persistencia.dao.neo4j.UbicacionNeo4jDao
 import ar.edu.unq.eperdemic.persistencia.dao.hibernate.*
 import ar.edu.unq.eperdemic.services.impl.PatogenoServiceImp
 import ar.edu.unq.eperdemic.services.impl.UbicacionServiceImp

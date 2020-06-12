@@ -2,7 +2,7 @@ package ar.edu.unq.eperdemic
 
 import ar.edu.unq.eperdemic.dto.VectorFrontendDTO
 import ar.edu.unq.eperdemic.modelo.*
-import ar.edu.unq.eperdemic.neo4jDao.UbicacionNeo4jDao
+import ar.edu.unq.eperdemic.persistencia.dao.neo4j.UbicacionNeo4jDao
 import ar.edu.unq.eperdemic.persistencia.dao.hibernate.*
 import ar.edu.unq.eperdemic.services.MutacionService
 import ar.edu.unq.eperdemic.services.PatogenoService
@@ -18,7 +18,6 @@ import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import javax.persistence.PersistenceException
 import kotlin.properties.Delegates
 
 class MutacionServiceTest {
