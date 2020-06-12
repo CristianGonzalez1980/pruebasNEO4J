@@ -37,6 +37,7 @@ class UbicacionServiceImp(
         if (vectorRecuperado.estaInfectado()) {
             vectorServiceImp.contagiar(vectorRecuperado, ubicacionNueva.vectores.toList())
         }
+        ubicacionNeoDao.mover(vectorRecuperado, nombreUbicacion)
     }
 
     override fun actualizar(ubicacion: Ubicacion) {

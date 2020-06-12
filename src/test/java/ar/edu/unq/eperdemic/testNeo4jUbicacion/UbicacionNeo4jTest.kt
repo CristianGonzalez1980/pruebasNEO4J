@@ -27,6 +27,7 @@ import org.junit.Test
 class UbicacionNeo4jTest {
 
     lateinit var serviceUbi: UbicacionServiceImp
+    lateinit var dao: UbicacionNeo4jDao
     lateinit var serviceData: DataServiceImp
     lateinit var vectorHibernateService: VectorServiceImp
     lateinit var ubicacionA: Ubicacion
@@ -37,6 +38,7 @@ class UbicacionNeo4jTest {
     fun setUp() {
         serviceUbi = UbicacionServiceImp(HibernateUbicacionDAO(),
                 UbicacionNeo4jDao(), HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO()))
+        dao = UbicacionNeo4jDao()
         serviceData = DataServiceImp(HibernateDataDAO(), UbicacionNeo4jDao())
         vectorHibernateService = VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO())
         ubicacionA = serviceUbi.crearUbicacion("Quilmes")
@@ -84,7 +86,7 @@ class UbicacionNeo4jTest {
         val vectorA = vectorHibernateService.crearVector(Vector(ubicacionA, VectorFrontendDTO.TipoDeVector.Persona))
         serviceUbi.conectar(ubicacionA.nombreDeLaUbicacion!!, ubicacionB.nombreDeLaUbicacion!!, TipoDeCamino.Maritimo.name)
         serviceUbi.conectar(ubicacionB.nombreDeLaUbicacion!!, ubicacionC.nombreDeLaUbicacion!!, TipoDeCamino.Terrestre.name)
-        serviceUbi.mover(vectorA.id!!.toInt(), ubicacionC.nombreDeLaUbicacion!!)
+        dao.mover(vectorA.id!!, ubicacionC.nombreDeLaUbicacion!!)
     }
 
     @Test

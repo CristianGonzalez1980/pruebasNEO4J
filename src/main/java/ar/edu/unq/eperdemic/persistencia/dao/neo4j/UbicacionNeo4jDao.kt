@@ -1,6 +1,7 @@
 package ar.edu.unq.eperdemic.persistencia.dao.neo4j
 
 import ar.edu.unq.eperdemic.modelo.Excepciones.UbicacionMuyLejana
+import ar.edu.unq.eperdemic.modelo.Excepciones.UbicacionNoAlcanzable
 import ar.edu.unq.eperdemic.modelo.Ubicacion
 import ar.edu.unq.eperdemic.modelo.Vector
 import ar.edu.unq.eperdemic.persistencia.dao.hibernate.HibernateDataDAO
@@ -15,8 +16,8 @@ import org.neo4j.driver.*
 class UbicacionNeo4jDao {
 
     private val vectorServiceImp: VectorServiceImp = VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO())
-    private val ubicacionServiceImp: UbicacionServiceImp = UbicacionServiceImp(HibernateUbicacionDAO(), UbicacionNeo4jDao(),
-            HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO()))
+    //private val ubicacionServiceImp: UbicacionServiceImp = UbicacionServiceImp(HibernateUbicacionDAO(), UbicacionNeo4jDao(),
+    //        HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO()))
 
 
     fun crearUbicacion(ubicacion: Ubicacion) {
@@ -119,8 +120,7 @@ class UbicacionNeo4jDao {
         return vector.location!!
     }
 
-    fun mover(vectorId: Long, nombreDeUbicacionDestino: String) {
-        val vector = vectorServiceImp.recuperarVector(vectorId.toInt())
+    fun mover(vector: Vector, nombreDeUbicacionDestino: String) {
         val ubicActual = this.ubicacionDeVector(vector)
         val ubicacionesLindantes = this.conectados(ubicActual.nombreDeLaUbicacion!!)
         val nombresConectados = ubicacionesLindantes.map { it.nombreDeLaUbicacion }
@@ -128,7 +128,7 @@ class UbicacionNeo4jDao {
             UbicacionMuyLejana(ubicActual.nombreDeLaUbicacion!!, nombreDeUbicacionDestino)
         }
         else {
-            ubicacionServiceImp.mover(vector.id!!.toInt(), nombreDeUbicacionDestino)
+            //ubicacionServiceImp.mover(vector.id!!.toInt(), nombreDeUbicacionDestino)
         }
     }
 
@@ -149,12 +149,18 @@ class UbicacionNeo4jDao {
                     "unaUbicacion", nombreDeUbicacion,
                     "relacion", tiposCaminos
             ))
-            result.list { record: Record ->
+            val resultado = result.list { record: Record ->
                 val conectada = record[0]
                 val nombreUbicacion = conectada["nombreUbicacion"].asString()
                 Ubicacion(nombreUbicacion)
             }
             print("------------------------------------------------------------------------------------------------------RESULTADO:" + result)
+            if (resultado.isEmpty()) {
+                //UbicacionNoAlcanzable(vector.tipo!!.name, nombreDeUbicacion, ) //Falta agregar el camino por el que no pudo pasar, o eliminar ese parametro de la excepcion
+            }
+            for (ubicCamino in result) {
+                //    this.mover(vector, ubicCamino) }
+            }
             //si la lista es vacia lanzar
             // ubicacionNoAlcanzable
         }
