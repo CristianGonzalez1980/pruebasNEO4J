@@ -39,7 +39,7 @@ class UbicacionNeo4jTest {
     @Test
     fun creoUnaUbicacionYverificoQueSeCreoElGrafo() {
         val ubicacion = Ubicacion("La Plata")
-        dao.crearUbicacion(ubicacion)
+        runTrx({ dao.crearUbicacion(ubicacion) }, listOf(TransactionType.NEO4J))
         Assert.assertTrue(runTrx({ dao.existeUbicacion(ubicacion) }, listOf(TransactionType.NEO4J)))
     }
 
