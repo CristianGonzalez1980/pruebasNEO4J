@@ -33,6 +33,9 @@ jobs:
           PASSWORD: ${{ secrets.PASSWORD }}
           DATA_BASE: ${{ secrets.DATA_BASE }}
           HOST: ${{ secrets.HOST }}
+          NEO4J_URL: ${{ secrets.NEO4J_URL }}
+          NEO4J_USER: ${{ secrets.NEO4J_USER }}
+          NEO4J_PASSWORD: ${{ secrets.NEO4J_PASSWORD }}
       - name: Success notification
         if: success()
         env:
