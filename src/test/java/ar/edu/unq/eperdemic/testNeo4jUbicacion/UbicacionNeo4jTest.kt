@@ -84,7 +84,7 @@ class UbicacionNeo4jTest {
             dao.tipoCaminoEntre(ubicacionB.nombreDeLaUbicacion!!, ubicacionC.nombreDeLaUbicacion!!)
         }, listOf(TransactionType.NEO4J)))
     }
-
+/*
     @Test
     fun muevoUnVectorHaciaUnaUbicacion() {
         vectorA = vectorHibernateService.crearVector(Vector(ubicacionA, VectorFrontendDTO.TipoDeVector.Persona))
@@ -111,7 +111,7 @@ class UbicacionNeo4jTest {
         Assert.assertNotEquals(ubicacionB.nombreDeLaUbicacion, ubicActualRecuperadaDeVectorB.nombreDeLaUbicacion)
         Assert.assertEquals(ubicacionC.nombreDeLaUbicacion, ubicActualRecuperadaDeVectorB.nombreDeLaUbicacion)*/
     }
-
+*/
     @After
     fun limpiar() {
         runTrx({dao.clear()}, listOf(TransactionType.NEO4J))

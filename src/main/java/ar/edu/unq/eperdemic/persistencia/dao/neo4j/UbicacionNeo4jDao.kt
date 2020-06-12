@@ -142,7 +142,7 @@ class UbicacionNeo4jDao {
         }
     }
 
-    fun moverMasCorto(vectorId: Long, nombreDeUbicacion: String) { //Revisar si es int o long el vectorId!!!
+    fun moverMasCorto(vector: Vector, nombreDeUbicacion: String) { //Revisar si es int o long el vectorId!!!
         val session: Session = Neo4jSessionFactoryProvider.instance.createSession()
         val idVector = vectorId.toInt()
         val listCaminos = this.caminosDeVector(vectorId).toMutableList()
@@ -181,6 +181,10 @@ class UbicacionNeo4jDao {
             }
         }
         return caminos
+    }
+
+    fun capacidadDeExpansion(vector: Vector, nombreDeUbicacion: String, movimientos: Int): Int {
+        return 0
     }
 
     fun clear() {

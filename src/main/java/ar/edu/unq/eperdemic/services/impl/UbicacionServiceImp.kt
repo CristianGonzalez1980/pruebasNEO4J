@@ -68,32 +68,20 @@ class UbicacionServiceImp(
     }
 
     override fun conectar(ubicacion1: String, ubicacion2: String, tipoCamino: String) {
-
-        runTrx({ ubicacionNeoDao.conectar(ubicacion1, ubicacion2, tipoCamino) })
+        runTrx({ ubicacionNeoDao.conectar(ubicacion1, ubicacion2, tipoCamino) }, listOf(TransactionType.NEO4J))
     }
 
     override fun conectados(nombreDeUbicacion: String): List<Ubicacion> {
-        TODO("Not yet implemented")
+        return runTrx({ ubicacionNeoDao.conectados(nombreDeUbicacion) }, listOf(TransactionType.NEO4J))
     }
 
     override fun moverMasCorto(vectorId: Long, nombreDeUbicacion: String) {
-        TODO("Not yet implemented")
+        val vectorRecuperado = vectorServiceImp.recuperarVector(vectorId.toInt())
+        runTrx({ ubicacionNeoDao.moverMasCorto(vectorRecuperado, nombreDeUbicacion) }, listOf(TransactionType.NEO4J))
     }
-
-/*
-    fun evaluarNombre(nombreTipoCamino: String): TipoDeCamino {
-        val caminos: List<TipoDeCamino> = listOf(TipoDeCamino.Maritimo, TipoDeCamino.Terrestre, TipoDeCamino.Aereo)
-        var caminoSolicitado: TipoDeCamino? = null
-        for (camino in caminos) {
-            if (camino.name == nombreTipoCamino) {
-                caminoSolicitado = camino
-            }
-        }
-        return caminoSolicitado!!
-    }
-*/
 
     override fun capacidadDeExpansion(vectorId: Long, nombreDeUbicacion: String, movimientos: Int): Int {
-        TODO("Not yet implemented")
+        val vectorRecuperado = vectorServiceImp.recuperarVector(vectorId.toInt())
+        return runTrx({ ubicacionNeoDao.capacidadDeExpansion(vectorRecuperado, nombreDeUbicacion, movimientos) }, listOf(TransactionType.NEO4J))
     }
 }
