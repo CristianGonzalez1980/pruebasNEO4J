@@ -116,43 +116,48 @@ class UbicacionNeo4jDao {
 
     fun moverMasCorto(vectorId: Long, nombreDeUbicacion: String) { //Revisar si es int o long el vectorId!!!
         val session: Session = Neo4jSessionFactoryProvider.instance.createSession()
-        val idVector = vectorId.toInt()
+        val vector = vectorServiceImp.recuperarVector(vectorId.toInt())
+        val ubicActual = this.ubicacionDeVector(vector)
         val listCaminos = this.caminosDeVector(vectorId).toMutableList()
         println(listCaminos)
         session.use { session ->
             val query = """
-                MATCH (vec:Vector  { id: ${'$'}unId }), 
-                 (ubi:Ubicacion { nombreUbicacion:${'$'}unaUbicacion }),
-                 p = shortestPath((vec)-[*..15]-(ubi))
-                 MATCH ()-[r]->(ubi) WHERE r.tipo IN (${'$'}relacion)
-                RETURN p
+                MATCH (ubiP:Ubicacion { nombreUbicacion:${'$'}ubiActual })-[:r ${'$'}relacion]-(ubi:Ubicacion { nombreUbicacion:${'$'}unaUbicacion })
               """
             session.run(query, Values.parameters(
-                    "unId", idVector,
+                    "ubiActual", ubicActual.nombreDeLaUbicacion,
                     "unaUbicacion", nombreDeUbicacion,
                     "relacion", listCaminos
             ))
         }
     }
 
-    private fun caminosDeVector(vectorId: Long): List<String> {
+    private fun caminosDeVector(vectorId: Long): String {
+
         val vector = vectorServiceImp.recuperarVector(vectorId.toInt())
         val tipoVector = vector.tipo!!.name
-        val caminos: ArrayList<String> = ArrayList()
+        var caminos: ArrayList<String> = ArrayList()
+
         if (tipoVector == "Persona") {
-            caminos.add("Terreste")
-            caminos.add("Maritimo")
-        } else {
-            if (tipoVector == "Insecto") {
-                caminos.add("Terrestre")
-                caminos.add("Aereo")
-            } else {
-                caminos.add("Terrestre")
-                caminos.add("Maritimo")
-                caminos.add("Aereo")
-            }
+            /*caminos.add("Terreste")
+            caminos.add("Maritimo")*/
+            return "Terreste|Maritimo"
         }
-        return caminos
+
+        if (tipoVector == "Insecto") {
+            /*caminos.add("Terrestre")
+            caminos.add("Aereo")*/
+            return "Terrestre|Aereo"
+        }
+
+        if (tipoVector == "Animal") {
+            /*caminos.add("Terrestre")
+            caminos.add("Maritimo")
+            caminos.add("Aereo")*/
+            return "Terrestre|Maritimo|Aereo"
+        }
+
+        return ""
     }
 
     fun capacidadDeExpansion(vector: Vector, nombreDeUbicacion: String, movimientos: Int): Int {
