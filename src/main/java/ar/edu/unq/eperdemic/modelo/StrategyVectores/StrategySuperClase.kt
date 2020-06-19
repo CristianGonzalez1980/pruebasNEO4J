@@ -49,4 +49,11 @@ open class StrategySuperClase() {
         especie.sumarAdn()
     }
 
+    open fun caminosDeVector(): String {
+        return ""
+    }
+
+    open fun puedeAtravesar(): List<String> {
+        return listOf("")
+    }
 }

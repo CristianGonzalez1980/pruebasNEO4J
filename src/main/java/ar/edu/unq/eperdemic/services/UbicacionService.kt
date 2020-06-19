@@ -35,7 +35,7 @@ interface UbicacionService {
 
     fun tipoCaminoEntre(nombreUbicacionBase: String, nombreUbicacionDestino: String): String
 
-    fun ubicacionDeVector(vector: Vector): Ubicacion
+    fun ubicacionDeVector(vectorId: Long): Ubicacion
 
     fun existeUbicacion(ubicacionCreada: Ubicacion): Boolean
 }

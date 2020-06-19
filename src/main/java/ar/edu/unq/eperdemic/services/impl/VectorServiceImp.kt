@@ -27,7 +27,7 @@ class VectorServiceImp(
         for (vectorAInfect: Vector in vectores) {
             vecAInfect = vectorAInfect
             if (vecAInfect != vectorInfectado) {
-                vectorInfectado.estrategiaDeContagio!!.darContagio(vectorInfectado, vecAInfect)
+                vectorInfectado.estrategiaDeTipo!!.darContagio(vectorInfectado, vecAInfect)
                 runTrx({ vectorDAO.actualizar(vecAInfect) }, listOf(TransactionType.HIBERNATE))
             }
         }
@@ -38,7 +38,7 @@ class VectorServiceImp(
         for (vectorAInfect: Vector in vectores) {
             vecAInfect = vectorAInfect
             if (vecAInfect != vectorInfectado) {
-                vectorInfectado.estrategiaDeContagio!!.darContagioSimularPositivo(vectorInfectado, vecAInfect)
+                vectorInfectado.estrategiaDeTipo!!.darContagioSimularPositivo(vectorInfectado, vecAInfect)
                 runTrx({ vectorDAO.actualizar(vecAInfect) }, listOf(TransactionType.HIBERNATE))
             }
         }
@@ -49,7 +49,7 @@ class VectorServiceImp(
         for (vectorAInfect: Vector in vectores) {
             vecAInfect = vectorAInfect
             if (vecAInfect != vectorInfectado) {
-                vectorInfectado.estrategiaDeContagio!!.darContagioSimularNegativo(vectorInfectado, vecAInfect)
+                vectorInfectado.estrategiaDeTipo!!.darContagioSimularNegativo(vectorInfectado, vecAInfect)
                 runTrx({ vectorDAO.actualizar(vecAInfect) }, listOf(TransactionType.HIBERNATE))
             }
         }
@@ -57,7 +57,7 @@ class VectorServiceImp(
 
     override fun infectar(vector: Vector, especie: Especie) {
         runTrx({
-            vector.estrategiaDeContagio!!.infectar(vector, especie)
+            vector.estrategiaDeTipo!!.infectar(vector, especie)
             vectorDAO.actualizar(vector)
         }, listOf(TransactionType.HIBERNATE))
     }
@@ -81,4 +81,6 @@ class VectorServiceImp(
     override fun borrarVector(vectorId: Int) {
         runTrx({ vectorDAO.eliminar(vectorId) }, listOf(TransactionType.HIBERNATE))
     }
+
+
 }

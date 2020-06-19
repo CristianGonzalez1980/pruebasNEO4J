@@ -1,5 +1,7 @@
 package ar.edu.unq.eperdemic.services.impl
 
+import ar.edu.unq.eperdemic.modelo.Excepciones.UbicacionMuyLejana
+import ar.edu.unq.eperdemic.modelo.Excepciones.UbicacionNoAlcanzable
 import ar.edu.unq.eperdemic.modelo.TipoDeCamino
 import ar.edu.unq.eperdemic.modelo.Ubicacion
 import ar.edu.unq.eperdemic.modelo.Vector
@@ -8,8 +10,12 @@ import ar.edu.unq.eperdemic.persistencia.dao.DataDAO
 import ar.edu.unq.eperdemic.persistencia.dao.UbicacionDAO
 import ar.edu.unq.eperdemic.persistencia.dao.VectorDAO
 import ar.edu.unq.eperdemic.services.UbicacionService
+import ar.edu.unq.eperdemic.services.runner.Neo4jSessionFactoryProvider
 import ar.edu.unq.eperdemic.services.runner.TransactionRunner.runTrx
 import ar.edu.unq.eperdemic.services.runner.TransactionType
+import org.neo4j.driver.Record
+import org.neo4j.driver.Session
+import org.neo4j.driver.Values
 
 class UbicacionServiceImp(
         private val ubicacionDAO: UbicacionDAO,
@@ -23,21 +29,34 @@ class UbicacionServiceImp(
     override fun mover(vectorId: Int, nombreUbicacion: String) {
 
         val vectorRecuperado = vectorServiceImp.recuperarVector(vectorId)
-        val ubicacionVieja = vectorRecuperado.location
-        val ubicacionNueva = this.recuperar(nombreUbicacion)
+        val ubicacionActual = vectorRecuperado.location
+        val ubicacionDestino = this.recuperar(nombreUbicacion)
+        val ubicacionesLindantes = this.conectados(ubicacionActual!!.nombreDeLaUbicacion!!)
+        val nombresConectados = ubicacionesLindantes.map { it.nombreDeLaUbicacion }
 
-        vectorRecuperado.cambiarDeUbicacion(ubicacionNueva)
+        if (ubicacionDestino.nombreDeLaUbicacion !in nombresConectados) {
+            throw UbicacionMuyLejana(ubicacionActual!!.nombreDeLaUbicacion!!, ubicacionDestino.nombreDeLaUbicacion!!)
+        }
+        val tiposDeCaminoFactibles = vectorRecuperado.estrategiaDeTipo!!.puedeAtravesar()
+
+        var puedeAtravezar: Boolean = false
+        for (tipo in tiposDeCaminoFactibles) {
+            puedeAtravezar = puedeAtravezar || this.estanConectadasPorCamino(ubicacionActual!!.nombreDeLaUbicacion!!, ubicacionDestino.nombreDeLaUbicacion!!, tipo)
+        }
+        if (!puedeAtravezar) {
+            throw UbicacionNoAlcanzable(vectorRecuperado.tipo!!.name, ubicacionDestino.nombreDeLaUbicacion!!, vectorRecuperado.caminos())
+        }
+
+        vectorRecuperado.cambiarDeUbicacion(ubicacionDestino)
         //vectorDAO.actualizar(vector) La comente porque estamos actualizando con el mismo vector que nos pasan, no tiene mucho sentido
         /* if (ubicacionVieja != null) {
              ubicacionDAO.actualizar(ubicacionVieja)
          }*/
-
         //this.actualizar(ubicacionVieja!!)
-        this.actualizar(ubicacionNueva)
+        this.actualizar(ubicacionDestino)
         if (vectorRecuperado.estaInfectado()) {
-            vectorServiceImp.contagiar(vectorRecuperado, ubicacionNueva.vectores.toList())
+            vectorServiceImp.contagiar(vectorRecuperado, ubicacionDestino.vectores.toList())
         }
-        ubicacionNeoDao.mover(vectorRecuperado, nombreUbicacion)
     }
 
     override fun actualizar(ubicacion: Ubicacion) {
@@ -77,11 +96,24 @@ class UbicacionServiceImp(
     }
 
     override fun moverMasCorto(vectorId: Long, nombreDeUbicacion: String) {
-        runTrx({ ubicacionNeoDao.moverMasCorto(vectorId, nombreDeUbicacion) }, listOf(TransactionType.NEO4J))
+        val vector = vectorServiceImp.recuperarVector(vectorId.toInt())
+        val tiposCaminos = vector.caminos()
+        val ubicActual = vector.location!!.nombreDeLaUbicacion!!
+        val caminoMasCorto: List<Ubicacion> = runTrx({ ubicacionNeoDao.caminoMasCorto(tiposCaminos, ubicActual, nombreDeUbicacion) }, listOf(TransactionType.NEO4J))
+
+        print("------------------------------------------------------------------------------------------------------RESULTADO:" + caminoMasCorto)
+
+        if (caminoMasCorto.isEmpty()) {
+            throw UbicacionNoAlcanzable(vector.tipo!!.name, nombreDeUbicacion, tiposCaminos)
+        }
+        for (ubicCamino in caminoMasCorto) {
+            this.mover(vector.id!!.toInt(), ubicCamino.nombreDeLaUbicacion!!)
+        }
     }
 
-    override fun capacidadDeExpansion(vectorId: Long,movimientos: Int): Int {
-        return runTrx({ ubicacionNeoDao.capacidadDeExpansion(vectorId, movimientos) }, listOf(TransactionType.NEO4J))
+    override fun capacidadDeExpansion(vectorId: Long, movimientos: Int): Int {
+        val vector = vectorServiceImp.recuperarVector(vectorId.toInt())
+        return runTrx({ ubicacionNeoDao.capacidadDeExpansion(vector, movimientos) }, listOf(TransactionType.NEO4J))
     }
 
     override fun estanConectadasPorCamino(nombreUbicacionBase: String, nombreUbicacionDestino: String, nombreTipoCamino: String): Boolean {
@@ -89,14 +121,15 @@ class UbicacionServiceImp(
     }
 
     override fun tipoCaminoEntre(nombreUbicacionBase: String, nombreUbicacionDestino: String): String {
-        return runTrx({ ubicacionNeoDao.tipoCaminoEntre(nombreUbicacionBase, nombreUbicacionDestino)}, listOf(TransactionType.NEO4J))
+        return runTrx({ ubicacionNeoDao.tipoCaminoEntre(nombreUbicacionBase, nombreUbicacionDestino) }, listOf(TransactionType.NEO4J))
     }
 
-    override fun ubicacionDeVector(vector: Vector): Ubicacion {
-        return runTrx({ ubicacionNeoDao.ubicacionDeVector(vector)})
+    override fun ubicacionDeVector(vectorId: Long): Ubicacion {
+        val vector = vectorServiceImp.recuperarVector(vectorId.toInt())
+        return vector.location!!
     }
 
     override fun existeUbicacion(ubicacionCreada: Ubicacion): Boolean {
-        return runTrx({ ubicacionNeoDao.existeUbicacion(ubicacionCreada)})
+        return runTrx({ ubicacionNeoDao.existeUbicacion(ubicacionCreada) }, listOf(TransactionType.NEO4J))
     }
 }

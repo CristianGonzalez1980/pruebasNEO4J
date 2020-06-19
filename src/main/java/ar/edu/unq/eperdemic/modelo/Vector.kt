@@ -25,7 +25,7 @@ class Vector() {
     var enfermedades: MutableSet<Especie> = HashSet()
 
     @Transient
-    var estrategiaDeContagio: StrategySuperClase? = null
+    var estrategiaDeTipo: StrategySuperClase? = null
 
     constructor(location: Ubicacion, tipoDeVector: VectorFrontendDTO.TipoDeVector) : this() {
         this.location = location
@@ -52,13 +52,17 @@ class Vector() {
 
     fun initEstrategia() {
         if (this.tipo!!.name == "Persona") {
-            this.estrategiaDeContagio = StrategyHumano()
+            this.estrategiaDeTipo = StrategyHumano()
         }
         if (this.tipo!!.name == "Animal") {
-            this.estrategiaDeContagio = StrategyAnimal()
+            this.estrategiaDeTipo = StrategyAnimal()
         }
         if (this.tipo!!.name == "Insecto") {
-            this.estrategiaDeContagio = StrategyInsecto()
+            this.estrategiaDeTipo = StrategyInsecto()
         }
+    }
+
+    fun caminos(): String {
+        return this.estrategiaDeTipo!!.caminosDeVector()
     }
 }

@@ -15,11 +15,6 @@ import org.neo4j.driver.*
 
 class UbicacionNeo4jDao {
 
-    private val vectorServiceImp: VectorServiceImp = VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO())
-    //private val ubicacionServiceImp: UbicacionServiceImp = UbicacionServiceImp(HibernateUbicacionDAO(), UbicacionNeo4jDao(),
-    //        HibernateDataDAO(), HibernateVectorDAO(), VectorServiceImp(HibernateVectorDAO(), HibernateDataDAO(), HibernatePatogenoDAO()))
-
-
     fun crearUbicacion(ubicacion: Ubicacion) {
         val session: Session = Neo4jSessionFactoryProvider.instance.createSession()
         session.use { session ->
@@ -53,12 +48,12 @@ class UbicacionNeo4jDao {
             val query = """
                 MATCH (conectar:Ubicacion { nombreUbicacion:${'$'}unaUbicacion })
                 MATCH (conectado:Ubicacion { nombreUbicacion:${'$'}otraUbicacion })
-                MERGE (conectar)-[:""" + camino + "{ tipo:${'$'}tCamino }]->(conectado)"
+                MERGE (conectar)-[:""" + camino + "]->(conectado)"
             session.run(
                     query, Values.parameters(
                     "unaUbicacion", ubicacion1,
-                    "otraUbicacion", ubicacion2,
-                    "tCamino", tipoCamino
+                    "otraUbicacion", ubicacion2//,
+                    //"tCamino", tipoCamino
             )
             )
         }
@@ -69,7 +64,7 @@ class UbicacionNeo4jDao {
         session.use { session ->
             val query = """
                 MATCH (ubicBase { nombreUbicacion:${'$'}nombreUbicBase })-[caminos]->(ubicDestino { nombreUbicacion:${'$'}nombreUbicDestino })
-                RETURN caminos.tipo = ${'$'}tipoCaminoBuscado
+                RETURN type(caminos) = ${'$'}tipoCaminoBuscado
             """
             val result = session.run(
                     query, Values.parameters(
@@ -87,7 +82,7 @@ class UbicacionNeo4jDao {
         session.use { session ->
             val query = """
                 MATCH (ubicBase { nombreUbicacion:${'$'}nombreUbicBase })-[relacion]->(ubicDestino { nombreUbicacion:${'$'}nombreUbicDestino })
-                RETURN relacion.tipo
+                RETURN type(relacion)
             """
             val result = session.run(
                     query, Values.parameters(
@@ -116,87 +111,32 @@ class UbicacionNeo4jDao {
         }
     }
 
-    fun ubicacionDeVector(vector: Vector): Ubicacion {
-        return vector.location!!
-    }
-
-    fun mover(vector: Vector, nombreDeUbicacionDestino: String) {
-        val ubicActual = this.ubicacionDeVector(vector)
-        val ubicacionesLindantes = this.conectados(ubicActual.nombreDeLaUbicacion!!)
-        val nombresConectados = ubicacionesLindantes.map { it.nombreDeLaUbicacion }
-        try {
-            if (nombreDeUbicacionDestino !in nombresConectados) {
-                UbicacionMuyLejana(ubicActual.nombreDeLaUbicacion!!, nombreDeUbicacionDestino)
-            }
-        }
-        catch (e:UbicacionMuyLejana) {
-
-            e.message
-
-            //ubicacionServiceImp.mover(vector.id!!.toInt(), nombreDeUbicacionDestino)
-        }
-    }
-
-    fun moverMasCorto(vectorId: Long, nombreDeUbicacion: String) {
+    fun caminoMasCorto(tiposCaminos: String, nombreDeUbicacionActual: String, nombreDeUbicacionDestino: String): List<Ubicacion> {
         val session: Session = Neo4jSessionFactoryProvider.instance.createSession()
-        val vector = vectorServiceImp.recuperarVector(vectorId.toInt())
-        val tiposCaminos = this.caminosDeVector(vector)
-        val ubicActual = this.ubicacionDeVector(vector)
         print("------------------------------------------------------------------------------------------------------------------------------" + tiposCaminos)
-            session.use { session ->
-                val query = """
-                MATCH (ubicP:Ubicacion { nombreUbicacion: ${'$'}ubicActual }),(ubicL:Ubicacion { nombreUbicacion: ${'$'}unaUbicacion }), 
-                p = shortestPath((ubicP)-[${'$'}relacion]-(ubicL)) 
-                RETURN p
+        return session.use { session ->
+            val query = """
+                MATCH p=shortestPath((ubicP:Ubicacion { nombreUbicacion: ${'$'}ubicActual })-[tiposCaminos]->(ubicL:Ubicacion { nombreUbicacion: ${'$'}unaUbicacion })) RETURN p
               """
-                val result = session.run(query, Values.parameters(
-                        "ubicActual", ubicActual.nombreDeLaUbicacion,
-                        "unaUbicacion", nombreDeUbicacion,
-                        "relacion", tiposCaminos
-                ))
-                val resultado = result.list { record: Record ->
-                    val conectada = record[0]
-                    val nombreUbicacion = conectada["nombreUbicacion"].asString()
-                    Ubicacion(nombreUbicacion)
-                }
-                print("------------------------------------------------------------------------------------------------------RESULTADO:" + result)
-                if (resultado.isEmpty()) {
-                    //UbicacionNoAlcanzable(vector.tipo!!.name, nombreDeUbicacion, ) //Falta agregar el camino por el que no pudo pasar, o eliminar ese parametro de la excepcion
-                }
-                for (ubicCamino in result) {
-                    //    this.mover(vector, ubicCamino) }
-                }
-                //si la lista es vacia lanzar
-                // ubicacionNoAlcanzable
+            val result = session.run(query, Values.parameters(
+                    "ubicActual", nombreDeUbicacionActual,
+                    "unaUbicacion", nombreDeUbicacionDestino,
+                    "relacion", tiposCaminos
+            ))
+            print("------------------------------------------------------------------------------------------------------RESULTADO:" + result)
+            result.list { record: Record ->
+                val conectada = record[0]
+                val nombreUbicacion = conectada["nombreUbicacion"].asString()
+                Ubicacion(nombreUbicacion)
             }
         }
-
-
-    private fun caminosDeVector(vector: Vector): String {
-
-        val tipoVector = vector.tipo!!.name
-
-        if (tipoVector == "Persona") {
-            return ":Terreste|:Maritimo*"
-        }
-
-        if (tipoVector == "Insecto") {
-            return ":Terrestre|:Aereo*"
-        }
-
-        if (tipoVector == "Animal") {
-            return ":Terrestre|:Maritimo|:Aereo*"
-        }
-
-        return ""
     }
 
-    fun capacidadDeExpansion(vectorId: Long, movimientos:Int): Int{
+    fun capacidadDeExpansion(vector: Vector, movimientos: Int): Int {
 
         var session: Session = Neo4jSessionFactoryProvider.instance.createSession()
 
-        val vector = vectorServiceImp.recuperarVector(vectorId.toInt())
-        val ubicacionActual = this.ubicacionDeVector(vector)
+        val ubicacionActual = vector.location!!.nombreDeLaUbicacion
         var cantUbicaciones: Int? = null
         //val ubicacionesConectadas = this.conectados(ubicacionDelVector.nombreDeLaUbicacion!!)
         //val ubicacionActual = ubicacionesConectadas.get(0)
@@ -204,18 +144,14 @@ class UbicacionNeo4jDao {
             val query = """
                 MATCH (ubi:Ubicacion { nombreUbicacion:${'$'}unaUbicacion }),(u:Ubicacion),
                  (ubi)-[*..movimientos]-(u)
-                 
                 RETURN u
-
               """
             val result = session.run(query, Values.parameters(
-                    "unaUbicacion", ubicacionActual,"movimientos", movimientos))
+                    "unaUbicacion", ubicacionActual, "movimientos", movimientos))
 
-            cantUbicaciones =  result.list().size
-
+            cantUbicaciones = result.list().size
         }
         return cantUbicaciones!!
-
     }
 
     fun clear() {

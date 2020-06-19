@@ -34,7 +34,7 @@ class Ubicacion() {
     fun actualizarInfectadoseEnUbicacion(vectorInfectado : Vector , vectores : MutableList<Vector>){
         vectorInfectado.initEstrategia()
         for(v  : Vector in vectores){
-            vectorInfectado.estrategiaDeContagio!!.darContagio(vectorInfectado ,v )
+            vectorInfectado.estrategiaDeTipo!!.darContagio(vectorInfectado ,v )
         }
     }
 

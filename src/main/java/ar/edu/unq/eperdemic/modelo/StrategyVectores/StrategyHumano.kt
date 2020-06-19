@@ -9,8 +9,12 @@ class StrategyHumano : StrategySuperClase() {
                 || (vectorRecibido.tipo!!.name == "Insecto"))
     }
 
-    fun puedeAtravesar(camino: TipoDeCamino) : Boolean {
-        return ((camino.name == "Terrestre") || (camino.name == "Maritimo"))
+    override fun puedeAtravesar(): List<String> {
+        return listOf("Terrestre", "Maritimo")
+    }
+
+    override fun caminosDeVector(): String {
+        return ":Terrestre|Maritimo*"
     }
 
     override fun darContagio(vectorInfectado: Vector, vectorAContagiar: Vector) {
